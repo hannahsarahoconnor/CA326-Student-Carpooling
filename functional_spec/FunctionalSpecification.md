@@ -2,15 +2,15 @@
 
 ## Group Members
 
-  * Hannah O Connor
-  * Catherine Mooney
+  + Hannah O Connor 
+  + Catherine Mooney 
   
 
 ## **Table of contents**
 
 ## **1. Introduction**  
-                                    
-     - [1.1 Overview](#11-overview)
+      
+      [1.1 Overview](#11-overview)
     
      - 1.2  Business Context
     
