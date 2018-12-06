@@ -22,9 +22,9 @@
 
  - [2.2 User Characteristics and Objectives](#22-user-characteristic-and-objectives)
 
- - [2.3 Operational Scenarios](#23-operational-scenario)
+ - [2.3 Operational Scenarios](#23-operational-scenarios)
 
- - [2.3 Constraints](#23-constraints)
+ - [2.4 Constraints](#24-constraints)
 
  **3. Functional Requirements**
 
@@ -224,7 +224,7 @@ For the verification process we will be using the Firebase Authentication servic
 None.
 
 
-**3.2  Login**
+## **3.2  Login**
 
 * Description 
 
@@ -242,7 +242,7 @@ The entered details must match what is contained within our user database, we wi
 
 The user must have first completed all the necessary steps in the Registration process in order to use the login function.
 
-**3.3 Selecting User Instance**
+## **3.3 Selecting User Instance**
 
 * Description 
 
@@ -260,7 +260,7 @@ We plan on implementing this feature through using a switch button on the User I
 
 Must be a logged in user.
 
-**3.4 User Profile**
+## **3.4 User Profile**
 
 * Description 
 
@@ -278,7 +278,7 @@ We're aware by allowing users to upload pictures will cause storage space to be 
 
 The user must be first registered correctly and logged in.
 
-**3.5 .Creating a Trip Request**
+## **3.5 .Creating a Trip Request**
 
 * Description 
 
@@ -296,7 +296,7 @@ The layout will be presented as a form in which the user must enter the fields f
 
 This requires the user to be logged in and have selected 'passenger' as their chosen user instance.
 
-**3.6 Creating a Trip**
+## **3.6 Creating a Trip**
 
 * Description 
 
@@ -314,7 +314,7 @@ Upon entering in the addresses of where the driver will start and finish, it can
 
 This requires to be logged in and have selected 'driver' as the current user instance.
 
-**3.7 Searching for a trip (Driver)**
+## **3.7 Searching for a trip (Driver)**
 
 * Description 
 
@@ -332,7 +332,7 @@ Possibly, we want to implement a way that once a trip has been organised the pas
 
 Requires a user to be logged in and choosing their instance as a driver.
 
-**3.8 Searching for a trip (Passenger)**
+## **3.8 Searching for a trip (Passenger)**
 
 * Description 
 
@@ -350,7 +350,7 @@ This search will query the database and return them to the passengers screen, in
 
 Requires trip to be first created by driver(s) and added to the database in order for a passenger to search the options.
 
-**3.9 Requesting a Trip**
+## **3.9 Requesting a Trip**
 
 * Description 
 
@@ -368,7 +368,7 @@ The request button will be shown on the trip details. After clicking the button,
 
 Requires Driver to user have create a trip and user instance is 'passenger'.
 
-**3.10 Accepting an request**
+## **3.10 Accepting an request**
 
 * Description 
 
@@ -384,7 +384,7 @@ We are also considering to possibly have these requests pop up, whilst a driver 
 
 * Dependencies with other requirements
 
-**3.11 Trip details**
+## **3.11 Trip details**
 
 * Description 
 
@@ -402,7 +402,7 @@ This will a display a scroll view of scheduled trips, each showing the destinati
 
 It requires a trip to have been created firstly and have passenger included.
 
-**3.12 Starting a Journey**
+## **3.12 Starting a Journey**
 
 * Description 
 
@@ -420,7 +420,7 @@ The start function is representation as a button in which the driver must select
 
 This depends on a trip being created in order for the trip to be shown within a user 'Trips' and for this function to be presented.
 
-**3.13 Calculating Passenger Route**
+## **3.13 Calculating Passenger Route**
 
 * Description
 
@@ -438,7 +438,7 @@ This depends on a trip being created in order for the trip to be shown within a 
 
   Depends on the trip being created and passengers joined.
 
-**3.14. Tracking the Driver**
+## **3.14. Tracking the Driver**
 
 * Description
 
@@ -456,7 +456,7 @@ This depends on a trip being created in order for the trip to be shown within a 
 
   A trip must be first created, passenger joined and the driver has click 'start' on the trip details.
 
-**3.15 Messaging**
+## **3.15 Messaging**
 
 * Description
 
@@ -475,7 +475,7 @@ We are still unsure of how exactly we will go about creating this feature, as of
 Require a login in user to have first interact with another on the basic of organising a trip.
 
 
-**3.16 Rating System**
+## **3.16 Rating System**
 
 * Description
 
@@ -493,7 +493,7 @@ In order to create this, we plan on using the Rating bar widget available within
 
 This requires that a trip has been created first, which includes passengers and has been started by a driver, along with reaching the destination and the driver clicking &#39;finish&#39;.
 
-**3.17 Log out**
+## **3.17 Log out**
 
 * Description
 
@@ -512,7 +512,7 @@ With this function, it means we will no longer be able to track the user. In the
 Requires the user to have first been successfully logged in, before logging out.
 
 ## **4. System Architecture**
-    ![System Architecture Diagram](/Images/SysArch.jpg)
+- ![System Architecture Diagram](Images/SysArch.jpg)
 
 
 The above diagram shows the architecture of our project.  The elements involved show the front end which is the android application, along with or backend, Firebase, which is responsible for hosting the application. Firebase includes the various SDKs required for the application to work successfully, such as the Authentication of our users (to provide student exclusivity), the real time database to store important content and cloud storage for allowing users to upload pictures for their profile. Our Application also integrates numerous APIs within, these are Google Maps, Directions, Places and Play Services. These are all required in order to enable the different functions of the Student Carpooling.
@@ -520,31 +520,31 @@ The above diagram shows the architecture of our project.  The elements involved 
 
 # **5. High-Level Design**
 
-- 5.1 Context Diagram
+## 5.1 Context Diagram
 
-    ![Context Diagram](/Images/ContextDiagram.png)
+- ![Context Diagram](Images/ContextDiagram.png)
 
-- 5.2 Data Flow Diagram
+## 5.2 Data Flow Diagram
 
-    ![Data Flow Diagram](/Images/DFD.jpg)
+- ![Data Flow Diagram](Images/DFD.jpg)
 
-- 5.3 Logical Diagram
+## 5.3 Logical Diagram
 
-    ![Logical Diagram](/Images/LogicalDiagram.png)
+- ![Logical Diagram](Images/LogicalDiagram.png)
 
-- 5.4 Use Case Diagram
+## 5.4 Use Case Diagram
 
-    ![Use Case Diagram](/Images/UseCase.jpg)
+- ![Use Case Diagram](Images/UseCase.jpg)
 
-## **6. Preliminary Schedule**
+# **6. Preliminary Schedule**
 
-- 6.1 Task List
+## 6.1 Task List
 
-- ![Task list](/Images/TaskList.png)
+- ![Task list](Images/TaskList.png)
 
-- 6.2 Gantt Diagram
+## 6.2 Gantt Diagram
 
-- ![Gantt Diagram](/Images/Gantt.png)
+- ![Gantt Diagram](Images/Gantt.png)
 
 # **7. Appendices**
 
