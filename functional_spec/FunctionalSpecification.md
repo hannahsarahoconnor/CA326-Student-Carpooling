@@ -204,7 +204,7 @@ Upon finishing a journey, each user of that particular trip, including the drive
 
 # **3. Functional Requirements**
 
-**3.1 Registration**
+## **3.1 Registration**
 
 * Description 
 
