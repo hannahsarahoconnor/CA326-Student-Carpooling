@@ -6,81 +6,81 @@
   + Catherine Mooney 
   
 
-## **Table of contents**
+# **Table of contents**
 
-## **1. Introduction**  
+ **1. Introduction**  
       
-      [1.1 Overview](#11-overview)
+ - [1.1 Overview](#11-overview)
     
-     - 1.2  Business Context
+ - [1.2 Business Context](#12-business-context)
     
-     - 1.3  Glossary
+ - [1.3 Glossary](#13-glossary)
 
-## 2. General Description
+ **2. General Description**
 
-     2.1 Product / System Functions
+ - [2.1 Product / System Functions](#21-product-system-functions)
 
-     2.2 User Characteristics and Objectives
+ - [2.2 User Characteristics and Objectives](#22-user-characteristic-and-objectives)
 
-     2.3 Operational Scenarios
+ - [2.3 Operational Scenarios](#23-operational-scenario)
 
-     2.4 Constraints
+ - [2.3 Constraints](#23-constraints)
 
-## 3.  Functional Requirements
+ **3. Functional Requirements**
 
-     3.1 Registration
+ - [3.1 Registeration ](#31-registeration)
 
-     3.2 Login
+ - 3.2 Login
 
-     3.3 Selecting User Instance
+ - 3.3 Selecting User Instance
 
-     3.4 Profile
+ - 3.4 Profile
 
-     3.5 Creating a Trip Request
+ - 3.5 Creating a Trip Request
 
-     3.6 Creating a Trip
+ - 3.6 Creating a Trip
 
-     3.7 Searching for a Trip (Driver)
+ - 3.7 Searching for a Trip (Driver)
 
-     3.8 Searching for a Trip (Passenger)
+ - 3.8 Searching for a Trip (Passenger)
 
-     3.9 Requesting a Trip
+ - 3.9 Requesting a Trip
 
-     3.10 Accepting a Request
+ - 3.10 Accepting a Request
 
-     3.11 Trip Details
+ - 3.11 Trip Details
 
-     3.12 Starting a Journey
+ - 3.12 Starting a Journey
 
-     3.13 Calculating Passenger Route
+ - 3.13 Calculating Passenger Route
 
-     3.14 Tracking the Driver
+ - 3.14 Tracking the Driver
 
-     3.15 Messaging
+ - 3.15 Messaging
 
-     3.16 Rating System
+ - 3.16 Rating System
 
-     3.17 Logout
+ - 3.17 Logout
 
-## 4. System Architecture
+**4. System Architecture**
 
-    4.1 System Architecture Diagram
+ - 4.1 System Architecture Diagram
 
-## 5. High-Level Design
+**5. High-Level Design**
 
-    5.1 Context Diagram
+ - 5.1 Context Diagram
 
-    5.2  Data Flow Diagram
+ - 5.2  Data Flow Diagram
 
-    5.3  Logical Diagram
+ - 5.3  Logical Diagram
 
-    5.4 Use Case Diagram
+ - 5.4 Use Case Diagram
 
-## 6. Preliminary Schedule
+**6. Preliminary Schedule**
 
-    6.1  Task List
+ - 6.1  Task List
 
-    6.2  Gantt Diagram
+ - 6.2  Gantt Diagram
 
 ## 7. Appendices
 
