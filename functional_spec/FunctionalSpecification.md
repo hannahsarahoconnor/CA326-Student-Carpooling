@@ -1,20 +1,22 @@
-#Functional Specification - Student Carpooling
+# **Functional Specification - Student Carpooling**
 
-##Group Members
+## Group Members
 
-  *Hannah O Connor
-  *Catherine Mooney
+  * Hannah O Connor
+  * Catherine Mooney
   
 
-##Table of contents
+## **Table of contents**
 
-##1. Introduction  
+## 1. Introduction  
                                     
-..1.1 Overview
-..1.2 Business Context
-..1.3 Glossary
+     1.1 Overview
+    
+     1.2 Business Context
+    
+     1.3 Glossary
 
-##2. General Description
+## 2. General Description
 
      2.1 Product / System Functions
 
@@ -24,7 +26,7 @@
 
      2.4 Constraints
 
-##3.  Functional Requirements
+## 3.  Functional Requirements
 
      3.1 Registration
 
@@ -60,11 +62,11 @@
 
      3.17 Logout
 
-##4. System Architecture
+## 4. System Architecture
 
     4.1 System Architecture Diagram
 
-##5. High-Level Design
+## 5. High-Level Design
 
     5.1 Context Diagram
 
@@ -74,19 +76,19 @@
 
     5.4 Use Case Diagram
 
-##6. Preliminary Schedule
+## 6. Preliminary Schedule
 
-     6.1  Task List
+    6.1  Task List
 
-     6.2  Gantt Diagram
+    6.2  Gantt Diagram
 
-##7. Appendices
+## 7. Appendices
 
 
 
-#1. Introduction
+# **1. Introduction**
 
-##1.1 Overview
+## 1.1 Overview
 
 The project we're working on is an exclusive, student carpooling, android, mobile application. This application takes a twist on conventional ride sharing, with the main goal being  to help irish students with commuting to college. The primary functionality of this app is to allow for the organisation of traveling via shared vehicles, to various colleges, among students. Student Carpooling will have two different users, &quot;Passenger&quot; and &quot;Driver&quot;, with different functionality for each. It will allow for any college student to set up an account and benefit from the features that this app can offer. They can search for a suitable driver and, through the in app messaging feature, our users can message one another.
 
@@ -106,7 +108,7 @@ One of the major downfalls of carpooling nowadays is that people are uncomfortab
 
 
 
-##1.2 Business Context
+## 1.2 Business Context
 
 Here are few examples of what could be done with this application in terms of business:
 
@@ -118,7 +120,7 @@ Here are few examples of what could be done with this application in terms of bu
 
 
 
-##1.3 Glossary
+## 1.3 Glossary
 
 - **Android OS** : Google's Linux-based open source operating system for mobile devices.
 - **Android Studio:** The official integrated development environment for the Android application development.
@@ -132,9 +134,9 @@ Here are few examples of what could be done with this application in terms of bu
 - **Google Directions API:** A service in which calculates directions between locations.
 - **Firebase Cloud Storage:** FirebaseSDK to allow for the storage of user-generated content, such as photos.
 
-#2. General Description
+# **2. General Description**
 
-##2.1 Product / System Functions
+## 2.1 Product / System Functions
 
 Displayed below are the main functions in which we plan to incorporate into our app, the functionality is subject to change over the course of development, however, for now this list is what we would like to feature. These functions will require a user to ,first, be registered successfully and have chosen their instance of user, as with our app having two types of user, each user to have different operations and permissions.
 
@@ -146,15 +148,15 @@ Displayed below are the main functions in which we plan to incorporate into our 
 - Requesting a trip.
 - Viewing your trip(s).
 - Starting a Journey.
--  Real time Driver tracking
--  Passenger(s) location and route automation.
+- Real time Driver tracking
+- Passenger(s) location and route automation.
 - Rating System.
 - User Profile.
 - In-App messaging.
 - Logging out.
 
 
-##2.2 User Characteristics and Objectives
+## 2.2 User Characteristics and Objectives
 
 The user community in which we plan to target is exclusively college students. We believe, with establishing the exclusivity of this app, students would be more comfortable car sharing with each other. This creates a circle of trust for our users, as they share a common association, reassuring them that those, in which they are travelling with, are not complete strangers. We believe this can in fact grow college communities, bringing more student bodies together within a single university and allow for friendships that may of not have grown/not occurred, if our app did not exist.
 
@@ -162,7 +164,7 @@ The User Interface will allow for a simple, yet appealing user friendly experien
 
 
 
-##2.3 Operational Scenarios
+## 2.3 Operational Scenarios
 
 As the structure of Student Carpooling has two type of users, there will be different instances of each scenario and although they perform similarly, they are entirely separate. Our two types of user are Driver and Passenger.
 
@@ -180,7 +182,7 @@ A user with a car and full licensed can have the option to create a new trip. He
 
 **Passenger joins a trip**
 
-Once a passengers' request has been accepted by the driver, this trip will then appear within the &#39;My Trips&#39; page. Here, the users can remind themselves of the details, if needed, and also examine the other users who are apart of this trip, who they can choose to message. Within the specific trip information there will also be an option to track the driver, yet this won&#39;t be made available until the driver &#39;starts&#39; the trip.
+Once a passengers' request has been accepted by the driver, this trip will then appear within the 'My Trips' page. Here, the users can remind themselves of the details, if needed, and also examine the other users who are apart of this trip, who they can choose to message. Within the specific trip information there will also be an option to track the driver, yet this won&#39;t be made available until the driver &#39;starts&#39; the trip.
 
 **Driver starts a journey and navigates Passengers**
 
@@ -190,14 +192,14 @@ Within 'My trips', a driver can allocate the certain trip they wish to start but
 
 Upon finishing a journey, each user of that particular trip, including the driver, will have the option to rate each one of their fellow carpoolers, on a scale from 1 to 5 stars.
 
-##2.4 Constraints
+## 2.4 Constraints
 
 - **Time constraint** : As we are quite restricted on our app development process due to the time, we will focus on implementing the basic functionality and ensure it all works accordingly, with sufficient testing conducted. Over time we can grow the app and add more features to it.
 - **Firebase database constraint:**  With a limit set on our free account on Firebase, we're constrained on the amount that we can store and on the amount of simultaneous connections to our database. (The in-app messaging may be a concern, as it will take up the most of the space.)
 - **Internet Constraint:** Users must acquire internet access in order to use our app and its functionality.
 - **Mobile OS constraint:** This application will only be available to those with an Android OS mobile.
 
-#3. Functional Requirements
+# **3. Functional Requirements**
 
 **3.1 Registration**
 
@@ -289,7 +291,7 @@ The layout will be presented as a form in which the user must enter the fields f
 
 * Dependencies with other requirements
 
-This requires the user to be logged in and have selected &#39;passenger&#39; as their chosen user instance **.**
+This requires the user to be logged in and have selected 'passenger' as their chosen user instance.
 
 **3.6 Creating a Trip**
 
@@ -361,7 +363,7 @@ The request button will be shown on the trip details. After clicking the button,
 
 * Dependencies with other requirements
 
-Requires Driver to user have create a trip and user instance is &#39;passenger&#39;.
+Requires Driver to user have create a trip and user instance is 'passenger'.
 
 **3.10 Accepting an request**
 
@@ -391,7 +393,7 @@ This is an important function, on the drivers behalf, as it is here where the dr
 
 * Technical issues
 
-This will a display a scroll view of scheduled trips, each showing the destination, date and starting time along with a button &#39;details&#39;. For drivers only, there will be a &#39;start&#39; button. Passengers will have a substitute for the &#39;start&#39; button, &#39;track&#39;, where they can view the real time location of the driver, once the driver hits &#39;start&#39;. Within &#39;details&#39;, the carpoolers will see the list of passengers, beside each name will be a quick link to view their location, profile and have the option to message each other.
+This will a display a scroll view of scheduled trips, each showing the destination, date and starting time along with a button 'details'. For drivers only, there will be a &#39;start&#39; button. Passengers will have a substitute for the &#39;start&#39; button, &#39;track&#39;, where they can view the real time location of the driver, once the driver hits &#39;start&#39;. Within &#39;details&#39;, the carpoolers will see the list of passengers, beside each name will be a quick link to view their location, profile and have the option to message each other.
 
 * Dependencies with other requirements
 
@@ -413,7 +415,7 @@ The start function is representation as a button in which the driver must select
 
 * Dependencies with other requirements
 
-This depends on a trip being created in order for the trip to be shown within a user &#39;Trips&#39; and for this function to be presented.
+This depends on a trip being created in order for the trip to be shown within a user 'Trips' and for this function to be presented.
 
 **3.13 Calculating Passenger Route**
 
@@ -423,7 +425,7 @@ This depends on a trip being created in order for the trip to be shown within a 
 
 * Criticality
 
-  This feature is quite important, as without this, it may be difficult to reach each passenger on the driver&#39;s own accord. With this way the driver will have the correct and accurate directions.
+  This feature is quite important, as without this, it may be difficult to reach each passenger on the driver's own accord. With this way the driver will have the correct and accurate directions.
 
 * Technical issues
 
@@ -437,7 +439,7 @@ This depends on a trip being created in order for the trip to be shown within a 
 
 * Description
 
-  With this feature, once a driver has clicked &#39;start&#39; within the trip details of the specific trip, the locations of each of passengers of the trip, and the driver, will be shown as markers on the map. As the driver makes their way to each of the passengers this will be tracked and updated, in real time, for each of the passenger to see.
+  With this feature, once a driver has clicked 'start' within the trip details of the specific trip, the locations of each of passengers of the trip, and the driver, will be shown as markers on the map. As the driver makes their way to each of the passengers this will be tracked and updated, in real time, for each of the passenger to see.
 
 * Criticality
 
@@ -449,7 +451,7 @@ This depends on a trip being created in order for the trip to be shown within a 
 
 * Dependencies with other requirements
 
-  A trip must be first created, passenger joined and the driver has click &#39;start&#39; on the trip details.
+  A trip must be first created, passenger joined and the driver has click 'start' on the trip details.
 
 **3.15 Messaging**
 
@@ -468,7 +470,6 @@ We are still unsure of how exactly we will go about creating this feature, as of
 * Dependencies with other requirements
 
 Require a login in user to have first interact with another on the basic of organising a trip.
-
 
 
 **3.16 Rating System**
@@ -507,42 +508,42 @@ With this function, it means we will no longer be able to track the user. In the
 
 Requires the user to have first been successfully logged in, before logging out.
 
-##4. System Architecture
+## **4. System Architecture**
     ![System Architecture Diagram](/Images/SysArch.jpg)
 
 
 The above diagram shows the architecture of our project.  The elements involved show the front end which is the android application, along with or backend, Firebase, which is responsible for hosting the application. Firebase includes the various SDKs required for the application to work successfully, such as the Authentication of our users (to provide student exclusivity), the real time database to store important content and cloud storage for allowing users to upload pictures for their profile. Our Application also integrates numerous APIs within, these are Google Maps, Directions, Places and Play Services. These are all required in order to enable the different functions of the Student Carpooling.
 
 
-#5. High-Level Design
+# **5. High-Level Design**
 
-##5.1 Context Diagram
+## 5.1 Context Diagram
 
     ![Context Diagram](/Images/ContextDiagram.png)
 
-##5.2 Data Flow Diagram
+## 5.2 Data Flow Diagram
 
     ![Data Flow Diagram](/Images/DFD.jpg)
 
-##5.3 Logical Diagram
+## 5.3 Logical Diagram
 
     ![Logical Diagram](/Images/LogicalDiagram.png)
 
-##5.4 Use Case Diagram
+## 5.4 Use Case Diagram
 
     ![Use Case Diagram](/Images/UseCase.jpg)
 
-##6 Preliminary Schedule
+## **6. Preliminary Schedule**
 
-  ##6.1 Task List
+    ## 6.1 Task List
   
-    ![Task list](/Images/TaskList.png)
+       ![Task list](/Images/TaskList.png)
 
-  ##6.2 Gantt Diagram
+    ## 6.2 Gantt Diagram
 
-    ![Gantt Diagram](/Images/Gantt.png)
+       ![Gantt Diagram](/Images/Gantt.png)
 
-#7. Appendices
+# **7. Appendices**
 
 [https://firebase.google.com](https://firebase.google.com)
 
