@@ -1,8 +1,8 @@
-**Functional Specification**
+#Functional Specification
 
-**Table of contents**
+##Table of contents
 
-**1. Introduction                                      **
+##1. Introduction                                      
 
     1.1 Overview
 
@@ -10,7 +10,7 @@
 
     1.3 Glossary
 
-**2. General Description**
+##2. General Description
 
      2.1 Product / System Functions
 
@@ -20,7 +20,7 @@
 
      2.4 Constraints
 
-**3.  Functional Requirements**
+##3.  Functional Requirements
 
      3.1 Registration
 
@@ -50,17 +50,17 @@
 
      3.14 Tracking the Driver
 
-     3.15 ** ** Messaging
+     3.15 Messaging
 
      3.16 Rating System
 
      3.17 Logout
 
-**4. System Architecture**
+##4. System Architecture
 
     4.1 System Architecture Diagram
 
-**5. High-Level Design**
+##5. High-Level Design
 
     5.1 Context Diagram
 
@@ -70,19 +70,21 @@
 
     5.4 Use Case Diagram
 
-**6. Preliminary Schedule**
+##6. Preliminary Schedule
 
      6.1  Task List
 
      6.2  Gantt Diagram
 
-**7. Appendices**
+##7. Appendices
 
-**1****. Introduction**
 
-**1.1 Overview**
 
-The project we&#39;re working on is an exclusive, student carpooling, android, mobile application. This application takes a twist on conventional ride sharing, with the main goal being  to help irish students with commuting to college. The primary functionality of this app is to allow for the organisation of traveling via shared vehicles, to various colleges, among students. Student Carpooling will have two different users, &quot;Passenger&quot; and &quot;Driver&quot;, with different functionality for each. It will allow for any college student to set up an account and benefit from the features that this app can offer. They can search for a suitable driver and, through the in app messaging feature, our users can message one another.
+#1. Introduction
+
+##1.1 Overview
+
+The project we're working on is an exclusive, student carpooling, android, mobile application. This application takes a twist on conventional ride sharing, with the main goal being  to help irish students with commuting to college. The primary functionality of this app is to allow for the organisation of traveling via shared vehicles, to various colleges, among students. Student Carpooling will have two different users, &quot;Passenger&quot; and &quot;Driver&quot;, with different functionality for each. It will allow for any college student to set up an account and benefit from the features that this app can offer. They can search for a suitable driver and, through the in app messaging feature, our users can message one another.
 
 Our objective is to make the lives of students easier in terms of travelling and costs. Not only learning to drive is expensive, but also having to fill a car with petrol each week for a long commute can add up, but many students don&#39;t have that luxury of being able to get the most out of public transport and/or their leap card. Our goal is to normalise the idea of car sharing with your peers and meet those who you may not have had the chance to before. It is often difficult to find people from your area, or along your route, to add to your carpool, without help. It lead to the only people car sharing being those who know each other quite well. The app can provide a more flexible option for finding commuters and make their student lives a little bit easier.
 
@@ -100,23 +102,7 @@ One of the major downfalls of carpooling nowadays is that people are uncomfortab
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-**1.2 Business Context**
+##1.2 Business Context
 
 Here are few examples of what could be done with this application in terms of business:
 
@@ -128,11 +114,11 @@ Here are few examples of what could be done with this application in terms of bu
 
 
 
-**1.3 Glossary**
+##1.3 Glossary
 
 - **Android OS** : Google&#39;s Linux-based open source operating system for mobile devices.
 - **Android Studio:** The official integrated development environment for the Android application development.
-- **Firebase** : is a [mobile](https://en.wikipedia.org/wiki/Mobile_application)[application](https://en.wikipedia.org/wiki/Web_application) cloud-based development platform owned by google, it acts as the server and provides tools in order to develop our app.
+- **Firebase** : is a cloud-based development platform owned by google, it acts as the server and provides tools in order to develop our app.
 - **Google Maps API** : A service in order to enabled google maps within our application and allows for location markers too.
 - **Geo-Fire** : GeoFire is an open-source library for Android that allows you to store and query a set of keys based on their geographic location using the Firebase realtime database.
 - **Firebase Authentication:** A service that can authenticate our users using through email and passwords. When a new user signs up with an email, it sends a verification email to that address before storing to database. It handles sending password reset emails too.
@@ -142,9 +128,9 @@ Here are few examples of what could be done with this application in terms of bu
 - **Google Directions API:** A service in which calculates directions between locations **.**
 - **Firebase Cloud Storage:** FirebaseSDK to allow for the storage of user-generated content, such as photos.
 
-**2. General Description**
+#2. General Description
 
-**2.1 Product / System Functions**
+##2.1 Product / System Functions
 
 Displayed below are the main functions in which we plan to incorporate into our app, the functionality is subject to change over the course of development, however, for now this list is what we would like to feature. These functions will require a user to ,first, be registered successfully and have chosen their instance of user, as with our app having two types of user, each user to have different operations and permissions.
 
@@ -164,8 +150,7 @@ Displayed below are the main functions in which we plan to incorporate into our 
 - Logging out.
 
 
-
-**2.2 User Characteristics and Objectives**
+##2.2 User Characteristics and Objectives
 
 The user community in which we plan to target is exclusively college students. We believe, with establishing the exclusivity of this app, students would be more comfortable car sharing with each other. This creates a circle of trust for our users, as they share a common association, reassuring them that those, in which they are travelling with, are not complete strangers. We believe this can in fact grow college communities, bringing more student bodies together within a single university and allow for friendships that may of not have grown/not occurred, if our app did not exist.
 
@@ -173,7 +158,7 @@ The User Interface will allow for a simple, yet appealing user friendly experien
 
 
 
-**2.3 Operational Scenarios**
+##2.3 Operational Scenarios
 
 As the structure of Student Carpooling has two type of users, there will be different instances of each scenario and although they perform similarly, they are entirely separate. Our two types of user are Driver and Passenger.
 
@@ -195,40 +180,24 @@ Once a passengers&#39; request has been accepted by the driver, this trip will t
 
 **Driver starts a journey and navigates Passengers**
 
-Within &#39;My trips&#39;, a driver can allocate the certain trip they wish to start but tapping on the &#39;start&#39; button underneath it&#39;s details. This will notify all their passenger that the trip has started and it will open up google maps, with each of the passengers shown as markers on the map. When a driver taps on one of the passenger markers, they will be provided with the option to calculate the route to them. The various passengers will now be able to see the movements of their driver.
+Within 'My trips', a driver can allocate the certain trip they wish to start but tapping on the &#39;start&#39; button underneath it&#39;s details. This will notify all their passenger that the trip has started and it will open up google maps, with each of the passengers shown as markers on the map. When a driver taps on one of the passenger markers, they will be provided with the option to calculate the route to them. The various passengers will now be able to see the movements of their driver.
 
 **Reviewing another user**
 
 Upon finishing a journey, each user of that particular trip, including the driver, will have the option to rate each one of their fellow carpoolers, on a scale from 1 to 5 stars.
 
-**2.4 Constraints**
+##2.4 Constraints
 
 - **Time constraint** : As we are quite restricted on our app development process due to the time, we will focus on implementing the basic functionality and ensure it all works accordingly, with sufficient testing conducted. Over time we can grow the app and add more features to it.
-- **Firebase database constraint:**  With a limit set on our free account on Firebase, we&#39;re constrained on the amount that we can store and on the amount of simultaneous connections to our database. (The in-app messaging may be a concern, as it will take up the most of the space.)
+- **Firebase database constraint:**  With a limit set on our free account on Firebase, we're constrained on the amount that we can store and on the amount of simultaneous connections to our database. (The in-app messaging may be a concern, as it will take up the most of the space.)
 - **Internet Constraint:** Users must acquire internet access in order to use our app and its functionality.
 - **Mobile OS constraint:** This application will only be available to those with an Android OS mobile.
 
+#3. Functional Requirements
 
+##3.1 Registration
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-**3. Functional Requirements**
-
-**3.1 Registration**
-
-- **●●**** Description**
+Description**
 
 This is the first in the list of functionality of our app. As a first time user, it is a requirement to register before proceeding to login. The registration form requires the new user to enter a valid student email address. This step is crucial as it is how we will ensure student exclusivity. The domain of the inputted email must match our drop down list of Irish college and universities email domains. Other basic information is required, like name, college, area, age, etc. After the completion of this form, the user must then be verified through the verification email that will be sent to their inputted address. Within that email, there will be a link in which the user must click, to be added to the database, and proceed to login successfully.
 
@@ -536,7 +505,7 @@ With this function, it means we will no longer be able to track the user. In the
 
 Requires the user to have first been successfully logged in, before logging out.
 
-**4. System Architecture**
+##4. System Architecture
 
 
 
@@ -546,51 +515,25 @@ The above diagram shows the architecture of our project.  The elements involved 
 
 
 
-**5. High-Level Design**
+#5. High-Level Design
 
-**5.1 Context Diagram**
+##5.1 Context Diagram
 
+##5.2 Data Flow Diagram
 
+##5.3 Logical Diagram
 
+##5.4 Use Case Diagram
 
+##6. Preliminary Schedule
 
-
-
-
-
-
-
-**5.2 Data Flow Diagram**
-
-**5.3 Logical Diagram**
-
-**5.4 Use Case Diagram**
-
-**6. Preliminary Schedule**
-
-  **6.1 Task List**
-
-**             **
-
-**6. 2 Gantt Diagram**
+  ##6.1 Task List
 
 
 
+#6. 2 Gantt Diagram
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-**7****. Appendices**
+#7. Appendices
 
 [https://firebase.google.com](https://firebase.google.com)
 
