@@ -28,61 +28,64 @@
 
  **3. Functional Requirements**
 
- - [3.1 Registeration ](#31-registeration)
+ - [3.1 Registeration](#31-registeration)
 
- - 3.2 Login
+ - [3.2 Login](#32-login)
 
- - 3.3 Selecting User Instance
+ - [3.3 Selecting User Instance](#33-selecting-user-instance)
 
- - 3.4 Profile
+ - [3.4 Profile](#34-profile)
 
- - 3.5 Creating a Trip Request
+ - [3.5 Creating a Trip Request](#35-creating-a-trip-request)
 
- - 3.6 Creating a Trip
+ - [3.6 Creating a Trip](#36-creating-a-trip)
 
- - 3.7 Searching for a Trip (Driver)
+ - [3.7 Searching for a Trip (Driver)](#37-searching-for-a-trip-driver)
 
- - 3.8 Searching for a Trip (Passenger)
+ - [3.8 Searching for a Trip (Passenger)](#38-searching-for-a-trip-passenger)
 
- - 3.9 Requesting a Trip
+ - [3.9 Requesting a Trip](#39-requesting-a-trip)
 
- - 3.10 Accepting a Request
+ - [3.10 Accepting a Request](#310-accepting-a-request)
 
- - 3.11 Trip Details
+ - [3.11 Trip Details](#311-trip-details)
 
- - 3.12 Starting a Journey
+ - [3.12 Starting a Journey](#312-starting-a-journey)
 
- - 3.13 Calculating Passenger Route
+ - [3.13 Calculating Passenger Route](#313-calculating-passenger-route)
 
- - 3.14 Tracking the Driver
+ - [3.14 Tracking the Driver](#313-tracking-the-driver)
 
- - 3.15 Messaging
+ - [3.15 Messaging](#315-messaging)
 
- - 3.16 Rating System
+ - [3.16 Rating System](#316-rating-system)
 
- - 3.17 Logout
+ - [3.17 Logout](#317-logout)
 
 **4. System Architecture**
 
- - 4.1 System Architecture Diagram
+ - [4.1 System Architecture Diagram](#41-system-architecture-diagram)
 
 **5. High-Level Design**
 
- - 5.1 Context Diagram
+ - [5.1 Context Diagram](#51-context-diagram)
 
- - 5.2  Data Flow Diagram
+ - [5.2 Data Flow Diagram](#52-data-flow-diagram)
 
- - 5.3  Logical Diagram
+ - [5.3 Logical Diagram](#53-logical-diagram)
 
- - 5.4 Use Case Diagram
+ - [5.4 Use Case Diagram](#54-use-case-diagram)
 
 **6. Preliminary Schedule**
 
- - 6.1  Task List
+ - [6.1 Task List](#61-task-list)
 
- - 6.2  Gantt Diagram
+ - [6.2 Gantt Diagram](#62-gantt-diagram)
 
-## 7. Appendices
+[**7. Appendices**](#7-appendices)
+
+
+
 
 
 
@@ -517,31 +520,31 @@ The above diagram shows the architecture of our project.  The elements involved 
 
 # **5. High-Level Design**
 
-## 5.1 Context Diagram
+- 5.1 Context Diagram
 
     ![Context Diagram](/Images/ContextDiagram.png)
 
-## 5.2 Data Flow Diagram
+- 5.2 Data Flow Diagram
 
     ![Data Flow Diagram](/Images/DFD.jpg)
 
-## 5.3 Logical Diagram
+- 5.3 Logical Diagram
 
     ![Logical Diagram](/Images/LogicalDiagram.png)
 
-## 5.4 Use Case Diagram
+- 5.4 Use Case Diagram
 
     ![Use Case Diagram](/Images/UseCase.jpg)
 
 ## **6. Preliminary Schedule**
 
-    ## 6.1 Task List
-  
-       ![Task list](/Images/TaskList.png)
+- 6.1 Task List
 
-    ## 6.2 Gantt Diagram
+- ![Task list](/Images/TaskList.png)
 
-       ![Gantt Diagram](/Images/Gantt.png)
+- 6.2 Gantt Diagram
+
+- ![Gantt Diagram](/Images/Gantt.png)
 
 # **7. Appendices**
 
