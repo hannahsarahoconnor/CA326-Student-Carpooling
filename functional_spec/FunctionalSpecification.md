@@ -12,9 +12,9 @@
                                     
      [Overview](#overview)
     
-     1.2 Business Context
+     2. Business Context
     
-     1.3 Glossary
+     3. Glossary
 
 ## 2. General Description
 
@@ -88,7 +88,7 @@
 
 # **1. Introduction**
 
-## Overview
+## Overview <a name="overview"></a>
 
 The project we're working on is an exclusive, student carpooling, android, mobile application. This application takes a twist on conventional ride sharing, with the main goal being  to help irish students with commuting to college. The primary functionality of this app is to allow for the organisation of traveling via shared vehicles, to various colleges, among students. Student Carpooling will have two different users, &quot;Passenger&quot; and &quot;Driver&quot;, with different functionality for each. It will allow for any college student to set up an account and benefit from the features that this app can offer. They can search for a suitable driver and, through the in app messaging feature, our users can message one another.
 
