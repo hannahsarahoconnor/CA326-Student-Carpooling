@@ -46,11 +46,13 @@ public class DriverProfile extends AppCompatActivity
     NavigationView navigationView;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView Name,Username,Uni;
+
     private FirebaseAuth mAuth;
     private ImageView profilePic;
     private DatabaseReference UserDb;
     private String DBName, DBUsername, DBUni,UserID;
     private TextView NUsername, Nemail;
+
     private Uri ResultUri;
     private String ProfilePicUrl;
     private Button Confirm;

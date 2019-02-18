@@ -1,13 +1,15 @@
 package com.example.student_carpooling;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
+import com.example.student_carpooling.tripRecyclerView.TripViewHolders;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,62 +28,64 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 
-public class FutureTripFragment extends Fragment {
+public class FutureTripFragment extends Fragment  {
 
     private RecyclerView tripRecyclerView;
-    private RecyclerView.Adapter tripAdapter;
+    private TripAdapter tripAdapter;
     private RecyclerView.LayoutManager tripLayoutManager;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time;
+    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
     Date TripDate,CurrentDate;
     LinearLayout linearLayout;
+    NavigationView navigationView;
 
-    View v;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_future_trip, container, false);
+        View v = inflater.inflate(R.layout.fragment_future_trip, container, false);
+        tripRecyclerView = v.findViewById(R.id.tripFutureRecycler);
+        tripRecyclerView.setNestedScrollingEnabled(false); //not true?
+        tripRecyclerView.setHasFixedSize(true);
+        tripAdapter = new TripAdapter(getDataTrips(),getActivity());
+        tripLayoutManager = new LinearLayoutManager(getActivity());
+        tripRecyclerView.setLayoutManager(tripLayoutManager);
+
+        tripRecyclerView.setAdapter(tripAdapter);
+
+        tripAdapter.setTripListener(new TripAdapter.onTripListener() {
+            @Override
+            public void onTripClick(int position) {
+                Intent intent = new Intent(getActivity(),DriverTripItem.class);
+                startActivity(intent);
+
+            }
+        });
+
+
+
+        linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
+
+        mAuth = FirebaseAuth.getInstance();
+        UserID = mAuth.getCurrentUser().getUid();
+
+
+
+        getTripIds();
+
         return v;
         }
 
-        @Override
-        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-            // Setup any handles to view objects here
-            // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
-
-            linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
-
-            mAuth = FirebaseAuth.getInstance();
-            UserID = mAuth.getCurrentUser().getUid();
-
-            tripRecyclerView = v.findViewById(R.id.tripFutureRecycler);
-            tripRecyclerView.setNestedScrollingEnabled(true); //not true?
-            tripRecyclerView.setHasFixedSize(true);
-            tripAdapter = new TripAdapter(getDataTrips(),getActivity());
-            tripLayoutManager = new LinearLayoutManager(getActivity());
-            tripRecyclerView.setLayoutManager(tripLayoutManager);
-
-            tripRecyclerView.setAdapter(tripAdapter);
-            //? tripRecyclerView.setNestedScrollingEnabled(true); //not true?
-            //? tripRecyclerView.setHasFixedSize(true);
-
-
-            // where is getDataTrips used??
-
-
-            getTripIds();
-        }
 
         private void getTripIds(){
             DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
@@ -125,7 +130,7 @@ public class FutureTripFragment extends Fragment {
                             Integer month = Integer.parseInt(tokens.nextToken());
                             Integer year = Integer.parseInt(tokens.nextToken());
                             //year month date
-                            TripDate = new Date(year,month-1,day);
+                            TripDate = new Date(year-1900,month-1,day);
                             String date_n =new SimpleDateFormat("dd-MM-yy", Locale.ENGLISH).format(TripDate);
 
                         }
@@ -146,39 +151,24 @@ public class FutureTripFragment extends Fragment {
                         if(map.get("Destination")!=null){
                             Destination = map.get("Destination").toString().toUpperCase();}
 
-                        Integer CurrentDay;
-                        Integer CurrentMonth;
-                        Integer CurrentYear;
-                        Integer CurrentHour;
-                        Integer CurrentMins;
 
-                        // split the Trips Date and compare against current
+                        if(map.get("Username")!=null){
+                            UserName = map.get("Username").toString();}
 
-                        Calendar calendar = Calendar.getInstance();
-                        CurrentYear = calendar.get(Calendar.YEAR);
-                        CurrentDay = calendar.get(Calendar.DAY_OF_MONTH);
-                        CurrentMonth = calendar.get(Calendar.MONTH);
-                        CurrentHour = calendar.get(Calendar.HOUR_OF_DAY);
-                        CurrentMins = calendar.get(Calendar.MINUTE);
 
-                        Date CurrentDate = calendar.getTime();
 
 
                         String pattern = "dd-MM-yy";
                         Date date = new Date();
                         String date_n =new SimpleDateFormat(pattern).format(date);
 
-                        if(date.after(TripDate)){
+                        if(TripDate.after(date)){
                             // this means its a past date...
                             Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
                             resultsTrips.add(object);
                             tripAdapter.notifyDataSetChanged();
                         }
 
-                        if(resultsTrips.size() == 0){
-
-
-                        }
 
 
                     }
@@ -197,9 +187,15 @@ public class FutureTripFragment extends Fragment {
         private ArrayList resultsTrips = new ArrayList<Trip>();
 
         private ArrayList<Trip> getDataTrips() {
+
             return resultsTrips;
 
         }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        resultsTrips.clear();
 
+    }
 }

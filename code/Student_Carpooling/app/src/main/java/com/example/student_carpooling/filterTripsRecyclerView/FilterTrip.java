@@ -1,24 +1,24 @@
-package com.example.student_carpooling.tripRecyclerView;
+package com.example.student_carpooling.filterTripsRecyclerView;
 
-public class Trip {
+public class FilterTrip {
 
     private String TripID;
     private String Date;
     private String Time;
     private String UserName;
     private String Seats;
-    private String LuggageCheck;
+    //private String LuggageCheck;
     private String Starting;
     private String Destination;
 
 
 
-    public Trip(String Date,String Time, String Seats, String LuggageCheck, String Starting, String Destination ){
+    public FilterTrip(String Date,String Time, String Seats, String UserName, String Starting, String Destination ){
         this.Date = Date;
         this.Time = Time;
         this.UserName = UserName;
         this.Seats = Seats;
-        this.LuggageCheck = LuggageCheck;
+        //this.LuggageCheck = LuggageCheck;
         this.Starting = Starting;
         this.Destination = Destination;
 
@@ -51,9 +51,9 @@ public class Trip {
         this.Seats = seats;
     }
 
-    public void setLuggageCheck(String luggageCheck) {
-        this.LuggageCheck = luggageCheck;
-    }
+    //public void setLuggageCheck(String luggageCheck) {
+      //  this.LuggageCheck = luggageCheck;
+    //}
 
     public void setDestination(String destination) {
         this.Destination = destination;
@@ -68,7 +68,7 @@ public class Trip {
     }
 
     //public void setUserName(String userName) {
-        //UserName = userName;
+    //UserName = userName;
     //}
 
     public String getDestination() {
@@ -84,10 +84,10 @@ public class Trip {
     }
 
     //public String getUserName(){
-        //return UserName;
+    //return UserName;
     //}
 
-    public String getLuggageCheck() {
-        return LuggageCheck;
-    }
+   // public String getLuggageCheck() {
+   //     return LuggageCheck;
+    //}
 }
