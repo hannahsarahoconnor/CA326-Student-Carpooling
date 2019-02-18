@@ -93,6 +93,8 @@ public class DriverProfile extends AppCompatActivity
         navProfile = hView.findViewById(R.id.imageView);
 
         setupFirebaseListener();
+        
+        //when user clicks on profile, their camera roll will show or they can take an image
 
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +105,7 @@ public class DriverProfile extends AppCompatActivity
             }
         });
 
+        //once the button is clicked the information for that user in database is updated
         Confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,6 +184,7 @@ public class DriverProfile extends AppCompatActivity
         return true;
     }
 
+    //retrieve current user info to display
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
@@ -222,6 +226,8 @@ public class DriverProfile extends AppCompatActivity
 
     private void saveUserDB(){
         //possibily allow the option to update details about themselves too
+        
+        //Glide library used here
         if (ResultUri != null) {
             final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("Image").child(UserID);
             Bitmap bitmap = null;
