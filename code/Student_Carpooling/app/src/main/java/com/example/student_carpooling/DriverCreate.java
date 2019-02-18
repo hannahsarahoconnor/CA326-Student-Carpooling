@@ -87,7 +87,7 @@ public class DriverCreate extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-
+        //get the instance of the user and get their id and reference to user info from database
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
@@ -104,6 +104,8 @@ public class DriverCreate extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        
+        //Set the Profile, email and username in the navigation drawer with the current user info from Database
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
@@ -111,9 +113,9 @@ public class DriverCreate extends AppCompatActivity
 
         setupFirebaseListener();
 
-        
-
-
+    
+        //sets up the TimePicker dialog for the trip
+        //when user clicks on the textView, it will show
         Time = findViewById(R.id.TimeInput);
         Time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +130,7 @@ public class DriverCreate extends AppCompatActivity
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         //how to show if time is am or pm, rather than 24 hours
-                        // FORMAT THIS TO BE IN FORM HH:MM
+                        // Format the time to HH:MM and set the TextView to the chosen time
                         String format = (String.format(Locale.US,"%02d:%02d", hourOfDay, minute));
                         Time.setText(format);
                     }
@@ -138,13 +140,15 @@ public class DriverCreate extends AppCompatActivity
             }
         });
 
-        //Getting time input
+         //sets up the DatePicker dialog for the trip
+        //when user clicks on the textView, it will show
 
         DateInput = findViewById(R.id.DateInput);
         DateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 calendar = Calendar.getInstance();
+                //get today's date and display  by default
                 year = calendar.get(Calendar.YEAR);
                 month = calendar.get(Calendar.MONTH);
                 dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
@@ -161,7 +165,7 @@ public class DriverCreate extends AppCompatActivity
 
 
 
-        //no_seats
+        //spinner of the number of seats
         Spinner spinner = (Spinner) findViewById(R.id.seats_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.no_seats, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -182,7 +186,9 @@ public class DriverCreate extends AppCompatActivity
         });
 
 
-        //Getting the User Input
+        //Getting the other User Input
+        
+        //radioGroup - checks if luggage space was set to Yes or No
         radioGroup = findViewById(R.id.LuggageInput);
         StartingPt = findViewById(R.id.StartingInput);
         DestinationPt = findViewById(R.id.DestinationInput);
@@ -190,6 +196,7 @@ public class DriverCreate extends AppCompatActivity
         TripNote = findViewById(R.id.Note);
         Create = findViewById(R.id.CreateId);
 
+        //when user clicks Create convert this input to string to add to database
         Create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,19 +209,21 @@ public class DriverCreate extends AppCompatActivity
                 final String luggageCheck = radioButton.getText().toString();
                 final String Tripnote = TripNote.getText().toString();
 
-
+                //make sure theres no fields left empty
                 if(TextUtils.isEmpty(StartingPoint) || TextUtils.isEmpty(DstPoint) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
                     Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }
 
                 else {
-
-                    //Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
-                    //but dont know in terms of time?
-                    //check to make no field is blank too
+                    //TODO: Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
+                    //use Date object to compare? 
+                    
+                    //create a database reference, will create if doesnt already exists
+                    //store this new trip under the current user unique ID
                     ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                    //Adding multiple info so use a hashmap
                     Map TripInfo = new HashMap();
-                    //add driver username and maybe name to the form too
+                    //add driver name to the form too possibly?
                     TripInfo.put("Username", DBUsername);
                     TripInfo.put("Starting", StartingPoint);
                     TripInfo.put("Destination", DstPoint);
@@ -224,6 +233,8 @@ public class DriverCreate extends AppCompatActivity
                     TripInfo.put("Luggage", luggageCheck);
                     TripInfo.put("Note", Tripnote);
 
+
+                    //Through using push(), this trip will has its own unique ID under the users ID, otherwise only one trips would be stored at one time
                     ref.push().setValue(TripInfo);
                     Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
 
@@ -242,7 +253,7 @@ public class DriverCreate extends AppCompatActivity
 
 
 
-
+//Default Navigation Drawer Activity Functions
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -281,6 +292,8 @@ public class DriverCreate extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+
+        //Using activities rather than fragments
         switch (id) {
             case R.id.nav_message:
                 Intent msg = new Intent(DriverCreate.this, DriverMessage.class);
@@ -311,6 +324,9 @@ public class DriverCreate extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    
+    
+    //Get the User Info from the DB based on their ID to set the Username and image in the header of the navigation drawer
 
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
@@ -339,6 +355,8 @@ public class DriverCreate extends AppCompatActivity
             }
         });
     }
+    
+    //Use this functions to get the current users's email through using Firebase Auth Library
     private void setupFirebaseListener() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
