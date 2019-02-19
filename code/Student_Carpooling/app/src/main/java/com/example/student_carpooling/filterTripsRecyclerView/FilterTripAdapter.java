@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.example.student_carpooling.R;
 import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripViewHolders;
@@ -44,7 +45,16 @@ public class FilterTripAdapter extends RecyclerView.Adapter<FilterTripViewHolder
         filtertripViewHolders.Time.setText(list.get(i).getTime());
         filtertripViewHolders.Date.setText(list.get(i).getDate());
         filtertripViewHolders.Seats.setText(list.get(i).getSeats());
-        //tripViewHolders.Luggage.setText(list.get(i).getLuggageCheck());
+        //tripViewHolders.Luggage.setText(list.get(i).getLuggageCheck())
+        // ;
+
+
+
+        Glide.with(context).load(list.get(i).getProfilePicUrl()).into(filtertripViewHolders.profilePic);
+
+
+       // ProfilePicUrl = map.get("profileImageUrl").toString();
+        //                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
     }
 
     @Override

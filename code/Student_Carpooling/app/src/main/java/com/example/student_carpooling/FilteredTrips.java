@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
 public class FilteredTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Dialog dialog;
+    private Dialog dialog, dialog2;
 
     private RecyclerView tripRecyclerView;
     private RecyclerView.Adapter FiltertripAdapter;
@@ -57,7 +57,7 @@ public class FilteredTrips extends AppCompatActivity
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail, txt;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName;
+    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName,DriverProfilePicUrl;
     private FirebaseAuth mAuth;
     private String DBUsername;
     private DatabaseReference UserDb, reference;
@@ -113,6 +113,7 @@ public class FilteredTrips extends AppCompatActivity
 
 
        dialog = new Dialog(this);
+       dialog2 = new Dialog(this);
 
         getDriverId();
     }
@@ -245,6 +246,33 @@ public class FilteredTrips extends AppCompatActivity
         });
     }
 
+
+    public void showDriverPopUp(View v){
+        TextView ClosePopUp;
+        Button Request;
+        dialog2.setContentView(R.layout.driver_popup);
+        ClosePopUp = dialog2.findViewById(R.id.close);
+        Request = (Button) dialog2.findViewById(R.id.messageDriver);
+
+        ClosePopUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog2.dismiss();
+            }
+        });
+
+        Request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //send the request to the drawer
+            }
+        });
+        //transparent background
+        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog2.show();
+
+    }
+
     private void getDriverId(){
         final DatabaseReference DriverID = FirebaseDatabase.getInstance().getReference().child("TripForms");
         DriverID.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -254,6 +282,7 @@ public class FilteredTrips extends AppCompatActivity
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
                         DriverKey = id.getKey();
                         getTripIds(DriverKey);
+                        getDriverImage(DriverKey);
 
                     }
                 }
@@ -279,6 +308,25 @@ public class FilteredTrips extends AppCompatActivity
                         UserTripDB(TripKey);
 
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getDriverImage(String ID){
+        DatabaseReference driverDB = FirebaseDatabase.getInstance().getReference().child("users").child(ID);
+        driverDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("profileImageUrl")!=null){
+                        DriverProfilePicUrl = map.get("profileImageUrl").toString();}
                 }
             }
 
@@ -343,6 +391,7 @@ public class FilteredTrips extends AppCompatActivity
                     }
 
 
+
                     String pattern = "dd-MM-yy";
                     date = new Date();
                     String Currentdate = new SimpleDateFormat(pattern).format(date);
@@ -351,24 +400,25 @@ public class FilteredTrips extends AppCompatActivity
                         //make sure its not a past trips or isnt one that was created by that user.
 
                         int compare = date.compareTo(TripDate);
-                        // if date greater, tripdate is a past dast
-
-
-                        // not working
+                        // if date greater, tripdate is a past d
 
 
                         if (date.compareTo(TripDate) < 0 && !(date.compareTo(TripDate) > 0)) {
                             //current date is before tripdate
 
                             //if not empty apply all those that have been entered
-                            getIntent().getStringExtra("Starting");
-                            getIntent().getStringExtra("Destination");
-                            getIntent().getStringExtra("Date");
-                            getIntent().getStringExtra("Time");
-                            getIntent().getStringExtra("Luggage");
+                            //getIntent().getStringExtra("Starting");
+                           // getIntent().getStringExtra("Destination");
+                          //  getIntent().getStringExtra("Date");
+                          //  getIntent().getStringExtra("Time");
+                           // getIntent().getStringExtra("Luggage");
+                            //
 
 
-                            FilterTrip object = new FilterTrip(Date, Time, Seats, UserName, Starting, Destination);
+
+
+
+                            FilterTrip object = new FilterTrip(DriverProfilePicUrl,Date, Time, Seats, UserName, Starting, Destination);
                             resultsTrips.add(object);
                             FiltertripAdapter.notifyDataSetChanged();
                         }

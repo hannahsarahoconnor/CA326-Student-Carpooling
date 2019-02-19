@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +28,16 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +45,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
@@ -66,10 +77,12 @@ public class FindTrips extends AppCompatActivity
     int dayOfMonth;
     private RadioGroup radioGroup;;
     private RadioButton radioButton;
-    private EditText StartingPt, DestinationPt;
+    private String StartingPt, DestinationPt;
     private Button filter;
     private String DBUsername;
 
+    int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final String TAG = "FindTrips";
 
 
     @Override
@@ -102,6 +115,72 @@ public class FindTrips extends AppCompatActivity
 
 
         setupFirebaseListener();
+
+        String apiKey = "AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA";
+        Places.initialize(getApplicationContext(), apiKey);
+
+        //Create a new Places client instance.
+        if (!Places.isInitialized()) {
+        PlacesClient placesClient = Places.createClient(this);}
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentSTART);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setCountry("IE");
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                //LatLng string_location = place.getLatLng();
+                //String address = (String) place.getAddress();
+                StartingPt = (String) place.getName();
+                Toast.makeText(FindTrips.this,""+StartingPt,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                // TODO: Handle the error.
+                // Log.i(TAG, "An error occurred: " + status);
+                Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        autocompleteFragment.setHint("Starting Point?");
+       // autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+
+        AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDEST);
+
+        autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        //autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
+        autocompleteFragmentDST.setCountry("IE");
+
+        autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                LatLng string_location = place.getLatLng();
+                //("destinationLat", destinationLatLng.latitude);
+                //("destinationLng", destinationLatLng.longitude);
+                //CharSequence address = place.getAddress();
+                final CharSequence address = place.getAddress();
+                DestinationPt = (String) place.getName();
+                Toast.makeText(FindTrips.this,""+ address,Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        autocompleteFragmentDST.setHint("Destination?");
+
+// Set up a PlaceSelectionListener to handle the response.
+
 
         Time = findViewById(R.id.TimeInput);
         Time.setOnClickListener(new View.OnClickListener() {
@@ -150,16 +229,14 @@ public class FindTrips extends AppCompatActivity
 
 
         radioGroup = findViewById(R.id.LuggageInput);
-        StartingPt = findViewById(R.id.FromInput);
-        DestinationPt = findViewById(R.id.Destination);
 
 
         filter = findViewById(R.id.filter);
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String StartingPoint = StartingPt.getText().toString();
-                final String DstPoint = DestinationPt.getText().toString();
+               // final String StartingPoint = StartingPt.getText().toString();
+               // final String DstPoint = DestinationPt.getText().toString();
                 final String startingDate = DateInput.getText().toString();
                 final String startingTime = Time.getText().toString();
                 int radioId = radioGroup.getCheckedRadioButtonId();
@@ -169,8 +246,8 @@ public class FindTrips extends AppCompatActivity
 
                 //pass this info to the next activity
                 Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
-                intent.putExtra("Starting", StartingPoint);
-                intent.putExtra("Destination", DstPoint);
+                //intent.putExtra("Starting", StartingPoint);
+               //intent.putExtra("Destination", DstPoint);
                 intent.putExtra("Date", startingDate);
                 intent.putExtra("Time", startingTime);
                 intent.putExtra("Luggage", luggage);
@@ -178,6 +255,8 @@ public class FindTrips extends AppCompatActivity
                 finish();
             }
         });
+
+
     }
 
     @Override
@@ -304,6 +383,23 @@ public class FindTrips extends AppCompatActivity
         super.onStop();
         if(mAuthStateListener != null){
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
         }
     }
 }

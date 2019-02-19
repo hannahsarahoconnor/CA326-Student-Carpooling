@@ -2,7 +2,7 @@ package com.example.student_carpooling.filterTripsRecyclerView;
 
 public class FilterTrip {
 
-    private String TripID;
+    private String profilePicUrl;
     private String Date;
     private String Time;
     private String UserName;
@@ -13,12 +13,12 @@ public class FilterTrip {
 
 
 
-    public FilterTrip(String Date,String Time, String Seats, String UserName, String Starting, String Destination ){
+    public FilterTrip(String profilePicUrl, String Date,String Time, String Seats, String UserName, String Starting, String Destination ){
         this.Date = Date;
         this.Time = Time;
         this.UserName = UserName;
         this.Seats = Seats;
-        //this.LuggageCheck = LuggageCheck;
+        this.profilePicUrl = profilePicUrl;
         this.Starting = Starting;
         this.Destination = Destination;
 
@@ -26,6 +26,13 @@ public class FilterTrip {
 
     //may not need the set functions
 
+    public String getProfilePicUrl() {
+        return profilePicUrl;
+    }
+
+    public void setProfilePicUrl(String profilePicUrl) {
+        this.profilePicUrl = profilePicUrl;
+    }
 
     public void setUserName(String userName) {
         UserName = userName;

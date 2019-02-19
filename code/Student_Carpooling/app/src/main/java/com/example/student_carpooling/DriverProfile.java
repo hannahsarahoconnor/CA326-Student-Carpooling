@@ -48,7 +48,7 @@ public class DriverProfile extends AppCompatActivity
     private TextView Name,Username,Uni;
 
     private FirebaseAuth mAuth;
-    private ImageView profilePic,UserPic;
+    private ImageView profilePic;
     private DatabaseReference UserDb;
     private String DBName, DBUsername, DBUni,UserID;
     private TextView NUsername, Nemail;
@@ -71,7 +71,7 @@ public class DriverProfile extends AppCompatActivity
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
-        //profilePic = findViewById(R.id.ProfilePic);
+        profilePic = findViewById(R.id.ProfilePic);
         Confirm = findViewById(R.id.ConfirmPic);
 
 
@@ -96,25 +96,17 @@ public class DriverProfile extends AppCompatActivity
 
         setupFirebaseListener();
 
-        UserPic = findViewById(R.id.ProfilePic);
 
-        UserPic.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //permissions??
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent,1);
-                                   } });
 
-        //profilePic.setOnClickListener(new View.OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        //     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        //    intent.setType("image/*");
-        //      startActivityForResult(intent,1);
-        //    }
-        //    });
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Intent intent = new Intent(Intent.ACTION_PICK);
+          intent.setType("image/*");
+          startActivityForResult(intent,1);
+            }
+            });
 
         Confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,7 +275,7 @@ public class DriverProfile extends AppCompatActivity
 
                 //its reference is kept within the Uri variable
                 final Uri imageUri = data.getData();
-                UserPic.setImageURI(imageUri);
+                profilePic.setImageURI(imageUri);
 
                 ResultUri = imageUri;
                 profilePic.setImageURI(ResultUri);
