@@ -48,7 +48,7 @@ public class DriverProfile extends AppCompatActivity
     private TextView Name,Username,Uni;
 
     private FirebaseAuth mAuth;
-    private ImageView profilePic;
+    private ImageView profilePic,UserPic;
     private DatabaseReference UserDb;
     private String DBName, DBUsername, DBUni,UserID;
     private TextView NUsername, Nemail;
@@ -71,7 +71,7 @@ public class DriverProfile extends AppCompatActivity
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
-        profilePic = findViewById(R.id.ProfilePic);
+        //profilePic = findViewById(R.id.ProfilePic);
         Confirm = findViewById(R.id.ConfirmPic);
 
 
@@ -95,19 +95,27 @@ public class DriverProfile extends AppCompatActivity
         navProfile = hView.findViewById(R.id.imageView);
 
         setupFirebaseListener();
-        
-        //when user clicks on profile, their camera roll will show or they can take an image
 
-        profilePic.setOnClickListener(new View.OnClickListener() {
+        UserPic = findViewById(R.id.ProfilePic);
+
+        UserPic.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
+                //permissions??
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(intent,1);
-            }
-        });
+                                   } });
 
-        //once the button is clicked the information for that user in database is updated
+        //profilePic.setOnClickListener(new View.OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        //     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //    intent.setType("image/*");
+        //      startActivityForResult(intent,1);
+        //    }
+        //    });
+
         Confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,7 +194,6 @@ public class DriverProfile extends AppCompatActivity
         return true;
     }
 
-    //retrieve current user info to display
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
@@ -228,8 +235,6 @@ public class DriverProfile extends AppCompatActivity
 
     private void saveUserDB(){
         //possibily allow the option to update details about themselves too
-        
-        //Glide library used here
         if (ResultUri != null) {
             final StorageReference filePath = FirebaseStorage.getInstance().getReference().child("Image").child(UserID);
             Bitmap bitmap = null;
@@ -273,8 +278,13 @@ public class DriverProfile extends AppCompatActivity
         @Override
         protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
-            if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+            if(requestCode == 1 && resultCode == Activity.RESULT_OK && data != null){
+                //user has picked an image
+
+                //its reference is kept within the Uri variable
                 final Uri imageUri = data.getData();
+                UserPic.setImageURI(imageUri);
+
                 ResultUri = imageUri;
                 profilePic.setImageURI(ResultUri);
             }

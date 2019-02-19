@@ -83,8 +83,6 @@ public class DriverTrips extends AppCompatActivity
 
         setupFirebaseListener();
 
-
-        //Tab layout to divide the trips into Past, Present and Future 
         tabLayout = findViewById(R.id.TabLayout);
         tabSwitch = findViewById(R.id.Switch);
         tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
@@ -94,16 +92,26 @@ public class DriverTrips extends AppCompatActivity
         tabAdapter.addFragment(new FutureTripFragment(),"Future");
 
         tabSwitch.setAdapter(tabAdapter);
-        //View pager makes it smoother to glide/change between tabs
         tabLayout.setupWithViewPager(tabSwitch);
 
 
+
+        //tabSwitch.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+
         //example of what will be put inside resultTrips..
-       // Trip object = new Trip("parameters")
+       // Trip object = new Trip()
+
         //add
         //notify change
 
+
+
     }
+    //get the unique keys of the trips under the user id
+
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

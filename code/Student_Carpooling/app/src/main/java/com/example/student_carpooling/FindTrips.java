@@ -41,9 +41,6 @@ import java.util.Map;
 
 public class FindTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-            
-            
-    //This activity is used by Passenger to find available trips once they chose the filters        
 
     DrawerLayout drawer;
     NavigationView navigationView;

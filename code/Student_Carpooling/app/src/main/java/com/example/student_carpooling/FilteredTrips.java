@@ -1,6 +1,9 @@
 package com.example.student_carpooling;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,6 +48,8 @@ import java.util.StringTokenizer;
 
 public class FilteredTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private Dialog dialog;
 
     private RecyclerView tripRecyclerView;
     private RecyclerView.Adapter FiltertripAdapter;
@@ -104,10 +110,39 @@ public class FilteredTrips extends AppCompatActivity
 
        tripRecyclerView.setAdapter(FiltertripAdapter);
 
-       txt = findViewById(R.id.text);
 
+
+       dialog = new Dialog(this);
 
         getDriverId();
+    }
+
+    //first set up onclick for the button in the recycler view
+
+    public void showPopUp(View v){
+        TextView ClosePopUp;
+        Button Request;
+        dialog.setContentView(R.layout.request_popup);
+        ClosePopUp = dialog.findViewById(R.id.close);
+        Request = (Button) dialog.findViewById(R.id.requestTrip);
+
+        ClosePopUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        Request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //send the request to the drawer
+            }
+        });
+        //transparent background
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+
     }
 
 
@@ -281,7 +316,6 @@ public class FilteredTrips extends AppCompatActivity
 
                         TripDate = new Date(year-1900, month - 1, day);
                         String date_n = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(TripDate);
-                        txt.setText(date_n);
 
                     }
                     if (map.get("Time") != null) {

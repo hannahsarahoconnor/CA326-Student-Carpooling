@@ -3,11 +3,15 @@ package com.example.student_carpooling;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 
+
 import android.text.TextUtils;
+
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,8 +21,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+
 
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -33,8 +39,20 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,9 +62,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import java.util.HashMap;
+
 import java.util.Locale;
 import java.util.Map;
 
@@ -61,7 +81,7 @@ public class DriverCreate extends AppCompatActivity
     private DatabaseReference UserDb, ref;
     NavigationView navigationView;
     private ImageView navProfile;
-    private TextView DateInput, Time;
+    private TextView DateInput, Time, Destination;
     TimePickerDialog timePickerDialog;
     DatePickerDialog datePickerDialog;
     Calendar calendar;
@@ -71,13 +91,18 @@ public class DriverCreate extends AppCompatActivity
     int month;
     int dayOfMonth;
     private String startingDate, startingTime;
-    private AutocompleteSupportFragment autocompleteFragment;
     private RadioGroup radioGroup;;
     private RadioButton radioButton;
-    private EditText StartingPt, DestinationPt, TripNote;
+    private EditText TripNote;
     private Button Create;
     private String DBUsername, numberSeats;
+    private String starting ,destination;
 
+
+
+
+    int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private static final String TAG = "DriverCreate";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +112,10 @@ public class DriverCreate extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        //get the instance of the user and get their id and reference to user info from database
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -104,8 +127,6 @@ public class DriverCreate extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        
-        //Set the Profile, email and username in the navigation drawer with the current user info from Database
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
@@ -113,9 +134,71 @@ public class DriverCreate extends AppCompatActivity
 
         setupFirebaseListener();
 
-    
-        //sets up the TimePicker dialog for the trip
-        //when user clicks on the textView, it will show
+
+        // Initialize Places.
+
+        String apiKey = "AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA";
+        Places.initialize(getApplicationContext(), apiKey);
+
+        //Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDST);
+
+
+
+        autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setCountry("IE");
+        autocompleteFragmentDST.setCountry("IE");
+        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
+
+        autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                LatLng string_location = place.getLatLng();
+                String address = (String) place.getAddress();
+                destination = (String) place.getName();
+                Toast.makeText(DriverCreate.this,""+destination,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        autocompleteFragmentDST.setHint("Destination?");
+
+// Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(Place place) {
+                //LatLng string_location = place.getLatLng();
+                //String address = (String) place.getAddress();
+                starting = (String) place.getName();
+                Toast.makeText(DriverCreate.this,""+starting,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+               // Log.i(TAG, "An error occurred: " + status);
+                Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        autocompleteFragment.setHint("Starting Point?");
+
+
+        //onActivityResult, you must call super.onActivityResult, otherwise the fragment will not function properly.
+
         Time = findViewById(R.id.TimeInput);
         Time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +213,7 @@ public class DriverCreate extends AppCompatActivity
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         //how to show if time is am or pm, rather than 24 hours
-                        // Format the time to HH:MM and set the TextView to the chosen time
+                        // FORMAT THIS TO BE IN FORM HH:MM
                         String format = (String.format(Locale.US,"%02d:%02d", hourOfDay, minute));
                         Time.setText(format);
                     }
@@ -140,15 +223,13 @@ public class DriverCreate extends AppCompatActivity
             }
         });
 
-         //sets up the DatePicker dialog for the trip
-        //when user clicks on the textView, it will show
+        //Getting time input
 
         DateInput = findViewById(R.id.DateInput);
         DateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 calendar = Calendar.getInstance();
-                //get today's date and display  by default
                 year = calendar.get(Calendar.YEAR);
                 month = calendar.get(Calendar.MONTH);
                 dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
@@ -165,7 +246,7 @@ public class DriverCreate extends AppCompatActivity
 
 
 
-        //spinner of the number of seats
+        //no_seats
         Spinner spinner = (Spinner) findViewById(R.id.seats_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.no_seats, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -186,22 +267,20 @@ public class DriverCreate extends AppCompatActivity
         });
 
 
-        //Getting the other User Input
-        
-        //radioGroup - checks if luggage space was set to Yes or No
+        //Getting the User Input
         radioGroup = findViewById(R.id.LuggageInput);
-        StartingPt = findViewById(R.id.StartingInput);
-        DestinationPt = findViewById(R.id.DestinationInput);
-
         TripNote = findViewById(R.id.Note);
         Create = findViewById(R.id.CreateId);
 
-        //when user clicks Create convert this input to string to add to database
+
+
+
+
         Create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String StartingPoint = StartingPt.getText().toString();
-                final String DstPoint = DestinationPt.getText().toString();
+                //final String StartingPoint = StartingPt.getText().toString();
+                //final String DstPoint = DestinationPt.getText().toString();
                 final String startingDate = DateInput.getText().toString();
                 final String startingTime = Time.getText().toString();
                 int radioId = radioGroup.getCheckedRadioButtonId();
@@ -209,51 +288,46 @@ public class DriverCreate extends AppCompatActivity
                 final String luggageCheck = radioButton.getText().toString();
                 final String Tripnote = TripNote.getText().toString();
 
-                //make sure theres no fields left empty
-                if(TextUtils.isEmpty(StartingPoint) || TextUtils.isEmpty(DstPoint) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
-                    Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
+                   Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }
 
-                else {
-                    //TODO: Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
-                    //use Date object to compare? 
-                    
-                    //create a database reference, will create if doesnt already exists
-                    //store this new trip under the current user unique ID
+                else{
+
+                    //Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
+                    //but dont know in terms of time?
+                    //check to make no field is blank too
                     ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                    //Adding multiple info so use a hashmap
                     Map TripInfo = new HashMap();
-                    //add driver name to the form too possibly?
+                    //add driver username and maybe name to the form too
                     TripInfo.put("Username", DBUsername);
-                    TripInfo.put("Starting", StartingPoint);
-                    TripInfo.put("Destination", DstPoint);
+                    TripInfo.put("Starting", starting);
+                    TripInfo.put("Destination",destination);
                     TripInfo.put("Date", startingDate);
                     TripInfo.put("Seats", numberSeats);
                     TripInfo.put("Time", startingTime);
                     TripInfo.put("Luggage", luggageCheck);
                     TripInfo.put("Note", Tripnote);
 
-
-                    //Through using push(), this trip will has its own unique ID under the users ID, otherwise only one trips would be stored at one time
                     ref.push().setValue(TripInfo);
                     Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
 
                     startActivity(new Intent(DriverCreate.this, DriverTrips.class));
                     finish();
 
-                }
+                }}
 
-            }
         });
 
 
-
-    }
-
+        }
 
 
 
-//Default Navigation Drawer Activity Functions
+
+
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -292,8 +366,6 @@ public class DriverCreate extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-
-        //Using activities rather than fragments
         switch (id) {
             case R.id.nav_message:
                 Intent msg = new Intent(DriverCreate.this, DriverMessage.class);
@@ -324,9 +396,6 @@ public class DriverCreate extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-    
-    
-    //Get the User Info from the DB based on their ID to set the Username and image in the header of the navigation drawer
 
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
@@ -355,8 +424,6 @@ public class DriverCreate extends AppCompatActivity
             }
         });
     }
-    
-    //Use this functions to get the current users's email through using Firebase Auth Library
     private void setupFirebaseListener() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -387,5 +454,22 @@ public class DriverCreate extends AppCompatActivity
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 }
