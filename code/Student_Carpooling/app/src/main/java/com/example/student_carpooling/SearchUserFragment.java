@@ -2,12 +2,15 @@ package com.example.student_carpooling;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.example.student_carpooling.usersRecyclerView.User;
 import com.example.student_carpooling.usersRecyclerView.UserAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -67,6 +72,20 @@ public class SearchUserFragment extends Fragment {
         userRecyclerView.setAdapter(userAdapter);
 
 
+        //starts a chat activity with what user was clicked
+       // userAdapter.setUserListener(new UserAdapter.onUserListener() {
+           // @Override
+           // public void onUserClick(int position) {
+                //get the info from postiton?
+
+               // getUsersId();
+
+               // Intent intent = new Intent(getActivity(),ChatActivity.class);
+               // startActivity(intent);
+         //   }
+       // });
+
+
 
         linearLayout = (LinearLayout) v.findViewById(R.id.linearLayoutSearch);
 
@@ -79,11 +98,52 @@ public class SearchUserFragment extends Fragment {
 
         //set up a User click listener to launch message with them when clicked..
 
-
-
         getUsersId();
 
+
+        EditText editText = v.findViewById(R.id.edittext);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+
         return v;
+
+    }
+
+
+    private ArrayList resultsUsers = new ArrayList<User>();
+
+    private ArrayList<User> getDataUsers() {
+
+        return resultsUsers;
+
+    }
+
+
+    private void filter(String text) {
+        ArrayList filteredList = new ArrayList<User>();
+
+        //for (User item : resultsUsers) {
+            //if (item.getUserName().toLowerCase().contains(text.toLowerCase())) {
+             //   filteredList.add(item);
+            //}
+        //}
+
+       // userAdapter.filterList(filteredList);
+        //mExampleList = new ArrayList<>(filteredList);
     }
 
 
@@ -137,7 +197,7 @@ public class SearchUserFragment extends Fragment {
         });
     }
 
-    private void UserDB(String ID) {
+    private void UserDB(final String ID) {
         //push().getKey();
         DatabaseReference UsersDB = FirebaseDatabase.getInstance().getReference().child("users").child(ID);
         UsersDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -156,7 +216,13 @@ public class SearchUserFragment extends Fragment {
                     //add usertype too and display
 
                     if(map.get("Username")!=null){
-                        UserName = map.get("Username").toString();}
+                        UserName = map.get("Username").toString();
+
+
+
+                    }
+
+
 
 
                     //make sure that the current user isnt shown..
@@ -165,7 +231,7 @@ public class SearchUserFragment extends Fragment {
 
                         // this means its a past date...
 
-                      User user = new User(ProfilePicUrl,UserName);
+                      User user = new User(ID,ProfilePicUrl,UserName);
 
                       resultsUsers.add(user);
                       userAdapter.notifyDataSetChanged();}
@@ -185,13 +251,6 @@ public class SearchUserFragment extends Fragment {
 
     }
 
-    private ArrayList resultsUsers = new ArrayList<User>();
-
-    private ArrayList<User> getDataUsers() {
-
-        return resultsUsers;
-
-    }
 
     //when clicks back on tab, the users will be retrieved, stops duplication
 

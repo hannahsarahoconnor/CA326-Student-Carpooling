@@ -47,7 +47,7 @@ public class FilterTripAdapter extends RecyclerView.Adapter<FilterTripViewHolder
         filtertripViewHolders.Seats.setText(list.get(i).getSeats());
         //tripViewHolders.Luggage.setText(list.get(i).getLuggageCheck())
         // ;
-        if(filtertripViewHolders.profilePic.equals("default")){
+        if(filtertripViewHolders.profilePic.equals("defaultPic")){
             filtertripViewHolders.profilePic.setImageResource(R.mipmap.ic_launcher_round);
         }
         else{

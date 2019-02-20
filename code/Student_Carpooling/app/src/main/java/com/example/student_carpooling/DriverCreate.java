@@ -94,7 +94,6 @@ public class DriverCreate extends AppCompatActivity
     private RadioGroup radioGroup;;
     private RadioButton radioButton;
     private EditText TripNote;
-    private Button Create;
     private String DBUsername, numberSeats;
     private String starting ,destination;
 
@@ -156,6 +155,7 @@ public class DriverCreate extends AppCompatActivity
 
         autocompleteFragment.setCountry("IE");
         autocompleteFragmentDST.setCountry("IE");
+        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -202,7 +202,7 @@ public class DriverCreate extends AppCompatActivity
         Time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //show the current time by default rather than 12:00
+                //show the current time by defaultPic rather than 12:00
                 calendar = Calendar.getInstance();
                 hour = calendar.get(Calendar.HOUR_OF_DAY);
                 minutes = calendar.get(Calendar.MINUTE);
@@ -269,6 +269,8 @@ public class DriverCreate extends AppCompatActivity
         //Getting the User Input
         radioGroup = findViewById(R.id.LuggageInput);
         TripNote = findViewById(R.id.Note);
+
+        Button Create;
         Create = findViewById(R.id.CreateId);
 
 

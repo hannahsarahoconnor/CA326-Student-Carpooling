@@ -217,8 +217,8 @@ public class DriverProfile extends AppCompatActivity
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
 
-                        if(ProfilePicUrl.equals("default")){
-                            profilePic.setImageResource(R.mipmap.ic_launcher_round);
+                        if(ProfilePicUrl.equals("defaultPic")){
+                            profilePic.setImageResource(R.drawable.logo);
                             //navProfile.setImageResource(R.mipmap.ic_launcher_round);
                         }
                         else{

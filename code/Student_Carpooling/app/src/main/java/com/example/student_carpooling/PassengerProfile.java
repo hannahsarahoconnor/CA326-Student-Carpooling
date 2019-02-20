@@ -157,7 +157,7 @@ public class PassengerProfile extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(ProfilePicUrl.equals("default")){
+                        if(ProfilePicUrl.equals("defaultPic")){
                             //profilePic.setImageResource(R.mipmap.ic_launcher_round);
                             navProfile.setImageResource(R.mipmap.ic_launcher_round);
                         }

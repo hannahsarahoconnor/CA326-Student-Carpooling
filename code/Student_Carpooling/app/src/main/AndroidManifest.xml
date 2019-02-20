@@ -16,10 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ChatActivity"></activity>
         <activity
             android:name=".DriverTripItem"
             android:label="@string/title_activity_driver_trip_item"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".FilteredTrips"
             android:label="@string/title_activity_filtered_trips"
@@ -87,7 +88,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA"/>
+            android:value="AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA" />
     </application>
 
 </manifest>

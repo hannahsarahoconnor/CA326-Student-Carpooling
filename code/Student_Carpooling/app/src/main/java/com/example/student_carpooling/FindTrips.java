@@ -186,7 +186,7 @@ public class FindTrips extends AppCompatActivity
         Time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //show the current time by default rather than 12:00
+                //show the current time by defaultPic rather than 12:00
                 calendar = Calendar.getInstance();
                 hour = calendar.get(Calendar.HOUR_OF_DAY);
                 minutes = calendar.get(Calendar.MINUTE);

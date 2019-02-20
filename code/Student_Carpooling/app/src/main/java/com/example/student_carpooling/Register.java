@@ -38,7 +38,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
 
     private EditText Email,Password,Name,Surname,Username,Age,University;
-    private String profilepic;
+    //private String profilepic;
     private FirebaseAuth mAuth;
     private AutoCompleteTextView Domain;
     private RadioGroup radioGroup;
@@ -151,7 +151,7 @@ public class Register extends AppCompatActivity {
                                             UserInfo.put("Age", age);
                                             UserInfo.put("Gender", gender);
                                             UserInfo.put("Type", true);
-                                            UserInfo.put("profileImageUrl", "default");
+                                            UserInfo.put("profileImageUrl", "defaultPic");
 
                                             currentUser.setValue(UserInfo);
                                             sendVerificationEmail();
