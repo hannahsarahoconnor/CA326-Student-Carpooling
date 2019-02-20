@@ -47,10 +47,11 @@ public class FilterTripAdapter extends RecyclerView.Adapter<FilterTripViewHolder
         filtertripViewHolders.Seats.setText(list.get(i).getSeats());
         //tripViewHolders.Luggage.setText(list.get(i).getLuggageCheck())
         // ;
-
-
-
-        Glide.with(context).load(list.get(i).getProfilePicUrl()).into(filtertripViewHolders.profilePic);
+        if(filtertripViewHolders.profilePic.equals("default")){
+            filtertripViewHolders.profilePic.setImageResource(R.mipmap.ic_launcher_round);
+        }
+        else{
+        Glide.with(context).load(list.get(i).getProfilePicUrl()).into(filtertripViewHolders.profilePic);}
 
 
        // ProfilePicUrl = map.get("profileImageUrl").toString();

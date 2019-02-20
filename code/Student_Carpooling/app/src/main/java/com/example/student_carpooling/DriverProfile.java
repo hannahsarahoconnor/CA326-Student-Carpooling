@@ -3,11 +3,13 @@ package com.example.student_carpooling;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -71,8 +73,11 @@ public class DriverProfile extends AppCompatActivity
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
-        profilePic = findViewById(R.id.ProfilePic);
         Confirm = findViewById(R.id.ConfirmPic);
+        profilePic = findViewById(R.id.ProfilePic);
+
+
+
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -93,6 +98,7 @@ public class DriverProfile extends AppCompatActivity
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
+
 
         setupFirebaseListener();
 
@@ -210,9 +216,15 @@ public class DriverProfile extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
-                    }
+
+                        if(ProfilePicUrl.equals("default")){
+                            profilePic.setImageResource(R.mipmap.ic_launcher_round);
+                            //navProfile.setImageResource(R.mipmap.ic_launcher_round);
+                        }
+                        else{
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                    }}
 
 
                 }

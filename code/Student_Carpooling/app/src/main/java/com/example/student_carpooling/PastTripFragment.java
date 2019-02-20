@@ -91,28 +91,6 @@ public class PastTripFragment extends Fragment  {
 
     }
 
-    //@Override
-    ////public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-
-
-
-        //check to see if the recycler view is empty, show dynamic text view and button
-
-                    //You can show toast or choose any other option
-
-
-
-        // This keeps returning 0, perhaps try set an emptyview if recycler view is null?
-
-
-
-
-
-
-
-    // when i reopen a fragment it duplicates the content
-
     private void getTripIds(){
         DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
         TripIDs.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -3,6 +3,8 @@ package com.example.student_carpooling;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -41,6 +43,10 @@ public class DriverMessage extends AppCompatActivity
     private RecyclerView.Adapter messagesAdapter;
     private RecyclerView.LayoutManager MsgListLayoutManager;
 
+    private TabLayout tabLayout;
+    private ViewPager tabSwitch;
+    private TabAdapter tabAdapter;
+
    // ArrayList<MessageObject> messages;
 
     @Override
@@ -49,8 +55,6 @@ public class DriverMessage extends AppCompatActivity
         setContentView(R.layout.activity_user_message);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        initializeRecycler();
 
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
@@ -72,6 +76,17 @@ public class DriverMessage extends AppCompatActivity
         navProfile = hView.findViewById(R.id.imageView);
 
         setupFirebaseListener();
+
+        tabLayout = findViewById(R.id.messageTab);
+        tabSwitch = findViewById(R.id.Switcher);
+        tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+        tabAdapter.addFragment(new ActiveChatFragment(),"Chats");
+        tabAdapter.addFragment(new SearchUserFragment(),"Find User");
+
+        tabSwitch.setAdapter(tabAdapter);
+        tabLayout.setupWithViewPager(tabSwitch);
+
     }
 
     @Override
@@ -102,6 +117,7 @@ public class DriverMessage extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -202,13 +218,7 @@ public class DriverMessage extends AppCompatActivity
 
     }
 
-    private void initializeRecycler(){
-       // messages = new ArrayList<>();
-        MsgList = findViewById(R.id.recyclerView);
-        MsgList.setNestedScrollingEnabled(false);
-
-
 
 
     }
-}
+

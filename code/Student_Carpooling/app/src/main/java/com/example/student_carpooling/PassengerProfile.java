@@ -157,7 +157,12 @@ public class PassengerProfile extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                        if(ProfilePicUrl.equals("default")){
+                            //profilePic.setImageResource(R.mipmap.ic_launcher_round);
+                            navProfile.setImageResource(R.mipmap.ic_launcher_round);
+                        }
+                        else{
+                          Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
                     }
 
 
