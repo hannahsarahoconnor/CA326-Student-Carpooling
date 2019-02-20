@@ -156,7 +156,6 @@ public class DriverCreate extends AppCompatActivity
 
         autocompleteFragment.setCountry("IE");
         autocompleteFragmentDST.setCountry("IE");
-        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
