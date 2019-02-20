@@ -13,6 +13,7 @@
     <string name="profile">P</string>
     <string name="messages">M</string>
     <string name="my_trips">T</string>
+    <string name="passenger">T</string>
     <string name="navigation_drawer_open">Open Navigation Side Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Side Drawer</string>
     <string name="Domain">Domain Name</string>
