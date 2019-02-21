@@ -30,6 +30,15 @@ public class ResetPassword extends AppCompatActivity {
         Cancel = findViewById(R.id.cancel);
         mAuth = FirebaseAuth.getInstance();
 
+
+        Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ResetPassword.this, Login.class);
+                startActivity(intent);
+            }
+        });
+
         ResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,14 +65,9 @@ public class ResetPassword extends AppCompatActivity {
                 }
 
 
-                Cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        finish();
-                    }
-                });
-
 
             }
         });
+
+
     }}

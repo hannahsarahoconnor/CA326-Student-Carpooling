@@ -1,7 +1,9 @@
 package com.example.student_carpooling;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,6 +32,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -84,6 +88,8 @@ public class FindTrips extends AppCompatActivity
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String TAG = "FindTrips";
 
+    FirebaseUser CurrentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +110,7 @@ public class FindTrips extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
@@ -281,11 +288,44 @@ public class FindTrips extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch(item.getItemId()) {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            case R.id.action_settings:
+                AlertDialog.Builder dialog = new AlertDialog.Builder(FindTrips.this);
+                dialog.setTitle("Are you sure you want to delete your account?");
+                dialog.setMessage("By Doing this.....");
+                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    //is deleted
+                                    Toast.makeText(FindTrips.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
+                                    UserDb.removeValue();
+                                    Intent intent = new Intent(FindTrips.this,MainActivity.class);
+                                    startActivity(intent);
+                                }
+                                else{
+                                    Toast.makeText(FindTrips.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                    }
+                });
+
+                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -340,7 +380,8 @@ public class FindTrips extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                        if(!ProfilePicUrl.equals("defaultPic")) {
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
                     }
 
 

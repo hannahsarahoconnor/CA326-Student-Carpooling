@@ -31,19 +31,39 @@
             android:layout_marginStart="30dp"/>
 
 
-    <TextView
-        android:id="@+id/otherUsername"
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/otherFullName"
+                android:text="Full name"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"/>
+
+         <TextView
+             android:id="@+id/otherUsername"
+             android:text="Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"/>
 
 
+
+
+        </LinearLayout>
+
+
 </android.support.v7.widget.Toolbar>
 </android.support.design.widget.AppBarLayout>
 
 
-    <RelativeLayout
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/chatRecycler"
@@ -64,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@android:color/transparent"
-            android:text="Enter your message..."
+            android:hint="Enter your message..."
             android:layout_toLeftOf="@+id/send"
             android:layout_centerVertical="true"/>
 

@@ -11,27 +11,17 @@ import com.example.student_carpooling.R;
 public class UserViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public ImageView UserProfilePic;
-    public TextView UserName;
+    public TextView UserName, FullName;
 
 
-    public UserViewHolders(@NonNull View itemView, final UserAdapter.onUserListener UserList) {
+    public UserViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
         UserProfilePic = (ImageView) itemView.findViewById(R.id.UserProfilePic);
         UserName = (TextView) itemView.findViewById(R.id.UserName);
+        FullName = (TextView) itemView.findViewById(R.id.Fullname);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(UserList != null){
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        UserList.onUserClick(position);
-                    }}
-            }
-        });
 
     }
 

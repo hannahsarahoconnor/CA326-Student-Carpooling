@@ -20,23 +20,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
     private List<User> list;
     private Context context;
-    private onUserListener UserListener;
 
 
-    public interface onUserListener {
-        void onUserClick(int position);
-    }
-
-
-    public void setUserListener(onUserListener userListener){
-        UserListener = userListener;
-    }
 
 
     public UserAdapter(List<User> list, Context context){
         this.list = list;
         this.context = context;
     }
+
+    public UserAdapter(){}
 
 
     @NonNull
@@ -45,7 +38,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_cards, null, false);
         RecyclerView.LayoutParams lp  = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        UserViewHolders uvh = new UserViewHolders(layoutView,UserListener);
+        UserViewHolders uvh = new UserViewHolders(layoutView);
         return uvh;
     }
 
@@ -54,12 +47,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         final String Username = list.get(i).getUserName();
         final String ProfilePicUrl = list.get(i).getProfilePicUrl();
         final String ID = list.get(i).getID();
+        final String Fullname = list.get(i).getFullname();
         userViewHolders.UserName.setText(Username);
-        if(userViewHolders.UserProfilePic.equals("defaultPic")){
-            userViewHolders.UserProfilePic.setImageResource(R.drawable.logo);
+        userViewHolders.FullName.setText(Fullname);
+        if(!(userViewHolders.UserProfilePic.equals("defaultPic"))){
+            Glide.with(context).load(ProfilePicUrl).into(userViewHolders.UserProfilePic);
         }
-        else{
-            Glide.with(context).load(ProfilePicUrl).into(userViewHolders.UserProfilePic);}
 
 
             userViewHolders.itemView.setOnClickListener(new View.OnClickListener() {
@@ -68,8 +61,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
                     Intent intent = new Intent(context, ChatActivity.class);
                     intent.putExtra("Username",Username);
                     intent.putExtra("ID", ID);
+                    intent.putExtra("Fullname", Fullname);
                     intent.putExtra("ProfilePicURL", ProfilePicUrl);
-                    Toast.makeText(context,Username,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,"Starting Chat with " +Username,Toast.LENGTH_SHORT).show();
                     context.startActivity(intent);
 
                 }
@@ -82,8 +76,4 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
     }
 
 
-    public void filterList(ArrayList<User> filteredList) {
-        list = filteredList;
-        notifyDataSetChanged();
-    }
 }
