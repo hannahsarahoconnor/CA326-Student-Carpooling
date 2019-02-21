@@ -53,7 +53,7 @@ import java.util.StringTokenizer;
 public class FilteredTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private Dialog dialog, dialog2;
+
 
     private RecyclerView tripRecyclerView;
     private RecyclerView.Adapter FiltertripAdapter;
@@ -61,7 +61,7 @@ public class FilteredTrips extends AppCompatActivity
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail, txt;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName,DriverProfilePicUrl;
+    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName,DriverProfilePicUrl;
     private FirebaseAuth mAuth;
     private String DBUsername;
     private DatabaseReference UserDb, reference;
@@ -118,39 +118,13 @@ public class FilteredTrips extends AppCompatActivity
 
 
 
-       dialog = new Dialog(this);
-       dialog2 = new Dialog(this);
 
         getDriverId();
+        Toast.makeText(FilteredTrips.this, "Click on a trip to see more details, send request or message the driver ", Toast.LENGTH_LONG).show();
     }
 
     //first set up onclick for the button in the recycler view
 
-    public void showPopUp(View v){
-        TextView ClosePopUp;
-        Button Request;
-        dialog.setContentView(R.layout.request_popup);
-        ClosePopUp = dialog.findViewById(R.id.close);
-        Request = (Button) dialog.findViewById(R.id.requestTrip);
-
-        ClosePopUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        Request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //send the request to the drawer
-            }
-        });
-        //transparent background
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.show();
-
-    }
 
 
 
@@ -271,7 +245,9 @@ public class FilteredTrips extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+
+                        if(!ProfilePicUrl.equals("defaultPic")) {
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
                     }
 
 
@@ -286,32 +262,6 @@ public class FilteredTrips extends AppCompatActivity
     }
 
 
-    public void showDriverPopUp(View v){
-        TextView ClosePopUp;
-        Button Request;
-        dialog2.setContentView(R.layout.driver_popup);
-        ClosePopUp = dialog2.findViewById(R.id.close);
-        Request = (Button) dialog2.findViewById(R.id.messageDriver);
-
-        ClosePopUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog2.dismiss();
-            }
-        });
-
-        Request.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //send the request to the drawer
-            }
-        });
-        //transparent background
-        dialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog2.show();
-
-    }
-
     private void getDriverId(){
         final DatabaseReference DriverID = FirebaseDatabase.getInstance().getReference().child("TripForms");
         DriverID.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -321,7 +271,6 @@ public class FilteredTrips extends AppCompatActivity
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
                         DriverKey = id.getKey();
                         getTripIds(DriverKey);
-                        getDriverImage(DriverKey);
 
                     }
                 }
@@ -357,31 +306,48 @@ public class FilteredTrips extends AppCompatActivity
         });
     }
 
-    private void getDriverImage(String ID){
-        DatabaseReference driverDB = FirebaseDatabase.getInstance().getReference().child("users").child(ID);
-        driverDB.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
-                    if(!ProfilePicUrl.equals("defaultPic")) {
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
 
     private void UserTripDB(String ID) {
         //push().getKey();
 
         //get all driver trips
         DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverKey).child(ID);
+        //Drivers full name is stored within "users"
+        DatabaseReference UserDB = FirebaseDatabase.getInstance().getReference().child("users").child(DriverKey);
+        UserDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Name") != null) {
+                        String name = map.get("Name").toString();
+                        First = name.substring(0, 1).toUpperCase() + name.substring(1);
+                    }
+                    if (map.get("Surname") != null) {
+                        String surname = map.get("Surname").toString();
+                        Surname = surname.substring(0, 1).toUpperCase() + surname.substring(1);
+                    }
+
+                    if(map.get("profileImageUrl")!= null){
+                        DriverProfilePicUrl = map.get("profileImageUrl").toString();
+                    }
+
+                    if (map.get("Username") != null) {
+                        UserName = map.get("Username").toString();
+                    }
+
+                }
+
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -417,19 +383,16 @@ public class FilteredTrips extends AppCompatActivity
                     if (map.get("Luggage") != null) {
                         LuggageCheck = map.get("Luggage").toString().toUpperCase();
                     }
-
-                    if (map.get("Starting") != null) {
+                    if (map.get("Note") != null) {
+                        Note = map.get("Note").toString();
+                    }
+                    if (map.get("Starting")!= null) {
                         Starting = map.get("Starting").toString().toUpperCase();
                     }
 
                     if (map.get("Destination") != null) {
                         Destination = map.get("Destination").toString().toUpperCase();
                     }
-
-                    if (map.get("Username") != null) {
-                        UserName = map.get("Username").toString();
-                    }
-
 
 
                     String pattern = "dd-MM-yy";
@@ -438,27 +401,12 @@ public class FilteredTrips extends AppCompatActivity
 
                     if (!(UserName.equals(DBUsername))) {
                         //make sure its not a past trips or isnt one that was created by that user.
-
                         int compare = date.compareTo(TripDate);
                         // if date greater, tripdate is a past d
-
-
                         if (date.compareTo(TripDate) < 0 && !(date.compareTo(TripDate) > 0)) {
-                            //current date is before tripdate
 
-                            //if not empty apply all those that have been entered
-                            //getIntent().getStringExtra("Starting");
-                           // getIntent().getStringExtra("Destination");
-                          //  getIntent().getStringExtra("Date");
-                          //  getIntent().getStringExtra("Time");
-                           // getIntent().getStringExtra("Luggage");
-                            //
-
-
-
-
-
-                            FilterTrip object = new FilterTrip(DriverProfilePicUrl,Date, Time, Seats, UserName, Starting, Destination);
+                            Fullname = First + " " + Surname;
+                            FilterTrip object = new FilterTrip(DriverKey, Note, LuggageCheck, Fullname, DriverProfilePicUrl,Date, Time, Seats, UserName, Starting, Destination);
                             resultsTrips.add(object);
                             FiltertripAdapter.notifyDataSetChanged();
                         }

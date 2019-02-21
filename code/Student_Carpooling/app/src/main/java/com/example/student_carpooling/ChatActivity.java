@@ -97,9 +97,9 @@ public class ChatActivity extends AppCompatActivity {
         otherFullname.setText(StrOtherFullName);
 
         //causing crash
-       // if(!(OtherProfilePicUrl.equals("defaultPic"))){
-           // Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
-       //}
+       if(!(OtherProfilePicUrl.equals("defaultPic"))){
+            Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
+       }
 
         GetNewMessage(CurrentUserID,OtherUserID);
 

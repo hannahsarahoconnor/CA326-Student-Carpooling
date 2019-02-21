@@ -163,7 +163,7 @@ public class DriverCreate extends AppCompatActivity
 
         autocompleteFragment.setCountry("IE");
         autocompleteFragmentDST.setCountry("IE");
-        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
+        //autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS); -> this excludes unis
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -306,9 +306,6 @@ public class DriverCreate extends AppCompatActivity
                     //Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
                     //but dont know in terms of time?
                     //check to make no field is blank too
-                    ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                    Map TripInfo = new HashMap();
-
 
 
                     //make sure there isnt a conflicting time on the same day- see below
@@ -324,7 +321,29 @@ public class DriverCreate extends AppCompatActivity
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if (dataSnapshot.getChildrenCount() > 0) {
-                                            Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time or delete other trip", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                                            Map TripInfo = new HashMap();
+
+                                            // search through driver trips,.
+                                            //add driver username and maybe name to the form too
+                                            TripInfo.put("Username", DBUsername);
+                                            TripInfo.put("Starting", starting);
+                                            TripInfo.put("Destination",destination);
+                                            TripInfo.put("Date", startingDate);
+                                            TripInfo.put("Seats", numberSeats);
+                                            TripInfo.put("Time", startingTime);
+                                            TripInfo.put("Luggage", luggageCheck);
+                                            TripInfo.put("Note", Tripnote);
+
+                                            ref.push().setValue(TripInfo);
+                                            Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
+
+                                            startActivity(new Intent(DriverCreate.this, DriverTrips.class));
+                                            finish();
+
                                         }
                                     }
 
@@ -344,24 +363,6 @@ public class DriverCreate extends AppCompatActivity
                     });
 
 
-
-
-                    // search through driver trips,.
-                    //add driver username and maybe name to the form too
-                    TripInfo.put("Username", DBUsername);
-                    TripInfo.put("Starting", starting);
-                    TripInfo.put("Destination",destination);
-                    TripInfo.put("Date", startingDate);
-                    TripInfo.put("Seats", numberSeats);
-                    TripInfo.put("Time", startingTime);
-                    TripInfo.put("Luggage", luggageCheck);
-                    TripInfo.put("Note", Tripnote);
-
-                    ref.push().setValue(TripInfo);
-                    Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
-
-                    startActivity(new Intent(DriverCreate.this, DriverTrips.class));
-                    finish();
 
                 }}
 

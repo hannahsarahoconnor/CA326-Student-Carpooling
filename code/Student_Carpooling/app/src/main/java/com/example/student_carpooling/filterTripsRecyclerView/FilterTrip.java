@@ -7,13 +7,16 @@ public class FilterTrip {
     private String Time;
     private String UserName;
     private String Seats;
-    //private String LuggageCheck;
+    private String LuggageCheck;
+    private String Note;
+    private String Name;
     private String Starting;
     private String Destination;
+    private String ID;
 
 
 
-    public FilterTrip(String profilePicUrl, String Date,String Time, String Seats, String UserName, String Starting, String Destination ){
+    public FilterTrip(String ID, String Note, String LuggageCheck, String Name,String profilePicUrl, String Date,String Time, String Seats, String UserName, String Starting, String Destination ){
         this.Date = Date;
         this.Time = Time;
         this.UserName = UserName;
@@ -21,8 +24,45 @@ public class FilterTrip {
         this.profilePicUrl = profilePicUrl;
         this.Starting = Starting;
         this.Destination = Destination;
+        this.Note = Note;
+        this.LuggageCheck = LuggageCheck;
+        this.Name = Name;
+        this.ID = ID;
 
     }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public String getLuggageCheck() {
+        return LuggageCheck;
+    }
+
+    public void setLuggageCheck(String luggageCheck) {
+        LuggageCheck = luggageCheck;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public void setNote(String note) {
+        Note = note;
+    }
+
+    public String getNote() {
+        return Note;
+    }
+
 
     //may not need the set functions
 
