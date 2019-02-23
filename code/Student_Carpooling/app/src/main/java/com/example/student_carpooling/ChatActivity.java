@@ -35,20 +35,21 @@ public class ChatActivity extends AppCompatActivity {
 
     ImageView otherProfilePic;
 
-    ImageButton sendMsg;
-    EditText Msg;
+    ImageButton btn_send;
+    EditText text_send;
 
     String CurrentUserID, OtherUserID;
     FirebaseAuth mAuth;
 
     TextView otherFullname;
 
+   // RecyclerView.Adapter
     MessageAdapter messageAdapter;
     List<Message> messageList;
     RecyclerView messageRecyclerView;
     LinearLayoutManager msgLayoutManager;
 
-   DatabaseReference msgDB;
+   DatabaseReference msgDB, reference, ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,20 +72,20 @@ public class ChatActivity extends AppCompatActivity {
 
         //set up Recycler View
         messageRecyclerView = findViewById(R.id.chatRecycler);
-        //?
         messageRecyclerView.setHasFixedSize(true);
-
-
-
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
 
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUserID = mAuth.getCurrentUser().getUid();
 
+
         intent = getIntent();
 
-        sendMsg = findViewById(R.id.send);
-        Msg = findViewById(R.id.message);
+        btn_send = findViewById(R.id.send);
+        text_send = findViewById(R.id.message);
 
         TextView otherUserName = findViewById(R.id.otherUsername);
         otherProfilePic = findViewById(R.id.otherPic);
@@ -96,27 +97,48 @@ public class ChatActivity extends AppCompatActivity {
         otherUserName.setText(StrOtherUserName);
         otherFullname.setText(StrOtherFullName);
 
-        //causing crash
-       // if(!(OtherProfilePicUrl.equals("defaultPic"))){
-           // Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
-       //}
+        //Other User id is showing the current User Id instead
 
-        GetNewMessage(CurrentUserID,OtherUserID);
+       Toast.makeText(ChatActivity.this, OtherUserID, Toast.LENGTH_SHORT).show();
+
+       // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
+       if(!(OtherProfilePicUrl.equals("defaultPic"))){
+            Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
+       }
 
 
-        sendMsg.setOnClickListener(new View.OnClickListener() {
+        ref = FirebaseDatabase.getInstance().getReference("users").child(OtherUserID);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                readMessage(CurrentUserID,OtherUserID);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
+
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //get Message
-                String Message = Msg.getText().toString();
+                String Message = text_send.getText().toString();
                 if(!Message.equals("")){
                   SendNewMessage(Message,CurrentUserID,OtherUserID);
                   //once sent, reset the EditText Field
-                  Msg.setText("");
+                    text_send.setText("");
                 }
                   else{
                     Toast.makeText(ChatActivity.this,"Enter your message",Toast.LENGTH_SHORT).show();
                 }
+                text_send.setText("");
 
             }
         });
@@ -149,7 +171,7 @@ public class ChatActivity extends AppCompatActivity {
         msgDB.child("Chats").push().setValue(hashMap);
 
 
-        //for the chat fragment
+        //for the active chats activity
         final DatabaseReference ChatIDs = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(CurrentUserID).child(OtherUserID);
 
@@ -179,35 +201,28 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void GetNewMessage(final String CurrentId, final String OtherId){
+    private void readMessage(final String CurrentId, final String OtherId){
         messageList = new ArrayList<>();
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
 
         //reference =
 
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //on resume instead?
                 messageList.clear();
-                for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                    //get one of the message object
-                    Message message = dataSnapshot1.getValue(Message.class);
-
-
-
-
-
-                    //check its attributes
-                    if(message.getRecipient().equals(CurrentId) && message.getSender().equals(OtherId)|| message.getRecipient().equals(OtherId) && message.getSender().equals(CurrentId)){
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Message message = snapshot.getValue(Message.class);
+                    if(message.getRecipient().equals(CurrentId)&&message.getSender().equals(OtherId) ||
+                    message.getSender().equals(CurrentId) && message.getRecipient().equals(OtherId)){
                         messageList.add(message);
-                        //messageAdapter.notifyDataSetChanged();
+                        //notify adapter
                     }
 
                     messageAdapter = new MessageAdapter(messageList,ChatActivity.this);
                     messageRecyclerView.setAdapter(messageAdapter);
-
                 }
             }
 
@@ -217,8 +232,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-    }
 
 
-
-}
+}}

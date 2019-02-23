@@ -1,9 +1,7 @@
 package com.example.student_carpooling;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.os.Bundle;
@@ -44,8 +42,6 @@ import com.bumptech.glide.Glide;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 
 import com.google.android.libraries.places.api.model.Place;
@@ -67,7 +63,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
-import java.sql.Driver;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -102,8 +97,8 @@ public class DriverCreate extends AppCompatActivity
     private EditText TripNote;
     private String DBUsername, numberSeats;
     private String starting ,destination;
+    private boolean result;
 
-    FirebaseUser CurrentUser;
 
 
 
@@ -119,7 +114,6 @@ public class DriverCreate extends AppCompatActivity
 
 
         mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
@@ -196,7 +190,7 @@ public class DriverCreate extends AppCompatActivity
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
-               // Log.i(TAG, "An error occurred: " + status);
+                // Log.i(TAG, "An error occurred: " + status);
                 Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
             }
         });
@@ -264,7 +258,7 @@ public class DriverCreate extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-              numberSeats = parent.getItemAtPosition(position).toString();
+                numberSeats = parent.getItemAtPosition(position).toString();
             }
 
             @Override
@@ -298,55 +292,23 @@ public class DriverCreate extends AppCompatActivity
                 final String Tripnote = TripNote.getText().toString();
 
                 if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
-                   Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }
 
                 else{
+
+                    //queryTrips();
+                   // if(result){
+
+
+                    //query is causing error - use listeners instead
+                    //get the trips under that id.. if date is the same.. check the time.. toast message
 
                     //Could get datasnapshot to make sure the driver doesnt have a trip already created that is conflicting
                     //but dont know in terms of time?
                     //check to make no field is blank too
                     ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
                     Map TripInfo = new HashMap();
-
-
-
-                    //make sure there isnt a conflicting time on the same day- see below
-                    Query DateCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).orderByChild("Date").equalTo(startingDate);
-                    final Query TimeCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).orderByChild("Time").equalTo(startingTime);
-
-
-                    DateCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.getChildrenCount() > 0) {
-                                TimeCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (dataSnapshot.getChildrenCount() > 0) {
-                                            Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time or delete other trip", Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-                        }
-
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-
-
-
-                    // search through driver trips,.
                     //add driver username and maybe name to the form too
                     TripInfo.put("Username", DBUsername);
                     TripInfo.put("Starting", starting);
@@ -368,7 +330,7 @@ public class DriverCreate extends AppCompatActivity
         });
 
 
-        }
+    }
 
 
 
@@ -398,54 +360,14 @@ public class DriverCreate extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId()) {
+        int id = item.getItemId();
 
-            case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverCreate.this);
-                dialog.setTitle("Are you sure you want to delete your account?");
-                dialog.setMessage("By Doing this.....");
-                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    //is deleted
-                                    Toast.makeText(DriverCreate.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
-                                    deleteUserDB();
-                                    Intent intent = new Intent(DriverCreate.this,MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(DriverCreate.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
-                break;
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-    private void deleteUserDB(){
-        //UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        UserDb.removeValue();
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -485,6 +407,8 @@ public class DriverCreate extends AppCompatActivity
         return true;
     }
 
+
+
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
@@ -499,9 +423,7 @@ public class DriverCreate extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
-                        }
+                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
                     }
 
 
@@ -563,3 +485,4 @@ public class DriverCreate extends AppCompatActivity
         }
     }
 }
+

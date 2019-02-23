@@ -26,6 +26,7 @@ public class Login extends AppCompatActivity {
     private EditText Email, Password;
     private FirebaseAuth mAuth;
     //private FirebaseAuth.AuthStateListener firebaseAuthListener;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,20 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         mAuth = FirebaseAuth.getInstance();
         Button LoginButton, ResetButton;
+
+        mAuthListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public  void  onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user!=null){
+                    Intent intent = new Intent(Login.this, UserInstance.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+
+        };
 
         ResetButton = findViewById(R.id.Reset);
         LoginButton = findViewById(R.id.Login);
@@ -61,22 +76,22 @@ public class Login extends AppCompatActivity {
                 else{
 
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            checkEmailVerfication();
-                            //not successful
-                        } else {
-                            Toast.makeText(Login.this, "Wrong Email or Password, Try again", Toast.LENGTH_SHORT).show();
-                            Email.setText("");
-                            Password.setText("");
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                checkEmailVerfication();
+                                //not successful
+                            } else {
+                                Toast.makeText(Login.this, "Wrong Email or Password, Try again", Toast.LENGTH_SHORT).show();
+                                Email.setText("");
+                                Password.setText("");
+                            }
+
+
                         }
 
-
-                    }
-
-                });
-            }}
+                    });
+                }}
         });
 
 
@@ -93,17 +108,17 @@ public class Login extends AppCompatActivity {
     }
 
 
-   // @Override
-  //  protected void onStart() {
+    // @Override
+    //  protected void onStart() {
     //    super.onStart();
-      //  mAuth.addAuthStateListener(firebaseAuthListener);
-   // }
+    //  mAuth.addAuthStateListener(firebaseAuthListener);
+    // }
 
-   // @Override
+    // @Override
     //protected void onStop() {
-       // super.onStop();
-        //mAuth.removeAuthStateListener(firebaseAuthListener);
-   // }
+    // super.onStop();
+    //mAuth.removeAuthStateListener(firebaseAuthListener);
+    // }
 
     private void checkEmailVerfication(){
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -117,8 +132,28 @@ public class Login extends AppCompatActivity {
         }
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(mAuthListener);
+    }
 }
-
-
 
 

@@ -46,6 +46,7 @@ public class presentTripsFragment extends Fragment  {
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
     Date TripDate,date;
+    String datetrip;
     LinearLayout linearLayout;
 
     TextView testing;
@@ -131,7 +132,7 @@ public class presentTripsFragment extends Fragment  {
 
                         TripDate = new Date(year-1900,month-1,day);
                         String pattern = "dd-MM-YYYY";
-                        String date_n =new SimpleDateFormat("dd-MM-yy",Locale.ENGLISH).format(TripDate);
+                        datetrip =new SimpleDateFormat("dd-MM-yy",Locale.ENGLISH).format(TripDate);
 
                     }
                     if(map.get("Time")!=null){
@@ -173,7 +174,7 @@ public class presentTripsFragment extends Fragment  {
 
 
 
-                    if(TripDate.equals(date)){
+                    if(date_n.equals(datetrip)){
                         // this means its a past date...
                         Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
                         resultsTrips.add(object);

@@ -47,9 +47,9 @@
             android:maxLines="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="First Surname"
+            android:text="Message.."
             android:textStyle="italic"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:textColor="@color/quantum_black_100"/>
 
         </LinearLayout>

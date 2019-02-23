@@ -33,12 +33,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
-public class DriverTripItem extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class DriverTripItem extends AppCompatActivity {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
+
+    Toolbar toolbar;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseAuth mAuth;
@@ -50,53 +48,41 @@ public class DriverTripItem extends AppCompatActivity
     private String ProfilePicUrl;
 
     FirebaseUser CurrentUser;
+    TextView txt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_trip_item);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        txt = findViewById(R.id.text);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //be able to go back out of the activity
+                finish();
+            }
+        });
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+
+        String Time = "09:00";
+        String[] timeSplit = Time.split(":");
+        Integer hours = Integer.parseInt(timeSplit[0]);
+        Integer mins = Integer.parseInt(timeSplit[1]);
+        Integer totalMins = (hours * 60) + mins;
+
+        txt.setText(""+totalMins);
 
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View hView =  navigationView.getHeaderView(0);
-        NUsername = hView.findViewById(R.id.UsernameNav);
-        Nemail = hView.findViewById(R.id.EmailNav);
-        navProfile = hView.findViewById(R.id.imageView);
-
-        setupFirebaseListener();
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.driver_main, menu);
-        return true;
     }
 
     @Override
@@ -145,102 +131,6 @@ public class DriverTripItem extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.nav_message:
-                Intent msg = new Intent(DriverTripItem.this, DriverMessage.class);
-                startActivity(msg);
-                break;
-
-            case R.id.nav_profile:
-                Intent profile = new Intent(DriverTripItem.this, DriverProfile.class);
-                startActivity(profile);
-                break;
-
-            case R.id.nav_sign_out:
-                FirebaseAuth.getInstance().signOut();
-
-            case R.id.nav_create_trips:
-                Intent create = new Intent(DriverTripItem.this, DriverCreate.class);
-                startActivity(create);
-                break;
-
-            case R.id.nav_my_trips:
-                Intent trips = new Intent(DriverTripItem.this, DriverTrips.class);
-                startActivity(trips);
-                break;}
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    private void setupFirebaseListener() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    String email = user.getEmail();
-                    Nemail.setText(email);
-                } else {
-                    Toast.makeText(DriverTripItem.this, "Sign Out", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(DriverTripItem.this, MainActivity.class);
-                    startActivity(intent);
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthStateListener != null) {
-            FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
-        }
-
-    }
-
-    private void getUserDB(){
-        UserDb.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //makes sure the data is present, else the app will crash if not
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
-                    //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //not needed
-            }
-        });
     }
 
 }

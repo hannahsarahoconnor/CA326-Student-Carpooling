@@ -18,17 +18,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
+            android:name=".FilteredTrips"
+            android:label="@string/title_activity_filtered_trips"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
             android:name=".DriverMessage"
             android:label="@string/title_activity_driver_message"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ChatActivity" />
         <activity
             android:name=".DriverTripItem"
             android:label="@string/title_activity_driver_trip_item"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".FilteredTrips"
-            android:label="@string/title_activity_filtered_trips"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".TripFilter" />
         <activity

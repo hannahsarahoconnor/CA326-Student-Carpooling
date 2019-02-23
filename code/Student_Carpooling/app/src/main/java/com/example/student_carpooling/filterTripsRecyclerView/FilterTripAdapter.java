@@ -38,23 +38,9 @@ public class FilterTripAdapter extends RecyclerView.Adapter<FilterTripViewHolder
     @Override
     public void onBindViewHolder(@NonNull FilterTripViewHolders filtertripViewHolders, final int i) {
         //populating the cards
-        filtertripViewHolders.Destination.setText(list.get(i).getDestination());
         filtertripViewHolders.UserName.setText(list.get(i).getUserName());
-        //tripViewHolders.TripID.setText(list.get(i).getTripID());
-        filtertripViewHolders.Starting.setText(list.get(i).getStarting());
-        filtertripViewHolders.Time.setText(list.get(i).getTime());
-        filtertripViewHolders.Date.setText(list.get(i).getDate());
-        filtertripViewHolders.Seats.setText(list.get(i).getSeats());
-        //tripViewHolders.Luggage.setText(list.get(i).getLuggageCheck())
-        // ;
-        if(filtertripViewHolders.profilePic.equals("defaultPic")){
-            filtertripViewHolders.profilePic.setImageResource(R.mipmap.ic_launcher_round);
-        }
-        else{
-        Glide.with(context).load(list.get(i).getProfilePicUrl()).into(filtertripViewHolders.profilePic);}
 
-
-       // ProfilePicUrl = map.get("profileImageUrl").toString();
+        // ProfilePicUrl = map.get("profileImageUrl").toString();
         //                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
     }
 
@@ -63,4 +49,8 @@ public class FilterTripAdapter extends RecyclerView.Adapter<FilterTripViewHolder
         return this.list.size();
     }
 }
+
+
+
+
 

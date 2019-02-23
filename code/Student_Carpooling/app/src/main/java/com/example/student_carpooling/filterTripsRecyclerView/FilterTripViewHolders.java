@@ -15,6 +15,8 @@ public class FilterTripViewHolders extends RecyclerView.ViewHolder implements Vi
     //could use the layout to attach the on click listener
     public TextView Starting, Destination, Time, Date, Seats, Luggage, UserName;
     Button request;
+
+
     // what about buttons? show when expanded? maybe the seats and luggage info could be hidden also.
 
 
@@ -29,8 +31,6 @@ public class FilterTripViewHolders extends RecyclerView.ViewHolder implements Vi
         Seats = (TextView) itemView.findViewById(R.id.Seats);
         profilePic = (ImageView) itemView.findViewById(R.id.ProfilePic);
         //Luggage = (TextView) itemView.findViewById(R.id.Luggage);
-        UserName = (TextView) itemView.findViewById(R.id.username);
-        request = itemView.findViewById(R.id.Request);
 
 
     }
@@ -42,4 +42,3 @@ public class FilterTripViewHolders extends RecyclerView.ViewHolder implements Vi
 
     }
 }
-

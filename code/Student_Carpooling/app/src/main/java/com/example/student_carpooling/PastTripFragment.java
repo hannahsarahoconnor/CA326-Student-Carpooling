@@ -182,7 +182,7 @@ public class PastTripFragment extends Fragment  {
 
 
                     // current date is before trip date..
-                    if(TripDate.before(date)){
+                    if((TripDate.equals(date))){
                         // this means its a past date...
                         Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
                         resultsTrips.add(object);

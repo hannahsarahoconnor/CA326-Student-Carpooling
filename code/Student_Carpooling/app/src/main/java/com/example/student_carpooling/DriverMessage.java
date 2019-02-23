@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,31 +24,46 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
+import com.example.student_carpooling.messagesRecyclerView.Message;
+import com.example.student_carpooling.usersRecyclerView.User;
+import com.example.student_carpooling.usersRecyclerView.UserAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DriverMessage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navigationView;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView Name,Username,Uni;
+    private TextView Name, Username, Uni;
 
     private FirebaseAuth mAuth;
     private ImageView profilePic;
-    private DatabaseReference UserDb;
-    private String DBName, DBUsername, DBUni,UserID;
+    private DatabaseReference reference, UserDb;
+    private String DBName, DBUsername, DBUni, UserID, ProfilePicUrl, First, Surname, Fullname;
     private TextView NUsername, Nemail;
 
-    private Uri ResultUri;
-    private String ProfilePicUrl;
-    private Button Confirm;
+    private LinearLayoutManager userLayoutManager;
+
     private ImageView navProfile;
 
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter userAdapter;
+
+    private String UserName, profilePicurl;
 
     FirebaseUser CurrentUser;
 
@@ -63,6 +80,7 @@ public class DriverMessage extends AppCompatActivity
         CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+        getUserDB();
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -75,7 +93,7 @@ public class DriverMessage extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        View hView =  navigationView.getHeaderView(0);
+        View hView = navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
@@ -83,11 +101,179 @@ public class DriverMessage extends AppCompatActivity
 
         setupFirebaseListener();
 
+        recyclerView = findViewById(R.id.activechatsrv);
+        recyclerView.setNestedScrollingEnabled(true);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        userAdapter = new UserAdapter(getDataUsers(), DriverMessage.this);
+        userLayoutManager = new LinearLayoutManager(DriverMessage.this);
+        recyclerView.setAdapter(userAdapter);
+
+        getRecievers();
+        getSenders();
+    }
 
 
+    private void getRecievers() {
+        DatabaseReference Chats = FirebaseDatabase.getInstance().getReference().child("ChatList").child(UserID);
+        Chats.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        //get the id for each user
+                        final String key = id.getKey();
+                        //Toast.makeText(DriverMessage.this, key, Toast.LENGTH_SHORT).show();
+                        DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
+                        RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    //get the info and create a new user object
+                                    //required -> Id, profilepicurl, username
+                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                    if (map.get("profileImageUrl") != null) {
+                                        profilePicurl = map.get("profileImageUrl").toString();
 
+                                    }
+                                    if (map.get("Username") != null) {
+                                        UserName = map.get("Username").toString();
+
+                                    }
+
+                                    if (map.get("Surname") != null) {
+                                        Surname = map.get("Surname").toString();
+
+                                    }
+
+                                    if (map.get("Name") != null) {
+                                        First = map.get("Name").toString();
+
+                                    }
+
+                                    Fullname = First + " " + Surname;
+
+                                    User object = new User(key, profilePicurl, UserName, Fullname);
+                                    resultsUsers.add(object);
+                                    userAdapter.notifyDataSetChanged();
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        //add to the User List..
+
+                        //query the user db to get more information
+
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void getSenders() {
+        //be in the form ChatList -> otheruserid, currentuser id..
+
+        //first get all children
+        //within, check to see if any of their children is equal to the current
+        //if so, add that user to the list too
+        DatabaseReference Chats = FirebaseDatabase.getInstance().getReference().child("ChatList");
+        Chats.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot id : dataSnapshot.getChildren()) {
+                    //get the id for each user
+                    final String key = id.getKey();
+                    DatabaseReference SenderDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(key);
+                    SenderDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                final String recieverKey = id.getKey();
+                                if (recieverKey.equals(UserID)) {
+                                    //add that user to database
+                                    //get their other info first
+                                    DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
+                                    RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                //get the info and create a new user object
+                                                //required -> Id, profilepicurl, username
+                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                                if (map.get("profileImageUrl") != null) {
+                                                    profilePicurl = map.get("profileImageUrl").toString();
+
+                                                }
+                                                if (map.get("Username") != null) {
+                                                    UserName = map.get("Username").toString();
+
+                                                }
+
+                                                if (map.get("Surname") != null) {
+                                                    Surname = map.get("Surname").toString();
+
+                                                }
+
+                                                if (map.get("Name") != null) {
+                                                    First = map.get("Name").toString();
+
+                                                }
+
+                                                Fullname = First + " " + Surname;
+
+                                                User object = new User(key, profilePicurl, UserName, Fullname);
+                                                resultsUsers.add(object);
+                                                userAdapter.notifyDataSetChanged();
+
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        }
+
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
+
+    private ArrayList resultsUsers = new ArrayList<User>();
+
+    private List<User> getDataUsers() {
+        return resultsUsers;
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -189,6 +375,41 @@ public class DriverMessage extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void getUserDB(){
+        UserDb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //makes sure the data is present, else the app will crash if not
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                    //data originally added is kept in this format
+                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    if(map.get("Name")!=null){
+                        DBName = map.get("Name").toString();
+                       // Name.setText(DBName);
+
+                    }
+                    if(map.get("Username")!=null){
+                        DBUsername = map.get("Username").toString();
+                        NUsername.setText(DBUsername);
+                    }
+                    if(map.get("profileImageUrl")!=null){
+                        ProfilePicUrl = map.get("profileImageUrl").toString();
+                        if(!ProfilePicUrl.equals("defaultPic")) {
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
+                    }}
+
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //not needed
+            }
+        });
+    }
+
 
     private void setupFirebaseListener() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {

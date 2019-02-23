@@ -6,6 +6,6 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".DriverTripItem"
-    tools:showIn="@layout/app_bar_driver_main">
+    tools:showIn="@layout/app_bar_trips">
 
 </android.support.constraint.ConstraintLayout>

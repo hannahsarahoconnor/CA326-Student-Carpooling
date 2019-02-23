@@ -59,6 +59,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_filtered_trips">Trip Results</string>
     <string name="title_activity_driver_trip_item">DriverTripItem</string>
-    <string name="title_activity_driver_message">DriverMessage</string>
+    <string name="title_activity_driver_message">Active Chats</string>
 
 </resources>

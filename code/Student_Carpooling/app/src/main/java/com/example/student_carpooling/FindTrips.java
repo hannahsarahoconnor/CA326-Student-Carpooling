@@ -252,12 +252,12 @@ public class FindTrips extends AppCompatActivity
 
 
                 //pass this info to the next activity
-                Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
-                //intent.putExtra("Starting", StartingPoint);
+               Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
+               //intent.putExtra("Starting", StartingPoint);
                //intent.putExtra("Destination", DstPoint);
-                intent.putExtra("Date", startingDate);
-                intent.putExtra("Time", startingTime);
-                intent.putExtra("Luggage", luggage);
+               //intent.putExtra("Date", startingDate);
+               // intent.putExtra("Time", startingTime);
+               // intent.putExtra("Luggage", luggage);
                 startActivity(intent);
                 finish();
             }

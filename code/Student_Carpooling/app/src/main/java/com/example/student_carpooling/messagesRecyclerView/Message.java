@@ -14,7 +14,9 @@ public class Message {
 
     }
 
-    public Message(){}
+    public Message(){
+
+    }
 
     public String getMessage() {
         return Message;
