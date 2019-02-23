@@ -1,6 +1,7 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -131,12 +133,15 @@ public class DriverMessage extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                resultsUsers.clear();
                 searchUser(s.toString().toLowerCase());
+                closeKeyboard();
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //hide the keyboard to yield results
             }
         });
 
@@ -145,6 +150,14 @@ public class DriverMessage extends AppCompatActivity
             //only get if no text in search bar has been entered
             getRecievers();
             getSenders();
+        }
+    }
+
+    private void closeKeyboard(){
+        View view = this.getCurrentFocus();
+        if(view != null){
+            InputMethodManager inm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            inm.hideSoftInputFromWindow(view.getWindowToken(),0);
         }
     }
     private void searchUser(String s){

@@ -50,7 +50,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         final String Fullname = list.get(i).getFullname();
         userViewHolders.UserName.setText(Username);
         userViewHolders.FullName.setText(Fullname);
-        if(!(userViewHolders.UserProfilePic.equals("defaultPic"))){
+
+        if(!(ProfilePicUrl.equals("defaultPic"))){
             Glide.with(context).load(ProfilePicUrl).into(userViewHolders.UserProfilePic);
         }
 
