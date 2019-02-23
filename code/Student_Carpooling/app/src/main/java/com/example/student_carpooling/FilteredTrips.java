@@ -46,34 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-<<<<<<< HEAD
 public class FilteredTrips extends AppCompatActivity {
-=======
-public class FilteredTrips extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
-
-
-    private RecyclerView tripRecyclerView;
-    private RecyclerView.Adapter FiltertripAdapter;
-    private RecyclerView.LayoutManager tripLayoutManager;
-
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView NUsername, Nemail, txt;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName,DriverProfilePicUrl;
-    private FirebaseAuth mAuth;
-    private String DBUsername;
-    private DatabaseReference UserDb, reference;
-    Date TripDate,date;
-    LinearLayout linearLayout;
-    private String DriverKey;
-    FirebaseUser CurrentUser;
-
-
-    Toolbar toolbar=null;
-
-
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
 
 
@@ -109,7 +82,6 @@ public class FilteredTrips extends AppCompatActivity
             getSupportActionBar().setTitle("Trip Results");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-<<<<<<< HEAD
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -118,19 +90,12 @@ public class FilteredTrips extends AppCompatActivity
                 }
             });
 
-=======
-
-        getDriverId();
-        Toast.makeText(FilteredTrips.this, "Click on a trip to see more details, send request or message the driver ", Toast.LENGTH_LONG).show();
-    }
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
             mAuth = FirebaseAuth.getInstance();
             CurrentUser = mAuth.getCurrentUser();
             UserID = mAuth.getCurrentUser().getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
 
-<<<<<<< HEAD
             tripRecyclerView = findViewById(R.id.FilterTripsRecycler);
             tripRecyclerView.setNestedScrollingEnabled(true); //not true?
             tripRecyclerView.setHasFixedSize(true);
@@ -139,8 +104,6 @@ public class FilteredTrips extends AppCompatActivity
             tripRecyclerView.setLayoutManager(tripLayoutManager);
 
             tripRecyclerView.setAdapter(FiltertripAdapter);
-=======
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
 
 
@@ -154,82 +117,7 @@ public class FilteredTrips extends AppCompatActivity
 
 
 
-<<<<<<< HEAD
     //first set up onclick for the button in the recycler view
-=======
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        switch (id){
-            case R.id.pass_message:
-                Intent msg = new Intent(FilteredTrips.this, PassengerMessage.class);
-                startActivity(msg);
-                break;
-
-            case R.id.pass_profile:
-                Intent profile = new Intent(FilteredTrips.this, PassengerProfile.class);
-                startActivity(profile );
-                break;
-
-            case R.id.pass_sign_out:
-                FirebaseAuth.getInstance().signOut();
-
-            case R.id.pass_find_trips:
-                Intent create = new Intent(FilteredTrips.this,FindTrips.class);
-                startActivity(create);
-                break;
-
-            case R.id.pass_trips:
-                Intent trips = new Intent(FilteredTrips.this,PassengerTrips.class);
-                startActivity(trips);
-                break;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    private void getUserDB(){
-        UserDb.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //makes sure the data is present, else the app will crash if not
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
-                    //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
 
         @Override
@@ -265,7 +153,6 @@ public class FilteredTrips extends AppCompatActivity
                         }
                     });
 
-<<<<<<< HEAD
                     dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -291,17 +178,6 @@ public class FilteredTrips extends AppCompatActivity
                         for (DataSnapshot id : dataSnapshot.getChildren()) {
                             DriverKey = id.getKey();
                             getTripIds(DriverKey);
-=======
-    private void getDriverId(){
-        final DatabaseReference DriverID = FirebaseDatabase.getInstance().getReference().child("TripForms");
-        DriverID.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        DriverKey = id.getKey();
-                        getTripIds(DriverKey);
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
                         }
                     }
@@ -333,60 +209,11 @@ public class FilteredTrips extends AppCompatActivity
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
-<<<<<<< HEAD
                 }
             });
         }
 
 
-=======
-
-
-    private void UserTripDB(String ID) {
-        //push().getKey();
-
-        //get all driver trips
-        DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverKey).child(ID);
-        //Drivers full name is stored within "users"
-        DatabaseReference UserDB = FirebaseDatabase.getInstance().getReference().child("users").child(DriverKey);
-        UserDB.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if (map.get("Name") != null) {
-                        String name = map.get("Name").toString();
-                        First = name.substring(0, 1).toUpperCase() + name.substring(1);
-                    }
-                    if (map.get("Surname") != null) {
-                        String surname = map.get("Surname").toString();
-                        Surname = surname.substring(0, 1).toUpperCase() + surname.substring(1);
-                    }
-
-                    if(map.get("profileImageUrl")!= null){
-                        DriverProfilePicUrl = map.get("profileImageUrl").toString();
-                    }
-
-                    if (map.get("Username") != null) {
-                        UserName = map.get("Username").toString();
-                    }
-
-                }
-
-                }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
         private void UserTripDB(final String Key, String ID) {
             //push().getKey();
@@ -422,30 +249,17 @@ public class FilteredTrips extends AppCompatActivity
 
                 }
 
-<<<<<<< HEAD
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
             });
-=======
-                    if (map.get("Luggage") != null) {
-                        LuggageCheck = map.get("Luggage").toString().toUpperCase();
-                    }
-                    if (map.get("Note") != null) {
-                        Note = map.get("Note").toString();
-                    }
-                    if (map.get("Starting")!= null) {
-                        Starting = map.get("Starting").toString().toUpperCase();
-                    }
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
             TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
 
-<<<<<<< HEAD
                         Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
 
@@ -458,12 +272,9 @@ public class FilteredTrips extends AppCompatActivity
                             Integer year = Integer.parseInt(tokens.nextToken());
                             //year month date
                             // year in date is saying 3919 rather than 2019
-=======
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
                             Calendar calendar = Calendar.getInstance();
 
-<<<<<<< HEAD
                             TripDate = new Date(year-1900, month - 1, day);
                             String date_n = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(TripDate);
 
@@ -510,18 +321,6 @@ public class FilteredTrips extends AppCompatActivity
                                 results.add(object);
                                 FiltertripAdapter.notifyDataSetChanged();
                             }
-=======
-                    if (!(UserName.equals(DBUsername))) {
-                        //make sure its not a past trips or isnt one that was created by that user.
-                        int compare = date.compareTo(TripDate);
-                        // if date greater, tripdate is a past d
-                        if (date.compareTo(TripDate) < 0 && !(date.compareTo(TripDate) > 0)) {
-
-                            Fullname = First + " " + Surname;
-                            FilterTrip object = new FilterTrip(DriverKey, Note, LuggageCheck, Fullname, DriverProfilePicUrl,Date, Time, Seats, UserName, Starting, Destination);
-                            resultsTrips.add(object);
-                            FiltertripAdapter.notifyDataSetChanged();
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
                         }
 
                     }

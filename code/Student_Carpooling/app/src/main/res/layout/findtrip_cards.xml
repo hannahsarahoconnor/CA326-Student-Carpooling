@@ -72,70 +72,6 @@
 
     </LinearLayout>
 
-    <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/logo"
-            android:id="@+id/ProfilePic"
-            android:layout_marginTop="10dp"
-
-            />
-
-
-        <LinearLayout android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/Dfullname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="Full name"
-                android:textStyle="italic"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="15dp"
-                />
-
-            <LinearLayout android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:text=" @"
-                    android:textStyle="bold"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginLeft="10dp"
-                    />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:id="@+id/Dusername"
-                android:text="Username"
-                android:textStyle="bold"
-
-                />
-            </LinearLayout>
-
-
-        </LinearLayout>
-
-    </LinearLayout>
-
 
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -298,8 +234,4 @@
 
 
     </LinearLayout>
-<<<<<<< HEAD
 </LinearLayout>
-=======
-    </LinearLayout>
->>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2

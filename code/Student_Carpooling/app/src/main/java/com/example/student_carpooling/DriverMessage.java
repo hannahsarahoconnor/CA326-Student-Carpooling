@@ -200,6 +200,7 @@ public class DriverMessage extends AppCompatActivity
                     SenderDB.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
                             for (DataSnapshot id : dataSnapshot.getChildren()) {
                                 final String recieverKey = id.getKey();
                                 if (recieverKey.equals(UserID)) {
@@ -246,7 +247,7 @@ public class DriverMessage extends AppCompatActivity
 
                                         }
                                     });
-                                }
+                                } }
                             }
                         }
 
