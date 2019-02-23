@@ -13,7 +13,7 @@ public class FilterTripViewHolders extends RecyclerView.ViewHolder implements Vi
 
     public ImageView profilePic;
     //could use the layout to attach the on click listener
-    public TextView Starting, Destination, Time, Date, Seats, Luggage, UserName;
+    public TextView Starting, Destination, Time, Date, Seats, Luggage, UserName, FullName, Note;
     Button request;
 
 
@@ -30,7 +30,15 @@ public class FilterTripViewHolders extends RecyclerView.ViewHolder implements Vi
         Date = (TextView) itemView.findViewById(R.id.Date);
         Seats = (TextView) itemView.findViewById(R.id.Seats);
         profilePic = (ImageView) itemView.findViewById(R.id.ProfilePic);
+<<<<<<< HEAD
         //Luggage = (TextView) itemView.findViewById(R.id.Luggage);
+=======
+        UserName = (TextView) itemView.findViewById(R.id.Dusername);
+        FullName = (TextView) itemView.findViewById(R.id.Dfullname);
+
+
+
+>>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
 
     }

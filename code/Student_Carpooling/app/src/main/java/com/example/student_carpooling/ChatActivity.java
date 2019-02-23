@@ -97,7 +97,14 @@ public class ChatActivity extends AppCompatActivity {
         otherUserName.setText(StrOtherUserName);
         otherFullname.setText(StrOtherFullName);
 
+<<<<<<< HEAD
         //Other User id is showing the current User Id instead
+=======
+        //causing crash
+       if(!(OtherProfilePicUrl.equals("defaultPic"))){
+            Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
+       }
+>>>>>>> a55d60a77aa0c4f8f9f61a406944db63df7d98b2
 
        Toast.makeText(ChatActivity.this, OtherUserID, Toast.LENGTH_SHORT).show();
 
