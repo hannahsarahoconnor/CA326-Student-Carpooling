@@ -17,6 +17,13 @@
         android:fitsSystemWindows="true"
         android:orientation="vertical">
 
+        <EditText
+            android:id="@+id/searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimary"
+            android:hint="Search..."/>
+
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">

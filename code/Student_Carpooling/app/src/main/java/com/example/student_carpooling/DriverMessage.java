@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +40,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -61,11 +65,17 @@ public class DriverMessage extends AppCompatActivity
     private ImageView navProfile;
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter userAdapter;
+    private RecyclerView.Adapter userAdapter, SearchUserAdapter;
 
     private String UserName, profilePicurl;
 
+    private EditText searchUsers;
+
     FirebaseUser CurrentUser;
+
+    boolean activeChat;
+
+    ArrayList<String> chatters;
 
 
     @Override
@@ -99,6 +109,8 @@ public class DriverMessage extends AppCompatActivity
         navProfile = hView.findViewById(R.id.imageView);
 
 
+        chatters = new ArrayList<>();
+
         setupFirebaseListener();
 
         recyclerView = findViewById(R.id.activechatsrv);
@@ -109,9 +121,109 @@ public class DriverMessage extends AppCompatActivity
         userLayoutManager = new LinearLayoutManager(DriverMessage.this);
         recyclerView.setAdapter(userAdapter);
 
-        getRecievers();
-        getSenders();
+
+        searchUsers = findViewById(R.id.searchBar);
+        searchUsers.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchUser(s.toString().toLowerCase());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+        if (searchUsers.getText().toString().equals("")) {
+            //only get if no text in search bar has been entered
+            getRecievers();
+            getSenders();
+        }
     }
+    private void searchUser(String s){
+
+        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("Search").startAt(s).endAt(s +"\uf8ff");
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //previous list is cleared - works
+                resultsUsers.clear();
+                //this isnt working
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                   // if (dataSnapshot.getChildrenCount() > 0){
+                        final String id = snapshot.getKey();
+                        // only show it if it's a reciever or sender to the currrent user.// how get this info -> function check, pass the id to a func
+                        if((!id.equals(CurrentUser.getUid()) && (chatters.contains(id)))){
+                            Toast.makeText(DriverMessage.this, id, Toast.LENGTH_SHORT).show();
+
+                            resultsUsers.clear();
+                            DatabaseReference GetUserDB = FirebaseDatabase.getInstance().getReference().child("users").child(id);
+                            GetUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        //get the info and create a new user object
+                                        //required -> Id, profilepicurl, username
+                                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                        if (map.get("profileImageUrl") != null) {
+                                            profilePicurl = map.get("profileImageUrl").toString();
+
+                                        }
+                                        if (map.get("Username") != null) {
+                                            UserName = map.get("Username").toString();
+
+                                        }
+
+                                        if (map.get("Surname") != null) {
+                                            Surname = map.get("Surname").toString();
+
+                                        }
+
+                                        if (map.get("Name") != null) {
+                                            First = map.get("Name").toString();
+
+                                        }
+
+                                        Fullname = First + " " + Surname;
+
+                                        User object = new User(id, profilePicurl, UserName, Fullname);
+                                        resultsUsers.add(object);
+                                        userAdapter.notifyDataSetChanged();
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
+
+
+                        }}}
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
+
 
 
     private void getRecievers() {
@@ -123,7 +235,6 @@ public class DriverMessage extends AppCompatActivity
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
                         //get the id for each user
                         final String key = id.getKey();
-                        //Toast.makeText(DriverMessage.this, key, Toast.LENGTH_SHORT).show();
                         DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
                         RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -155,6 +266,7 @@ public class DriverMessage extends AppCompatActivity
 
                                     User object = new User(key, profilePicurl, UserName, Fullname);
                                     resultsUsers.add(object);
+                                    chatters.add(key);
                                     userAdapter.notifyDataSetChanged();
 
                                 }
@@ -237,6 +349,7 @@ public class DriverMessage extends AppCompatActivity
 
                                                 User object = new User(key, profilePicurl, UserName, Fullname);
                                                 resultsUsers.add(object);
+                                                chatters.add(key);
                                                 userAdapter.notifyDataSetChanged();
 
                                             }
@@ -274,6 +387,8 @@ public class DriverMessage extends AppCompatActivity
     private List<User> getDataUsers() {
         return resultsUsers;
     }
+
+
 
 
     @Override

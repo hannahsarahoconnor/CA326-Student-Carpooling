@@ -152,6 +152,7 @@ public class Register extends AppCompatActivity {
                                             UserInfo.put("Gender", gender);
                                             UserInfo.put("Type", true);
                                             UserInfo.put("profileImageUrl", "defaultPic");
+                                            UserInfo.put("Search", username.toLowerCase());
 
                                             currentUser.setValue(UserInfo);
                                             sendVerificationEmail();
