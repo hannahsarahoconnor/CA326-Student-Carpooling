@@ -41,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.onesignal.OneSignal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -214,6 +215,8 @@ public class DriverProfile extends AppCompatActivity
                 break;
 
             case R.id.nav_sign_out:
+                //user shouldnt get notification if logged out
+                OneSignal.setSubscription(false);
                 FirebaseAuth.getInstance().signOut();
 
             case R.id.nav_create_trips:

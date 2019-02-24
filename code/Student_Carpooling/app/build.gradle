@@ -1,10 +1,29 @@
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/'}
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.11.0, 0.99.99]'
+    }
+}
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+
+repositories {
+    maven { url 'https://maven.google.com' }
+}
+
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.student_carpooling"
-        minSdkVersion 14
+        manifestPlaceholders = [
+                onesignal_app_id: 'fac45e59-a1ff-4f49-9161-33ac017719d6',
+                // Project number pulled from dashboard, local value is ignored.
+                onesignal_google_project_number: 'REMOTE']
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -29,6 +48,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:16.1.0'
     implementation 'com.google.firebase:firebase-database:16.0.6'
     implementation 'com.android.support:support-vector-drawable:28.0.0'
+    implementation 'com.google.firebase:firebase-messaging:17.3.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -38,7 +58,9 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     // or  implementation 'com.google.android.libraries.places:places:1.0.0' cant use both
     implementation 'com.google.android.libraries.places:places:1.0.0'
-    //implementation 'com.google.android.gms:play-services-places:16.0.0'
+    implementation 'com.onesignal:OneSignal:[3.9.1, 3.99.99]'
+
+
 
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:multidex:1.0.3'

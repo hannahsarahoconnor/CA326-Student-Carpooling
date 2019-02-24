@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,14 +31,32 @@ public class UserInstance extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_instance);
 
+        mAuth = FirebaseAuth.getInstance();
+        UserID = mAuth.getCurrentUser().getUid();
+
+
+        OneSignal.startInit(this).init();
+        //notify one signal that the user wishes to recieves nofications
+        OneSignal.setSubscription(true);
+        //get key and add unique key to user database for that user
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("NotificationKey").setValue(userId);
+
+            }
+        });
+        //show notfication in topbar
+        OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
+
+        new SendNotification("Hello!!", "Student Carpooling", null);
+
         Button Passenger;
         Button Driver;
 
         Passenger = findViewById(R.id.Rider);
         Driver = findViewById(R.id.Driver);
 
-        mAuth = FirebaseAuth.getInstance();
-        UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
 
 

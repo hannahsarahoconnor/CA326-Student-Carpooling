@@ -23,6 +23,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.onesignal.OneSignal;
+
+import org.checkerframework.checker.units.qual.Current;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     List<Message> messageList;
     RecyclerView messageRecyclerView;
     LinearLayoutManager msgLayoutManager;
+    String CurrentUsername,OtherUserKey;
 
    DatabaseReference msgDB, reference, ref;
 
@@ -55,6 +59,32 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+
+        mAuth = FirebaseAuth.getInstance();
+        CurrentUserID = mAuth.getCurrentUser().getUid();
+        //get current users Username
+        DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+        UserDb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                    //data originally added is kept in this format
+                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    if(map.get("Username")!=null){
+                        CurrentUsername = map.get("Username").toString();}
+
+                    }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,10 +108,6 @@ public class ChatActivity extends AppCompatActivity {
         messageRecyclerView.setLayoutManager(linearLayoutManager);
 
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUserID = mAuth.getCurrentUser().getUid();
-
-
         intent = getIntent();
 
         btn_send = findViewById(R.id.send);
@@ -99,8 +125,6 @@ public class ChatActivity extends AppCompatActivity {
 
         //Other User id is showing the current User Id instead
 
-       Toast.makeText(ChatActivity.this, OtherUserID, Toast.LENGTH_SHORT).show();
-
        // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
        if(!(OtherProfilePicUrl.equals("defaultPic"))){
             Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
@@ -111,6 +135,18 @@ public class ChatActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //get their notification key
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                    //data originally added is kept in this format
+                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    if(map.get("NotificationKey")!=null){
+                        OtherUserKey = map.get("NotificationKey").toString();
+                        Toast.makeText(ChatActivity.this,OtherUserKey,Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
                 readMessage(CurrentUserID,OtherUserID);
             }
 
@@ -119,7 +155,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
 
 
 
@@ -167,6 +202,10 @@ public class ChatActivity extends AppCompatActivity {
         hashMap.put("Sender", id);
         hashMap.put("Recipient", otherid);
         hashMap.put("Message", msg);
+
+        //send notification to that user
+        String msgFormat = CurrentUsername + ": " + msg;
+        new SendNotification(msgFormat,"Student Carpooling",OtherUserKey);
 
         msgDB.child("Chats").push().setValue(hashMap);
 

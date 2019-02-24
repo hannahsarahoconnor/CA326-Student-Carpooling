@@ -11,7 +11,7 @@ import com.example.student_carpooling.R;
 public class UserViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public ImageView UserProfilePic;
-    public TextView UserName, FullName;
+    public TextView UserName, Message;
 
 
     public UserViewHolders(@NonNull View itemView) {
@@ -20,7 +20,7 @@ public class UserViewHolders extends RecyclerView.ViewHolder implements View.OnC
 
         UserProfilePic = (ImageView) itemView.findViewById(R.id.UserProfilePic);
         UserName = (TextView) itemView.findViewById(R.id.UserName);
-        FullName = (TextView) itemView.findViewById(R.id.Fullname);
+        Message = (TextView) itemView.findViewById(R.id.Message);
 
 
     }

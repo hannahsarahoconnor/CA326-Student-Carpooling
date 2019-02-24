@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:backgroundTint="@color/colorAccent"
+    android:backgroundTintMode="src_in">
 
     <TextView
         app:fontFamily= "sans-serif-light"
@@ -25,7 +27,7 @@
         android:layout_gravity="center"
         android:src="@drawable/logo"
         app:civ_border_color="@color/quantum_black_100"
-        app:civ_border_width="3dp"
+
         android:contentDescription="@string/Description"/>
 
     <Button
