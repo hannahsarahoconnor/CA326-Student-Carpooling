@@ -69,7 +69,7 @@ public class DriverMessage extends AppCompatActivity
     private ImageView navProfile;
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter userAdapter, SearchUserAdapter;
+    private RecyclerView.Adapter userAdapter;
 
     private String UserName, profilePicurl;
 
@@ -77,7 +77,6 @@ public class DriverMessage extends AppCompatActivity
 
     FirebaseUser CurrentUser;
 
-    boolean activeChat;
 
     ArrayList<String> chatters;
 
