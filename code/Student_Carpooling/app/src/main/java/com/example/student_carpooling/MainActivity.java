@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                                     finish();
                                 }
                                 else if(UserType.equals("Passenger")){
-                                    Intent intent = new Intent(MainActivity.this, DriverMain.class);
+                                    Intent intent = new Intent(MainActivity.this, PassengerActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
