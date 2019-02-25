@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,9 +64,13 @@ public class FilteredTrips extends AppCompatActivity {
         Date TripDate,date;
         private String DriverKey;
         FirebaseUser CurrentUser;
+        private int counter=0;
 
 
         Toolbar toolbar;
+
+        TextView textView1, textView2;
+        Button createRequest;
 
 
 
@@ -96,23 +101,25 @@ public class FilteredTrips extends AppCompatActivity {
             UserID = mAuth.getCurrentUser().getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
 
+            textView1 = findViewById(R.id.Text);
+            textView2 = findViewById(R.id.Text2);
+            createRequest = findViewById(R.id.Request);
+
             tripRecyclerView = findViewById(R.id.FilterTripsRecycler);
             tripRecyclerView.setNestedScrollingEnabled(true); //not true?
             tripRecyclerView.setHasFixedSize(true);
-            FiltertripAdapter = new FindTripAdapter(getDataFilterTrips(),FilteredTrips.this);
+            FiltertripAdapter = new FindTripAdapter(getDataFilterTrips(), FilteredTrips.this);
             tripLayoutManager = new LinearLayoutManager(FilteredTrips.this);
             tripRecyclerView.setLayoutManager(tripLayoutManager);
 
             tripRecyclerView.setAdapter(FiltertripAdapter);
 
 
-
-
             getDriverId();
+
 
             //not working yet..
             sortList();
-            Toast.makeText(FilteredTrips.this, "Click on a trip to see more details, send request or message the driver ", Toast.LENGTH_LONG).show();
         }
 
 
@@ -315,11 +322,18 @@ public class FilteredTrips extends AppCompatActivity {
                                  Integer mins = Integer.parseInt(timeSplit[1]);
                                  Integer totalMins = (hours * 60) + mins;
 
+                              // TripDate = new Date(year-1900, month - 1, day);
 
+                               if(date.before(TripDate)){
                                 Fullname = First + " " + Surname;
                                 FindTrip object = new FindTrip(Fullname,UserName,DriverProfilePicUrl,Time,Date,Starting,Destination,Seats,LuggageCheck,Note,Key);
                                 results.add(object);
                                 FiltertripAdapter.notifyDataSetChanged();
+                                counter++;
+                                   //Toast.makeText(FilteredTrips.this,""+counter,Toast.LENGTH_LONG).show();
+                                }
+                                //if 0, make recycler view visibility = gone, and make button = visible
+
                             }
                         }
 
@@ -348,8 +362,11 @@ public class FilteredTrips extends AppCompatActivity {
             //  txt.setText("There are no matching trips..");
             //}
             return results;
+
         }
 
+
+        //not working
             private void sortList(){
 
                 Collections.sort(results, new Comparator<FindTrip>() {

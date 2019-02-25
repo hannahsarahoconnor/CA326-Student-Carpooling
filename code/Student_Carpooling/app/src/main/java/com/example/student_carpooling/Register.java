@@ -199,7 +199,7 @@ public class Register extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 Toast.makeText(Register.this, "Registration Successful, please now verify your email", Toast.LENGTH_SHORT).show();
                                 FirebaseAuth.getInstance().signOut();
-                                startActivity(new Intent(Register.this, Login.class));
+                                startActivity(new Intent(Register.this, MainActivity.class));
                                 finish();
                             //else - no email was sent.
                             }

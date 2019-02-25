@@ -34,7 +34,7 @@ public class ResetPassword extends AppCompatActivity {
         Cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ResetPassword.this, Login.class);
+                Intent intent = new Intent(ResetPassword.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -54,7 +54,7 @@ public class ResetPassword extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Toast.makeText(ResetPassword.this, "Email has been sent.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(ResetPassword.this, Login.class);
+                                Intent intent = new Intent(ResetPassword.this, MainActivity.class);
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(ResetPassword.this, "Email is not registered successfully.", Toast.LENGTH_SHORT).show();

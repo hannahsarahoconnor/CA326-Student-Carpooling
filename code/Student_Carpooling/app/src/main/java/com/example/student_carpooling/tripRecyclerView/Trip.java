@@ -10,10 +10,11 @@ public class Trip {
     private String LuggageCheck;
     private String Starting;
     private String Destination;
+    private String DriverID;
 
 
 
-    public Trip(String Date,String Time, String Seats, String LuggageCheck, String Starting, String Destination ){
+    public Trip(String TripID,String DriverID,String Date,String Time,String Seats,String LuggageCheck, String Starting, String Destination ){
         this.Date = Date;
         this.Time = Time;
         this.UserName = UserName;
@@ -21,11 +22,29 @@ public class Trip {
         this.LuggageCheck = LuggageCheck;
         this.Starting = Starting;
         this.Destination = Destination;
+        this.TripID = TripID;
+        this.DriverID = DriverID;
 
     }
 
     //may not need the set functions
 
+
+    public void setTripID(String tripID) {
+        TripID = tripID;
+    }
+
+    public String getTripID() {
+        return TripID;
+    }
+
+    public String getDriverID() {
+        return DriverID;
+    }
+
+    public void setDriverID(String driverID) {
+        DriverID = driverID;
+    }
 
     public void setUserName(String userName) {
         UserName = userName;

@@ -68,14 +68,6 @@ public class PastTripFragment extends Fragment  {
 
         tripRecyclerView.setAdapter(tripAdapter);
 
-        tripAdapter.setTripListener(new TripAdapter.onTripListener() {
-            @Override
-            public void onTripClick(int position) {
-                Intent intent = new Intent(getActivity(),DriverTripItem.class);
-                startActivity(intent);
-            }
-        });
-
 
 
         linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
@@ -115,7 +107,7 @@ public class PastTripFragment extends Fragment  {
         });
     }
 
-    private void UserTripDB(String ID) {
+    private void UserTripDB(final String ID) {
         //push().getKey();
         DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(ID);
         TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -184,7 +176,7 @@ public class PastTripFragment extends Fragment  {
                     // current date is before trip date..
                     if((TripDate.equals(date))){
                         // this means its a past date...
-                        Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
+                        Trip object = new Trip(ID,UserID,Date,Time,Seats,LuggageCheck,Starting,Destination);
                         resultsTrips.add(object);
                         tripAdapter.notifyDataSetChanged();
 

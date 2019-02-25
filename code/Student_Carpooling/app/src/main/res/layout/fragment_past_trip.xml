@@ -8,11 +8,6 @@
         android:orientation="vertical"
         android:id="@+id/linearLayout">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:id="@+id/txt"/>
 
 
         <android.support.v7.widget.RecyclerView

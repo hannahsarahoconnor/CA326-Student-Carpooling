@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:fitsSystemWindows="true"
+    android:layout_width="300dp"
+    android:layout_height="290dp"
+    tools:context=".MainActivity"
+    android:padding="5dp"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
+    >
+
+    <TextView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:textColor="@color/quantum_black_100"
+        android:text="X"
+        android:textAlignment="textEnd"
+        android:layout_marginRight="5dp"
+        android:layout_marginEnd="5dp"
+        android:id="@+id/close"
+
+        android:textStyle="bold"
+        android:layout_gravity="end"/>
+
+    <EditText
+        android:id="@+id/EmailInput"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:hint="@string/Email"
+        android:inputType="textEmailAddress"
+        android:autofillHints="email"
+        tools:targetApi="o"/>
+
+    <EditText
+        android:id="@+id/PasswordInput"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:hint="@string/Password"
+        android:inputType="textPassword"
+        android:autofillHints="email"
+        tools:targetApi="o"/>
+
+    <RadioGroup
+        android:id="@+id/TypeInput"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+
+
+
+    <RadioButton
+        android:id="@+id/Driver"
+        android:layout_width="71dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="2dp"
+        android:checked="true"
+        android:text="Driver" />
+
+    <RadioButton
+        android:id="@+id/Passenger"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="5dp"
+
+        android:layout_marginTop="2dp"
+        android:layout_height="wrap_content"
+        android:text="Passenger" />
+
+</RadioGroup>
+
+
+<Button
+        android:id="@+id/Login"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="15dp"
+    android:textColor="@color/colorPrimary"
+    android:text="@string/Login"
+    android:textSize="20sp"
+    android:background="@color/quantum_white_100"
+    android:textAllCaps="false"/>
+</LinearLayout>

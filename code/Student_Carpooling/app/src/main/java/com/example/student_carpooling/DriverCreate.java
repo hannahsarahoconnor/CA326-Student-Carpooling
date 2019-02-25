@@ -157,15 +157,19 @@ public class DriverCreate extends AppCompatActivity
 
         autocompleteFragment.setCountry("IE");
         autocompleteFragmentDST.setCountry("IE");
-       // autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
+        autocompleteFragmentDST.setTypeFilter(TypeFilter.ESTABLISHMENT);
+        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
+        autocompleteFragmentDST.setTypeFilter(TypeFilter.REGIONS);
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                LatLng string_location = place.getLatLng();
+                //LatLng string_location = place.getLatLng();
+                double lat = (place.getLatLng()).latitude;
+                double lng = (place.getLatLng()).longitude;
                 String address = (String) place.getAddress();
                 destination = (String) place.getName();
-                Toast.makeText(DriverCreate.this,""+destination,Toast.LENGTH_SHORT).show();
+                Toast.makeText(DriverCreate.this,""+lat, Toast.LENGTH_SHORT).show();
             }
 
             @Override

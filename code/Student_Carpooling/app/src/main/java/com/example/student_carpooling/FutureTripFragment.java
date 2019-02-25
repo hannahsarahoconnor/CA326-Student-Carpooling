@@ -13,8 +13,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
@@ -48,6 +50,9 @@ public class FutureTripFragment extends Fragment  {
     Date TripDate,CurrentDate;
     LinearLayout linearLayout;
     NavigationView navigationView;
+    private int counter=0;
+    TextView textView1, textView2;
+    Button createRequest;
 
 
 
@@ -63,18 +68,14 @@ public class FutureTripFragment extends Fragment  {
 
         tripRecyclerView.setAdapter(tripAdapter);
 
-        tripAdapter.setTripListener(new TripAdapter.onTripListener() {
-            @Override
-            public void onTripClick(int position) {
-                Intent intent = new Intent(getActivity(),DriverTripItem.class);
-                startActivity(intent);
-
-            }
-        });
 
 
 
-        linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
+
+        linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout3);
+        textView1 = v.findViewById(R.id.Text);
+        //textView2 = v.findViewById(R.id.Text2);
+        //createRequest = v.findViewById(R.id.Request);
 
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
@@ -82,6 +83,9 @@ public class FutureTripFragment extends Fragment  {
 
 
         getTripIds();
+
+
+
 
         return v;
         }
@@ -111,7 +115,7 @@ public class FutureTripFragment extends Fragment  {
             });
         }
 
-        private void UserTripDB(String ID) {
+        private void UserTripDB(final String ID) {
             //push().getKey();
             DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(ID);
             TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -164,9 +168,21 @@ public class FutureTripFragment extends Fragment  {
 
                         if(TripDate.after(date)){
                             // this means its a past date...
-                            Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
+                            Trip object = new Trip(ID, UserID,Date,Time,Seats,LuggageCheck,Starting,Destination);
                             resultsTrips.add(object);
                             tripAdapter.notifyDataSetChanged();
+
+                            if(tripAdapter.getItemCount() > 0){
+                                //disable the recycler view
+                                //add dynamic text and button
+                                //tripRecyclerView.setVisibility(View.GONE);
+                                //textView1.setVisibility(View.VISIBLE);
+                               // createRequest.setVisibility(View.VISIBLE);
+
+
+
+                            }
+
                         }
 
 
@@ -176,6 +192,8 @@ public class FutureTripFragment extends Fragment  {
 
                 }
 
+
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -184,7 +202,8 @@ public class FutureTripFragment extends Fragment  {
 
         }
 
-        private ArrayList resultsTrips = new ArrayList<Trip>();
+
+    private ArrayList resultsTrips = new ArrayList<Trip>();
 
         private ArrayList<Trip> getDataTrips() {
 

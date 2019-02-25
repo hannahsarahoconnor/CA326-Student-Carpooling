@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,19 +38,20 @@ import java.util.StringTokenizer;
 public class presentTripsFragment extends Fragment  {
 
     private RecyclerView tripRecyclerView;
-    private TripAdapter tripAdapter;
+    private TripAdapter PresentTripAdapter;
     private RecyclerView.LayoutManager tripLayoutManager;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time,UserName;
+    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time,UserName,TripID;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
     Date TripDate,date;
     String datetrip;
     LinearLayout linearLayout;
-
-    TextView testing;
+    private int counter=0;
+    TextView textView1, textView2;
+    Button createRequest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,24 +59,20 @@ public class presentTripsFragment extends Fragment  {
         tripRecyclerView = v.findViewById(R.id.trippresentRecycler);
         tripRecyclerView.setNestedScrollingEnabled(false); //not true?
         tripRecyclerView.setHasFixedSize(true);
-        tripAdapter = new TripAdapter(getDataTrips(),getActivity());
+        PresentTripAdapter = new TripAdapter(getDataTrips(),getActivity());
         tripLayoutManager = new LinearLayoutManager(getActivity());
         tripRecyclerView.setLayoutManager(tripLayoutManager);
 
-        tripRecyclerView.setAdapter(tripAdapter);
+        tripRecyclerView.setAdapter(PresentTripAdapter);
 
-        tripAdapter.setTripListener(new TripAdapter.onTripListener() {
-            @Override
-            public void onTripClick(int position) {
-                Intent intent = new Intent(getActivity(),DriverTripItem.class);
-                startActivity(intent);
-            }
-        });
 
         //toolbar
 
 
         linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
+        textView1 = v.findViewById(R.id.Text);
+        textView2 = v.findViewById(R.id.Text2);
+        createRequest = v.findViewById(R.id.Request);
 
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
@@ -110,7 +108,7 @@ public class presentTripsFragment extends Fragment  {
         });
     }
 
-    private void UserTripDB(String ID) {
+    private void UserTripDB(final String ID) {
         //push().getKey();
         DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(ID);
         TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -174,13 +172,22 @@ public class presentTripsFragment extends Fragment  {
 
 
 
-                    if(date_n.equals(datetrip)){
+                    if(date_n.equals(datetrip)) {
+                        TripID = ID;
+
                         // this means its a past date...
-                        Trip object = new Trip(Date,Time,Seats,LuggageCheck,Starting,Destination);
+                        Trip object = new Trip(TripID, UserID,Date, Time, Seats, LuggageCheck, Starting, Destination);
                         resultsTrips.add(object);
-                        tripAdapter.notifyDataSetChanged();}
+                        PresentTripAdapter.notifyDataSetChanged();
+                        counter++;
+
+                        if(PresentTripAdapter.getItemCount() > 0){
+                           //disable the recycler view
+                           //add dynamic text and button
 
 
+                        }
+                    }
 
                }
 
