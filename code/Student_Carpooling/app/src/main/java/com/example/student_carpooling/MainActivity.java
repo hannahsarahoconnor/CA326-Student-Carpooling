@@ -66,14 +66,13 @@ public class MainActivity extends AppCompatActivity {
                                     UserType = map.get("Type").toString();
                                 }}
 
-
                                 if(UserType.equals("Driver")){
                                     Intent intent = new Intent(MainActivity.this, DriverMain.class);
                                     startActivity(intent);
                                     finish();
                                 }
                                 else if(UserType.equals("Passenger")){
-                                    Intent intent = new Intent(MainActivity.this, DriverMain.class);
+                                    Intent intent = new Intent(MainActivity.this, PassengerActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }

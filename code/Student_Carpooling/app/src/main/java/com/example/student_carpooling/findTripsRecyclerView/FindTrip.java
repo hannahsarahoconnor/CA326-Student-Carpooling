@@ -11,13 +11,13 @@ public class FindTrip {
     private String starting;
     private String destination;
     private String seats;
-
     private String Luggage;
     private String Note;
     private String ID;
+    private String TripID;
+    private String CurrentID;
 
-
-    public FindTrip(String Fullname, String username,String profilePicUrl,String time,String date,String starting,String destination, String seats, String Luggage, String Note,String ID) {
+    public FindTrip(String CurrentID, String TripID, String Fullname, String username,String profilePicUrl,String time,String date,String starting,String destination, String seats, String Luggage, String Note,String ID) {
         this.Fullname = Fullname;
         this.username = username;
         this.profilePicUrl = profilePicUrl;
@@ -29,6 +29,24 @@ public class FindTrip {
         this.Luggage = Luggage;
         this.Note = Note;
         this.ID = ID;
+        this.TripID = TripID;
+        this.CurrentID = CurrentID;
+    }
+
+    public String getCurrentID() {
+        return CurrentID;
+    }
+
+    public void setCurrentID(String currentID) {
+        CurrentID = currentID;
+    }
+
+    public String getTripID() {
+        return TripID;
+    }
+
+    public void setTripID(String tripID) {
+        TripID = tripID;
     }
 
     public String getID() {

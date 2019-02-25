@@ -222,7 +222,7 @@ public class FilteredTrips extends AppCompatActivity {
 
 
 
-        private void UserTripDB(final String Key, String ID) {
+        private void UserTripDB(final String Key, final String ID) {
             //push().getKey();
 
             //get all driver trips
@@ -326,13 +326,23 @@ public class FilteredTrips extends AppCompatActivity {
 
                                if(date.before(TripDate)){
                                 Fullname = First + " " + Surname;
-                                FindTrip object = new FindTrip(Fullname,UserName,DriverProfilePicUrl,Time,Date,Starting,Destination,Seats,LuggageCheck,Note,Key);
+                                   Toast.makeText(FilteredTrips.this, ""+CurrentUser.getUid(),Toast.LENGTH_LONG).show();
+                                FindTrip object = new FindTrip(CurrentUser.getUid(),ID,Fullname,UserName,DriverProfilePicUrl,Time,Date,Starting,Destination,Seats,LuggageCheck,Note,Key);
                                 results.add(object);
                                 FiltertripAdapter.notifyDataSetChanged();
                                 counter++;
                                    //Toast.makeText(FilteredTrips.this,""+counter,Toast.LENGTH_LONG).show();
+
+                                if(counter == 0) {
+
+                                    //recycler view is empty, set the visibility of button and text view
+                                    tripRecyclerView.setVisibility(View.GONE);
+                                    textView1.setVisibility(View.VISIBLE);
+                                    textView2.setVisibility(View.VISIBLE);
+                                    createRequest.setVisibility(View.VISIBLE);
+
                                 }
-                                //if 0, make recycler view visibility = gone, and make button = visible
+                                }
 
                             }
                         }

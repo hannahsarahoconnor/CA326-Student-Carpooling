@@ -150,8 +150,7 @@ public class DriverTripItem extends AppCompatActivity {
 
                              Intent intent = new Intent(DriverTripItem.this,DriverTrips.class);
                              startActivity(intent);
-
-                                    //send notification to passengers of the cancellation
+                             //send notification to passengers of the cancellation
                     }
 
 

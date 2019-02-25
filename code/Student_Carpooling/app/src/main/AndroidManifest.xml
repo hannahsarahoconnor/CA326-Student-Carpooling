@@ -38,7 +38,6 @@
         <activity
             android:name=".RequestMapActivity"
             android:label="@string/title_activity_request_map" />
-        <activity android:name=".SendLocation" />
         <activity
             android:name=".FilteredTrips"
             android:label="@string/title_activity_filtered_trips"

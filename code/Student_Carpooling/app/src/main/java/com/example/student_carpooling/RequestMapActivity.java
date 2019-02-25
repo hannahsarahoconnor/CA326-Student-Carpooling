@@ -1,6 +1,7 @@
 package com.example.student_carpooling;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -10,14 +11,19 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
@@ -26,11 +32,19 @@ import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RequestMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -43,16 +57,24 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean LocationPermissionsGranted = false;
 
-    private String PickUp,PickUpID;
+    private String PickUp,PickUpID,DriverID,TripID, CurrentUserID,driverNotificationKey;
     AutocompleteSupportFragment autocompleteFragment;
 
     private LatLng latLng;
+
+    private Button Request, Cancel;
+
+    Intent intent;
+
+    private FirebaseAuth mAuth;
+
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
+
 
 
         if (LocationPermissionsGranted) {
@@ -75,8 +97,11 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
         setContentView(R.layout.activity_request_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
 
+        //pass the driver and trip id
 
-        Toast.makeText(RequestMapActivity.this, "HI", Toast.LENGTH_SHORT).show();
+
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -91,7 +116,63 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
 
         getLocationPermission();
 
+        Request = findViewById(R.id.request);
+        Cancel = findViewById(R.id.cancel);
 
+        mAuth = FirebaseAuth.getInstance();
+        CurrentUserID = mAuth.getCurrentUser().getUid();
+
+        Request.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = getIntent();
+                DriverID = intent.getStringExtra("DriverID");
+                TripID = intent.getStringExtra("TripID");
+               try{
+                if(!PickUp.equals("null")){
+
+                    Toast.makeText(RequestMapActivity.this, ""+DriverID, Toast.LENGTH_SHORT).show();
+
+                   //get driver notification key to send notification key to information them of the request
+                    DatabaseReference _DriverNotificationKey = FirebaseDatabase.getInstance().getReference().child("users").child(DriverID);
+                    _DriverNotificationKey.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                            if(map.get("NotificationKey")!=null){
+                                driverNotificationKey = map.get("NotificationKey").toString();
+                                new SendNotification("You have a new request","Student Carpooling",driverNotificationKey);
+
+                            }}
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    //add the hash map of request (info passenger id, lat & long) to the tripdetails
+                    DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("Requests").child(CurrentUserID);
+                    Map RequestInfo = new HashMap();
+                    RequestInfo.put("Lat", latLng.latitude);
+                    RequestInfo.put("Lon",latLng.longitude);
+                    TripDB.setValue(RequestInfo);
+                    Toast.makeText(RequestMapActivity.this, "Request Sent", Toast.LENGTH_SHORT).show();
+                    finish();
+
+                }}
+                catch (NullPointerException e){
+
+                   Toast.makeText(RequestMapActivity.this, "Please enter a pick up point", Toast.LENGTH_SHORT).show();
+
+               }}
+
+        });
+
+       Cancel.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               finish();
+           }
+       });
 
     }
 
@@ -138,10 +219,9 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
         }
         if (list.size() > 0) {
             Address address = list.get(0);
-            Toast.makeText(RequestMapActivity.this, "" + address.toString(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(RequestMapActivity.this, "" + address.toString(), Toast.LENGTH_LONG).show();
             //moveCamera(new LatLng(address.getLatitude(),address.getLongitude(),address.getAddressLine(0));
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            Toast.makeText(RequestMapActivity.this, "" + address.getLatitude(), Toast.LENGTH_LONG).show();
+           // Toast.makeText(RequestMapActivity.this, "" + address.getAddressLine(0), Toast.LENGTH_LONG).show();
 
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
@@ -164,7 +244,13 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
 
     private void moveCamera(LatLng latLng, String title){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude );
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(latLng.latitude, latLng.longitude)).tilt(70)
+                .zoom(15)
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
         MarkerOptions options = new MarkerOptions().position(latLng).title(title);
             mMap.addMarker(options);
         }
