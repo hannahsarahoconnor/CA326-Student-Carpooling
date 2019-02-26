@@ -150,7 +150,7 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
                         }
                     });
                     //add the hash map of request (info passenger id, lat & long) to the tripdetails
-                    DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("Requests").child(CurrentUserID);
+                    DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("TripRequests").child(CurrentUserID);
                     Map RequestInfo = new HashMap();
                     RequestInfo.put("Lat", latLng.latitude);
                     RequestInfo.put("Lon",latLng.longitude);

@@ -153,6 +153,8 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
             @Override
             public void onClick(View v) {
                 //if user has already requested the trip,stop them from requesting again
+                //check if they're already a passenger, (or filter it out in find trips- or change the request button to cancel request?
+                //check that they havent requested the trip before
               RequestCheck(_id,_tripId,CurrentId);
               if(result){
                   Toast.makeText(context, "You have already sent a request for this trip, please wait until the driver has accepted/declined", Toast.LENGTH_LONG).show();
@@ -179,7 +181,7 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
     }
 
     public void RequestCheck(String driverid, String tripid, final String currentid){
-        DatabaseReference requestCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(driverid).child(tripid).child("Requests");
+        DatabaseReference requestCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(driverid).child(tripid).child("TripRequests");
         //requestCheck.
         requestCheck.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

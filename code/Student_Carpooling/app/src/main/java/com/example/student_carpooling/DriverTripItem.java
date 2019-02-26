@@ -172,7 +172,9 @@ public class DriverTripItem extends AppCompatActivity {
         request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(DriverTripItem.this,TripRequests.class);
+                intent.putExtra("TripID",TripID);
+                startActivity(intent);
             }
         });
 

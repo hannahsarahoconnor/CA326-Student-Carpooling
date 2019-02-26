@@ -14,9 +14,9 @@ public class Passenger {
         this.ID = ID;
 
     }
-
     public Passenger(){
     }
+
 
     public void setID(String ID) {
         this.ID = ID;
