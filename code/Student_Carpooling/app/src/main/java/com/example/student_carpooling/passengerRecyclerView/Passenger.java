@@ -9,10 +9,12 @@ public class Passenger {
     private String NotificationKey;
     private float lat;
     private float lon;
+    private String Fullname;
 
 
-    public Passenger(String ID, String profilePicUrl, String UserName, float lat, float lon, String NotificationKey){
+    public Passenger(String Fullname,String ID, String profilePicUrl, String UserName, float lat, float lon, String NotificationKey){
         this.profilePicUrl = profilePicUrl;
+        this.Fullname = Fullname;
         this.UserName = UserName;
         this.ID = ID;
         this.NotificationKey = NotificationKey;
@@ -21,6 +23,14 @@ public class Passenger {
 
     }
     public Passenger(){
+    }
+
+    public void setFullname(String fullname) {
+        Fullname = fullname;
+    }
+
+    public String getFullname() {
+        return Fullname;
     }
 
     public void setNotificationKey(String notificationKey) {

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
+import com.example.student_carpooling.PassengerLocation;
 import com.example.student_carpooling.R;
 import com.example.student_carpooling.UserLocation;
 import com.example.student_carpooling.UserProfile;
@@ -48,6 +49,7 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
 
     @Override
     public void onBindViewHolder(@NonNull PassengerViewHolders passengerViewHolders, int i) {
+        final String Fullname = list.get(i).getFullname();
         final String Username = list.get(i).getUserName();
         final String ProfilePicUrl = list.get(i).getProfilePicUrl();
         final String ID = list.get(i).getID();
@@ -68,6 +70,7 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("Username", Username);
                 intent.putExtra("ID", ID);
+                intent.putExtra("Fullname",Fullname);
                 intent.putExtra("ProfilePicURL", ProfilePicUrl);
                 Toast.makeText(context, "Starting Chat with " + Username, Toast.LENGTH_SHORT).show();
                 context.startActivity(intent);
@@ -88,13 +91,16 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(context, "retrieving locations and forming route...", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, UserLocation.class);
+                //Toast.makeText(context, "retrieving locations and forming route...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, PassengerLocation.class);
                 intent.putExtra("Username", Username);
                 intent.putExtra("ID", ID);
                 intent.putExtra("ProfilePicURL", ProfilePicUrl);
-                intent.putExtra("Lat", lat);
-                intent.putExtra("Lon", lon);
+                intent.putExtra("Lat",lat);
+                intent.putExtra("Lon",lon);
+                //intent.putExtra("Lat", lat);
+                //Toast.makeText(context, ""+lat, Toast.LENGTH_SHORT).show();
+                //intent.putExtra("Lon", lon);
                 intent.putExtra("NotificationKey",_notificationKey);
                 context.startActivity(intent);
 

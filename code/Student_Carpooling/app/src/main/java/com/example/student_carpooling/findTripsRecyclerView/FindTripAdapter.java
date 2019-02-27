@@ -95,121 +95,124 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
                 dialog = new Dialog(context);
                 dialog.setContentView(R.layout.driver_popup);
                 TextView ClosePopUp = dialog.findViewById(R.id.close);
-                TextView username = (TextView) dialog.findViewById(R.id.DUserName);
+                TextView username = dialog.findViewById(R.id.DUserName);
                 //TextView Fullname = (TextView) dialog.findViewById(R.id.Dfullname);
-                TextView Luggage = (TextView) dialog.findViewById(R.id.Dluggage);
-                TextView Note = (TextView) dialog.findViewById(R.id.Dnote);
-                TextView Time = (TextView) dialog.findViewById(R.id.Dtime);
-                TextView Date = (TextView) dialog.findViewById(R.id.Ddate);
-                TextView Seats = (TextView) dialog.findViewById(R.id.Dseats);
-                TextView Starting = (TextView) dialog.findViewById(R.id.Dstarting);
-                TextView Destination = (TextView) dialog.findViewById(R.id.Ddestination);
-                ImageView Ppic = (ImageView) dialog.findViewById(R.id.UserProfilePic);
-                ImageView ProfileIcon = (ImageView) dialog.findViewById(R.id.profile);
-                ImageView MessageIcon = (ImageView) dialog.findViewById(R.id.message);
-                final Button request = (Button) dialog.findViewById(R.id.request);
+                TextView Luggage = dialog.findViewById(R.id.Dluggage);
+                TextView Note = dialog.findViewById(R.id.Dnote);
+                TextView Time = dialog.findViewById(R.id.Dtime);
+                TextView Date = dialog.findViewById(R.id.Ddate);
+                TextView Seats = dialog.findViewById(R.id.Dseats);
+                TextView Starting = dialog.findViewById(R.id.Dstarting);
+                TextView Destination = dialog.findViewById(R.id.Ddestination);
+                ImageView Ppic = dialog.findViewById(R.id.UserProfilePic);
+                ImageView ProfileIcon = dialog.findViewById(R.id.profile);
+                ImageView MessageIcon = dialog.findViewById(R.id.message);
+                final Button request = dialog.findViewById(R.id.request);
+                try {
+                    username.setText(list.get(findTripViewHolders.getAdapterPosition()).getUsername());
+                    Starting.setText(list.get(findTripViewHolders.getAdapterPosition()).getStarting());
+                    Seats.setText(list.get(findTripViewHolders.getAdapterPosition()).getSeats());
+                    Date.setText(list.get(findTripViewHolders.getAdapterPosition()).getDate());
+                    Destination.setText(list.get(findTripViewHolders.getAdapterPosition()).getDestination());
 
-                username.setText(list.get(findTripViewHolders.getAdapterPosition()).getUsername());
-                Starting.setText(list.get(findTripViewHolders.getAdapterPosition()).getStarting());
-                Seats.setText(list.get(findTripViewHolders.getAdapterPosition()).getSeats());
-                Date.setText(list.get(findTripViewHolders.getAdapterPosition()).getDate());
-                Destination.setText(list.get(findTripViewHolders.getAdapterPosition()).getDestination());
+
+                    Time.setText(list.get(findTripViewHolders.getAdapterPosition()).getTime());
+
+                    // Fullname.setText(list.get(findTripViewHolders.getAdapterPosition()).getFullname());
+                    Luggage.setText(list.get(findTripViewHolders.getAdapterPosition()).getLuggage());
+                    Note.setText(list.get(findTripViewHolders.getAdapterPosition()).getNote());
+
+                    final String PicUrl = list.get(findTripViewHolders.getAdapterPosition()).getProfilePicUrl();
+                    if (!(PicUrl.equals("defaultPic"))) {
+                        Glide.with(context).load(PicUrl).into(Ppic);
+                    }
 
 
-                Time.setText(list.get(findTripViewHolders.getAdapterPosition()).getTime());
+                    ClosePopUp.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
 
-                // Fullname.setText(list.get(findTripViewHolders.getAdapterPosition()).getFullname());
-                Luggage.setText(list.get(findTripViewHolders.getAdapterPosition()).getLuggage());
-                Note.setText(list.get(findTripViewHolders.getAdapterPosition()).getNote());
 
-                final String PicUrl = list.get(findTripViewHolders.getAdapterPosition()).getProfilePicUrl();
-                if(!(PicUrl.equals("defaultPic"))){
-                    Glide.with(context).load(PicUrl).into(Ppic);
+                    MessageIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //send the request to the drawer
+                            Toast.makeText(context, "Starting new chat..." + _id, Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(context, ChatActivity.class);
+                            intent.putExtra("Username", _username);
+                            intent.putExtra("ID", _id);
+                            intent.putExtra("Fullname", _fullname);
+                            intent.putExtra("ProfilePicURL", PicUrl);
+                            context.startActivity(intent);
+
+                        }
+                    });
+
+                    request.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //if user has already requested the trip,stop them from requesting again
+                            //check if they're already a passenger, (or filter it out in find trips- or change the request button to cancel request?
+                            //check that they havent requested the trip before
+                            // Toast.makeText(context, ""+CurrentId, Toast.LENGTH_LONG).show();
+
+                            DatabaseReference declinedCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(_id).child(_tripId).child("TripRequests");
+                            //requestCheck.
+                            declinedCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                            String KeyCheck = id.getKey();
+                                            assert KeyCheck != null;
+                                            if(KeyCheck.equals(CurrentId)) {
+                                                Toast.makeText(context, "You have already sent a request for this trip, please wait until the driver has accepted/declined", Toast.LENGTH_LONG).show();
+                                                return;
+
+                                            }
+
+
+                                        }
+
+                                    }
+
+                                    //if empty
+                                    Intent intent = new Intent(context, RequestMapActivity.class);
+                                    intent.putExtra("DriverID", _id);
+                                    intent.putExtra("TripID", _tripId);
+                                    //Toast.makeText(context, _id, Toast.LENGTH_SHORT).show();
+                                    context.startActivity(intent);
+
+
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }
+                    });
+                    dialog.show();
+
+
+                }catch(Exception e){
+                    Toast.makeText(context, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-
-
-
-                ClosePopUp.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-
-
-
-
-                MessageIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //send the request to the drawer
-                        Toast.makeText(context, "Starting new chat..." +_id, Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, ChatActivity.class);
-                        intent.putExtra("Username",_username);
-                        intent.putExtra("ID", _id);
-                        intent.putExtra("Fullname", _fullname);
-                        intent.putExtra("ProfilePicURL", PicUrl);
-                        context.startActivity(intent);
-
-                    }
-                });
-
-                request.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //if user has already requested the trip,stop them from requesting again
-                        //check if they're already a passenger, (or filter it out in find trips- or change the request button to cancel request?
-                        //check that they havent requested the trip before
-                       // Toast.makeText(context, ""+CurrentId, Toast.LENGTH_LONG).show();
-
-                        RequestCheck(_id,_tripId,CurrentId);
-
-                        Toast.makeText(context, ""+CurrentId, Toast.LENGTH_SHORT).show();
-                        if(requested.contains(CurrentId)){
-                            Toast.makeText(context, "You have already sent a request for this trip, please wait until the driver has accepted/declined", Toast.LENGTH_LONG).show();
-                        }else{
-                        Intent intent = new Intent(context, RequestMapActivity.class);
-                        intent.putExtra("DriverID", _id);
-                        intent.putExtra("TripID", _tripId);
-                        //Toast.makeText(context, _id, Toast.LENGTH_SHORT).show();
-                        context.startActivity(intent);}
-
-                    }
-                });
-                Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
 
             }
         });
     }
 
-
     private void RequestCheck(String Key,String TripKey,final String CurrentUserId) {
         //get those declined and add to list
-        DatabaseReference declinedCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(Key).child(TripKey).child("TripRequests");
-        //requestCheck.
-        declinedCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        String KeyCheck = id.getKey();
-                        if(KeyCheck!=null) {
-                            if(KeyCheck.equals(CurrentUserId)) {
-                                addToList(KeyCheck);
-                            }
 
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private ArrayList<String> requested = new ArrayList<String>();
@@ -224,6 +227,7 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
     public int getItemCount() {
         return this.list.size();
     }
+
 
 
 }

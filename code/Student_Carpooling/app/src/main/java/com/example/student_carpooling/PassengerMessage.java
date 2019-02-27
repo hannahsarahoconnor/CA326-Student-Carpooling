@@ -122,7 +122,7 @@ public class PassengerMessage extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                showKeyboard();
+                //showKeyboard();
                 resultsUsers.clear();
                 searchUser(s.toString().toLowerCase());
                 //closeKeyboard();
@@ -153,15 +153,15 @@ public class PassengerMessage extends AppCompatActivity
         }
     }
 
-    private void showKeyboard(){
-        View view = this.getCurrentFocus();
-        if (view.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-        }
+    //private void showKeyboard(){
+        //View view = this.getCurrentFocus();
+       // if (view.requestFocus()) {
+        //    InputMethodManager imm = (InputMethodManager)
+        //            getSystemService(Context.INPUT_METHOD_SERVICE);
+        //    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+       // }
 
-    }
+   // }
     private void searchUser(String s){
         closeKeyboard();
         final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

@@ -64,7 +64,7 @@ public class TripRequests extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //be able to go back out of the activity
-                finish();
+               finish();
             }
         });
 

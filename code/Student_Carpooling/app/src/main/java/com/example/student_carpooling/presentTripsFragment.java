@@ -214,7 +214,7 @@ public class presentTripsFragment extends Fragment  {
     @Override
     public void onResume() {
         super.onResume();
-        resultsTrips.clear();
+        //resultsTrips.clear();
 
     }
 }

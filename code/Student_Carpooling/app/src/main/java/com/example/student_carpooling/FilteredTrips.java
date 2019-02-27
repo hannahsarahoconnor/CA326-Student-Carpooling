@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.findTripsRecyclerView.FindTrip;
 import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
+import com.example.student_carpooling.seatRecyclerView.Seat;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -361,8 +362,9 @@ public class FilteredTrips extends AppCompatActivity {
                                                 Fullname = First + " " + Surname;
                                                 //Toast.makeText(FilteredTrips.this, ""+CurrentUser.getUid(),Toast.LENGTH_LONG).show();
                                                 //
-                                                Toast.makeText(FilteredTrips.this, ""+UserID,Toast.LENGTH_LONG).show();
+                                               if((Integer.parseInt(Seats)!=0)){
                                                 FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Date, Starting, Destination, Seats, LuggageCheck, Note, Key);
+
                                                 results.add(object);
                                                 FiltertripAdapter.notifyDataSetChanged();
                                                 counter++;
@@ -384,7 +386,7 @@ public class FilteredTrips extends AppCompatActivity {
                                                         }
                                                     });
 
-                                                }}}}}}
+                                                }}}}}}}
 
 
                                 //Toast.makeText(FilteredTrips.this,KeyCheck, Toast.LENGTH_SHORT).show();
@@ -451,7 +453,7 @@ public class FilteredTrips extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        results.clear();
+        //results.clear();
 
     }
 

@@ -64,5 +64,6 @@
     <string name="title_activity_user_location">Map</string>
     <string name="title_activity_passenger_create_requests">PassengerCreateRequests</string>
     <string name="title_activity_driver_find_requests">DriverFindRequests</string>
+    <string name="title_activity_passenger_location">Map</string>
 
 </resources>

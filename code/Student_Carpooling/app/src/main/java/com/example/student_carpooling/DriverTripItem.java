@@ -26,6 +26,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.passengerRecyclerView.Passenger;
 import com.example.student_carpooling.passengerRecyclerView.PassengerAdapter;
+import com.example.student_carpooling.seatRecyclerView.Seat;
+import com.example.student_carpooling.seatRecyclerView.SeatAdapter;
+import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,19 +55,21 @@ public class DriverTripItem extends AppCompatActivity {
     private TextView textView;
     private String email,UserID;
     private DatabaseReference UserDb;
-    private String TripID, UserName, profilePicurl, NotificationKey;
+    private String TripID, UserName, profilePicurl, NotificationKey, Name,Surname,Fullname;
 
     private float Lat,Lon;
     FirebaseUser CurrentUser;
     TextView starting, destination, time ,date, seats, luggage;
 
+    String Seats;
+
     Intent intent;
 
-    private LinearLayoutManager passengerLayoutManager;
+    private LinearLayoutManager passengerLayoutManager,seatsLayoutManager;
 
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter passengerAdapter;
+    private RecyclerView recyclerView, SeatrecyclerView;
+    private RecyclerView.Adapter passengerAdapter, seatsAdapter;
 
     private Button cancel, request, start;
 
@@ -84,7 +89,8 @@ public class DriverTripItem extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //be able to go back out of the activity
-                finish();
+             Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
+             startActivity(intent);
             }
         });
 
@@ -93,7 +99,6 @@ public class DriverTripItem extends AppCompatActivity {
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
 
-
         recyclerView = findViewById(R.id.passengerRecycler);
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setHasFixedSize(true);
@@ -101,6 +106,16 @@ public class DriverTripItem extends AppCompatActivity {
         passengerAdapter = new PassengerAdapter(getDataPassenger(), DriverTripItem.this);
         passengerLayoutManager = new LinearLayoutManager(DriverTripItem.this);
         recyclerView.setAdapter(passengerAdapter);
+
+        //recycler view for the seats -- show the no in real times once a new passenger is accepted or one is removed
+        SeatrecyclerView = findViewById(R.id.seatsRecycler);
+        SeatrecyclerView.setNestedScrollingEnabled(false);
+        SeatrecyclerView.setHasFixedSize(true);
+        SeatrecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        seatsAdapter = new SeatAdapter(getDataSeat(),DriverTripItem.this);
+        seatsLayoutManager = new LinearLayoutManager(DriverTripItem.this);
+        SeatrecyclerView.setAdapter(seatsAdapter);
+
 
         starting = findViewById(R.id.Starting);
         destination = findViewById(R.id.Destination);
@@ -123,14 +138,40 @@ public class DriverTripItem extends AppCompatActivity {
         String _luggage = intent.getStringExtra("Luggage");
         TripID = intent.getStringExtra("TripID");
 
-        Toast.makeText(DriverTripItem.this,""+TripID,Toast.LENGTH_LONG).show();
-
         starting.setText(_starting);
         destination.setText(_destination);
         date.setText(_date);
         time.setText(_time);
-        seats.setText(_seats);
-        luggage.setText(_luggage);
+
+        //listener for the seats no!!
+
+        DatabaseReference SeatCount = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+        SeatCount.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Seats") != null) {
+                        Seats = map.get("Seats").toString();
+                        resultsSeats.clear();
+                        //seatsAdapter.notifyDataSetChanged();
+
+                        Seat object = new Seat(Seats);
+                        resultsSeats.add(object);
+                        seatsAdapter.notifyDataSetChanged();
+
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
 
         getPassengers();
@@ -194,58 +235,15 @@ public class DriverTripItem extends AppCompatActivity {
         try {
             DatabaseReference PassengersID = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Passengers");
             //get each id in the passenger child and use that id to query the users db to get more information
-            PassengersID.addListenerForSingleValueEvent(new ValueEventListener() {
+            PassengersID.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot id : dataSnapshot.getChildren()) {
                             final String passengerKey = id.getKey();
+                            PassengerInfo(passengerKey);
 
-                            DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("users").child(passengerKey);
-                            PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        //get the info and create a new user object
-                                        //required -> Id, profilepicurl, username
-                                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-
-                                        if (map.get("profileImageUrl") != null) {
-                                            profilePicurl = map.get("profileImageUrl").toString();
-
-                                        }
-                                        if (map.get("Username") != null) {
-                                            UserName = map.get("Username").toString();
-                                            Toast.makeText(DriverTripItem.this, ""+UserName, Toast.LENGTH_SHORT).show();
-
-                                        }
-                                        if (map.get("NotificationKey") != null) {
-                                            NotificationKey = map.get("NotificationKey").toString();
-
-                                        }
-
-
-                                        PassengerTripDB(passengerKey,UserID, TripID);
-
-                                        Passenger object = new Passenger(passengerKey, profilePicurl, UserName,Lat,Lon,NotificationKey);
-                                        resultsPassengers.add(object);
-                                        passengerAdapter.notifyDataSetChanged();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-
-                        }
-                    }
-
-
-
-                }
+                        }}}
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -263,9 +261,41 @@ public class DriverTripItem extends AppCompatActivity {
 
     }
 
-    private void PassengerTripDB(final String PassID, String DriverID, String TripID){
 
-        DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("Passengers").child(PassID);
+    private void PassengerInfo(final String ID){
+        DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Passengers").child(ID);
+        PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //get lon and lat
+                if (dataSnapshot.exists()) {
+                    //get the info and create a new user object
+                    //required -> Id, profilepicurl, username
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("lat") != null) {
+                        Lat = Float.valueOf(map.get("lat").toString());
+
+                    }
+                    if (map.get("lon") != null) {
+                        Lon = Float.valueOf(map.get("lon").toString());
+
+                    }
+                    PassengerUserInfo(ID,Lat,Lon);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
+    private void PassengerUserInfo(final String PassID,final float Lat,final float Lon){
+
+        DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("users").child(PassID);
         PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -273,14 +303,36 @@ public class DriverTripItem extends AppCompatActivity {
                     //get the info and create a new user object
                     //required -> Id, profilepicurl, username
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if (map.get("Lat") != null) {
-                        Lat = Float.valueOf(map.get("Lat").toString());
+
+                    if (map.get("profileImageUrl") != null) {
+                        profilePicurl = map.get("profileImageUrl").toString();
+                        //Toast.makeText(DriverTripItem.this, ""+profilePicurl, Toast.LENGTH_SHORT).show();
 
                     }
-                    if (map.get("Lon") != null) {
-                        Lon = Float.valueOf(map.get("Lon").toString());
+                    if (map.get("Username") != null) {
+                        UserName = map.get("Username").toString();
 
                     }
+                    if (map.get("NotificationKey") != null) {
+                        NotificationKey = map.get("NotificationKey").toString();
+
+                    }
+                    if (map.get("Name") != null) {
+                        Name = map.get("Name").toString();
+                    }
+                    if (map.get("Surname") != null) {
+                        Surname = map.get("Surname").toString();
+                    }
+
+                    Fullname = Name + " " + Surname;
+
+
+                    Passenger object = new Passenger(Fullname,PassID,profilePicurl,UserName,Lat,Lon,NotificationKey);
+                    resultsPassengers.add(object);
+                    passengerAdapter.notifyDataSetChanged();
+
+
+
 
 
                 }
@@ -299,6 +351,15 @@ public class DriverTripItem extends AppCompatActivity {
     private List<Passenger> getDataPassenger() {
         return resultsPassengers;
     }
+
+
+    private ArrayList resultsSeats = new ArrayList<Seat>();
+
+    private List<Seat> getDataSeat() {
+        return resultsSeats;
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

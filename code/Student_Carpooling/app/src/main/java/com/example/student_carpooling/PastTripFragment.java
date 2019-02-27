@@ -213,7 +213,7 @@ public class PastTripFragment extends Fragment  {
     @Override
     public void onResume() {
         super.onResume();
-        resultsTrips.clear();
+        //resultsTrips.clear();
 
     }
 
