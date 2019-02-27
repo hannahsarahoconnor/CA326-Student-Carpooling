@@ -28,6 +28,12 @@
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>
         <item>live.ie</item>
+        <item>nci.ie</item>
+        <item>ucc.ie</item>
+        <item>ucd.ie</item>
+        <item>ul.ie</item>
+        <item>nuigalway.ie</item>
+        <item>mumail.ie</item>
     </string-array>
     <string-array name="no_seats">
         <item>1</item>
