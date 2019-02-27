@@ -8,8 +8,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
 import com.example.student_carpooling.messagesRecyclerView.Message;
 import com.example.student_carpooling.messagesRecyclerView.MessageAdapter;
 import com.example.student_carpooling.requestsRecyclerView.Requests;
@@ -36,9 +39,14 @@ public class TripRequests extends AppCompatActivity {
     Intent intent;
 
     private FirebaseAuth mAuth;
-    private String TripId,UserID,profilePicURL,First,Surname,Fullname,Username;
+    private String TripId,UserID,profilePicURL,First,Surname,Fullname,Username,NotificationKey,CurrentUserName;
     private DatabaseReference UserDb;
     FirebaseUser CurrentUser;
+    int counter=0;
+    DatabaseReference TripDB;
+
+    TextView textView1, textView2;
+    Button findRequest;
 
     float lat,lon;
 
@@ -49,7 +57,7 @@ public class TripRequests extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("Requests");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -60,6 +68,10 @@ public class TripRequests extends AppCompatActivity {
             }
         });
 
+        textView1 = findViewById(R.id.Text);
+        textView2 = findViewById(R.id.Text2);
+        findRequest = findViewById(R.id.Request);
+
         intent = getIntent();
 
         TripId = intent.getStringExtra("TripID");
@@ -67,35 +79,55 @@ public class TripRequests extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-
+        //UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+        TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripId);
 
         requestRecyclerView = findViewById(R.id.requestRecycler);
         requestRecyclerView.setNestedScrollingEnabled(true);
         requestRecyclerView.setHasFixedSize(true);
         requestAdapter = new RequestsAdapter(getDataRequest(), TripRequests.this);
-        requestLayoutManager = new LinearLayoutManager(getApplicationContext());
+        requestLayoutManager = new LinearLayoutManager(TripRequests.this);
+        requestRecyclerView.setLayoutManager(requestLayoutManager);
         requestRecyclerView.setAdapter(requestAdapter);
 
-      // Toast.makeText(TripRequests.this, ""+ TripId, Toast.LENGTH_SHORT).show();
+        getUserName();
+        // Toast.makeText(TripRequests.this, ""+ TripId, Toast.LENGTH_SHORT).show();
         //Toast.makeText(TripRequests.this, ""+UserID, Toast.LENGTH_SHORT).show();
-        getRequests();
+        getRequests(); }
 
 
-    }
+   private void getUserName(){
+        TripDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Username") != null) {
+                        CurrentUserName = (map.get("Username").toString());
+                    }
+                    }
+            }
 
-    private void getRequests(){
-        DatabaseReference requestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripId).child("TripRequests");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+   }
+
+
+    private void getRequests() {
+      try{
+        DatabaseReference requestsDB = TripDB.child("TripRequests");
         requestsDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     //if there is any info there
-
-                    for(DataSnapshot id : dataSnapshot.getChildren()){
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
                         //then get the info under that unique ID
-                        String PassengerID = id.getKey();
-                        Toast.makeText(TripRequests.this, ""+PassengerID, Toast.LENGTH_SHORT).show();
+                        final String PassengerID = id.getKey();
+                        Toast.makeText(TripRequests.this, ""+PassengerID,Toast.LENGTH_SHORT).show();
                         DatabaseReference PassengerCoordinates = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripId).child("TripRequests").child(PassengerID);
                         PassengerCoordinates.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -104,15 +136,12 @@ public class TripRequests extends AppCompatActivity {
                                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                                     if (map.get("Lat") != null) {
                                         lat = Float.valueOf(map.get("Lat").toString());
-                                        Toast.makeText(TripRequests.this, ""+lat, Toast.LENGTH_SHORT).show();
 
                                     }
                                     if (map.get("Lon") != null) {
                                         lon = Float.valueOf(map.get("Lon").toString());
                                     }
-
-                                    //PassengerInfo(PassengerID,lat,lon);
-
+                                    PassengerInfo(PassengerID, lat, lon);
                                 }
                             }
 
@@ -122,9 +151,13 @@ public class TripRequests extends AppCompatActivity {
                             }
                         });
 
-                        PassengerInfo(PassengerID,lat,lon);
-
                     }
+                }else{
+                    Toast.makeText(TripRequests.this, "no users", Toast.LENGTH_SHORT).show();
+                    requestRecyclerView.setVisibility(View.GONE);
+                   textView1.setVisibility(View.VISIBLE);
+                   textView2.setVisibility(View.VISIBLE);
+                   findRequest.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -134,8 +167,16 @@ public class TripRequests extends AppCompatActivity {
 
             }
         });
-    }
+    }catch(Exception e){
 
+          Toast.makeText(TripRequests.this, "no users 2", Toast.LENGTH_SHORT).show();
+          requestRecyclerView.setVisibility(View.GONE);
+          textView1.setVisibility(View.VISIBLE);
+          textView2.setVisibility(View.VISIBLE);
+          findRequest.setVisibility(View.VISIBLE);
+
+      }
+      }
     private void PassengerInfo(final String passengerID, final float lat, final float lon) {
         DatabaseReference passengersDB = FirebaseDatabase.getInstance().getReference().child("users").child(passengerID);
         passengersDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -159,14 +200,18 @@ public class TripRequests extends AppCompatActivity {
                     if (map.get("Username") != null) {
                         Username = map.get("Username").toString();
                     }
-
+                    if (map.get("NotificationKey") != null) {
+                        NotificationKey = map.get("NotificationKey").toString();
+                    }
 
                     Fullname = First + " " + Surname;
-                    Requests object = new Requests(passengerID,profilePicURL,lon,lat,Username,Fullname);
+                   // Toast.makeText(TripRequests.this, ""+Username, Toast.LENGTH_SHORT).show();
+
+
+                    Requests object = new Requests(CurrentUserName,NotificationKey,TripId,passengerID,profilePicURL,lon,lat,Username,Fullname);
                     resultsRequest.add(object);
+                    counter++;
                     requestAdapter.notifyDataSetChanged();
-
-
 
 
                 }

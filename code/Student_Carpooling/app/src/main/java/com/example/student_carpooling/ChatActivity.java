@@ -210,7 +210,7 @@ public class ChatActivity extends AppCompatActivity {
         msgDB.child("Chats").push().setValue(hashMap);
 
 
-        //for the active chats activity
+           //for the active chats activity
         final DatabaseReference ChatIDs = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(CurrentUserID).child(OtherUserID);
 

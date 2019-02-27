@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuthListener = new FirebaseAuth.AuthStateListener(){
             @Override
-            public  void  onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user!=null){
                     UserID = mAuth2.getCurrentUser().getUid();
@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 LoginPopUp();
-                LoginDialog.show();
                 LoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                LoginDialog.show();
             }
         });
 
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+                                LoginDialog.dismiss();
                                 checkEmailVerfication(mAuth, type);
                             } else {
                                 Toast.makeText(MainActivity.this, "Wrong Email or Password, Try again", Toast.LENGTH_SHORT).show();

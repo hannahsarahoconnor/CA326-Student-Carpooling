@@ -225,7 +225,7 @@
         android:textColor="@color/quantum_googred700"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"/>
+        android:layout_marginTop="210dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
@@ -254,7 +254,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         android:paddingTop="1.6dp"
-        android:layout_marginTop="470dp"
+        android:layout_marginTop="485dp"
         android:paddingBottom="15dp"
         >
 

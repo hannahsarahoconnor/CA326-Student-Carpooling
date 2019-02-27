@@ -61,5 +61,6 @@
     <string name="title_activity_driver_trip_item">Trip Information</string>
     <string name="title_activity_driver_message">Active Chats</string>
     <string name="title_activity_request_map">Map</string>
+    <string name="title_activity_user_location">Map</string>
 
 </resources>

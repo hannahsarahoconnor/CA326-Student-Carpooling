@@ -23,11 +23,47 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
+    <TextView
+        android:layout_marginTop="180dp"
+        android:id="@+id/Text"
+        android:text="You have no Requests for this trip!"
+        android:layout_width="wrap_content"
+        android:textSize="30dp"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/app_bar_chat" />
+
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:id="@+id/Text2"
+        android:textAlignment="center"
+        android:text="If you wish,\nclick the button below and search the requests made by other users who you may wish to join your trip"
+        android:layout_width="wrap_content"
+        android:textSize="30sp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Text" />
+
+
+    <Button
+        android:id="@+id/Request"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/Text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Request Forms" />
+
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/requestRecycler"
+        android:visibility="visible"
         android:layout_below="@+id/app_bar_chat"
         android:layout_above="@+id/relLayout2"/>
 

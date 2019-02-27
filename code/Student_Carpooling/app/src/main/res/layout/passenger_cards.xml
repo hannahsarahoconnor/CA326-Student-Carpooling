@@ -14,50 +14,88 @@
         android:background="#c0c0c0"/>
 
 
-        <LinearLayout android:layout_width="fill_parent"
+        <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/UserProfilePic"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:gravity="start"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/UserName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/UserProfilePic"
+            android:gravity="start"
+            android:maxLines="1"
+            android:text="username"
+            android:textColor="@color/quantum_black_100"
+            android:textSize="20sp" />
 
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/UserProfilePic"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/logo" />
-
-            <TextView
-                android:id="@+id/UserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Username"
-                android:layout_marginTop="10dp"
-                android:maxLines="1"
-                android:layout_marginLeft="10dp"
-                android:textSize="20sp"
-                android:textColor="@color/quantum_black_100"/>
 
             <ImageView
-                android:layout_marginLeft="200dp"
-                android:layout_marginStart="200dp"
+                android:layout_toRightOf="@+id/UserName"
                 android:id="@+id/profile"
-                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:gravity="end"
                 app:srcCompat="@drawable/ic_person_black_24dp" />
 
 
             <ImageView
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
                 android:id="@+id/message"
+                android:layout_toRightOf="@+id/profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:gravity="end"
                 app:srcCompat="@drawable/ic_message_black_24dp" />
 
 
-        </LinearLayout>
+            <ImageView
+                android:layout_toRightOf="@+id/message"
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:gravity="end"
+                android:layout_marginRight="0dp"
+                android:layout_toEndOf="@+id/message"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                app:srcCompat="@drawable/ic_location" />
 
-    </LinearLayout>
+
+
+            <ImageView
+                android:layout_toRightOf="@+id/location"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/decline"
+                android:gravity="end"
+                android:adjustViewBounds="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_decline"
+                android:layout_marginRight="50dp"/>
+
+
+
+    </RelativeLayout>
+
+</LinearLayout>

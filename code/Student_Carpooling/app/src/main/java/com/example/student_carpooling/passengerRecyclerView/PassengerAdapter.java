@@ -49,12 +49,13 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
         final String Username = list.get(i).getUserName();
         final String ProfilePicUrl = list.get(i).getProfilePicUrl();
         final String ID = list.get(i).getID();
-        passengerViewHolders.UserName.setText(Username);
+
         //userViewHolders.FullName.setText(Fullname);
 
         if (!(ProfilePicUrl.equals("defaultPic"))) {
             Glide.with(context).load(ProfilePicUrl).into(passengerViewHolders.ProfilePic);
         }
+        passengerViewHolders.UserName.setText(Username);
 
         passengerViewHolders.MessageIcon.setOnClickListener(new View.OnClickListener() {
             @Override
