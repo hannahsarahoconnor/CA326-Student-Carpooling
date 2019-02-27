@@ -228,6 +228,11 @@ public class DriverProfile extends AppCompatActivity
                 Intent trips = new Intent(DriverProfile.this, DriverTrips.class);
                 startActivity(trips);
                 break;
+
+            case R.id.nav_find_trips_requests:
+                Intent requests = new Intent(DriverProfile.this, DriverFindRequests.class);
+                startActivity(requests);
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

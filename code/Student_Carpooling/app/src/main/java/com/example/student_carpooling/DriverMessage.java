@@ -513,6 +513,11 @@ public class DriverMessage extends AppCompatActivity
                             Intent trips = new Intent(DriverMessage.this, DriverTrips.class);
                             startActivity(trips);
                             break;
+
+                        case R.id.nav_find_trips_requests:
+                            Intent requests = new Intent(DriverMessage.this, DriverFindRequests.class);
+                            startActivity(requests);
+                            break;
                     }
 
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

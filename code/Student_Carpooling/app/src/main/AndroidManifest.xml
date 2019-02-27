@@ -19,7 +19,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".UserProfile"></activity>
+        <activity
+            android:name=".DriverFindRequests"
+            android:label="@string/title_activity_driver_find_requests"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar"></activity>
+        <activity
+            android:name=".PassengerCreateRequests"
+            android:label="@string/title_activity_passenger_create_requests"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
+        <activity android:name=".UserProfile" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

@@ -25,6 +25,10 @@
                 android:icon="@drawable/ic_find"
                 android:title="Find Trips" />
             <item
+                android:id="@+id/create_request"
+                android:icon="@drawable/ic_create_trip"
+                android:title="Create Request" />
+            <item
                 android:id="@+id/pass_trips"
                 android:icon="@drawable/ic_my_trips"
                 android:title="My Trips" />

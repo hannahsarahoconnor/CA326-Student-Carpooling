@@ -124,31 +124,36 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
 
     private void getCurrentUserLocation() {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if(task.isSuccessful()){
-                    //location is retrieved
-                    Location location = task.getResult();
-                    //geopoint?
-                    //GeoPoint geoPoint = new GeoPoint(location.getLatitude(),location.getLongitude());
-                    LatLng latLng = new LatLng((location.getLatitude()),location.getLongitude());
-                }
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try {
+            if (LocationPermissionsGranted) {
+
+                final Task location = fusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: found location!");
+                            Location currentLocation = (Location) task.getResult();
+
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
+
+                        } else {
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(UserLocation.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-        });
+        } catch (SecurityException e) {
+            Log.e(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
     }
 
-    private void moveCamera(LatLng latLng){
+        private void moveCamera(LatLng latLng){
         CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(latLng.latitude, latLng.longitude)).tilt(70)
                 .zoom(5)
                 .build();

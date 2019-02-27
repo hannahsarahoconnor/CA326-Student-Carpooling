@@ -62,5 +62,7 @@
     <string name="title_activity_driver_message">Active Chats</string>
     <string name="title_activity_request_map">Map</string>
     <string name="title_activity_user_location">Map</string>
+    <string name="title_activity_passenger_create_requests">PassengerCreateRequests</string>
+    <string name="title_activity_driver_find_requests">DriverFindRequests</string>
 
 </resources>

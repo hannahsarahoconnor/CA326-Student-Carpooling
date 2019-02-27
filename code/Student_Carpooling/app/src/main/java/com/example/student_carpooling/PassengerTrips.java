@@ -177,6 +177,11 @@ public class PassengerTrips extends AppCompatActivity
                 Intent trips = new Intent(PassengerTrips.this,PassengerTrips.class);
                 startActivity(trips);
                 break;
+
+            case R.id.create_request:
+                Intent requests = new Intent(PassengerTrips.this,PassengerCreateRequests.class);
+                startActivity(requests);
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

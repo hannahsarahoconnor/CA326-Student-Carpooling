@@ -158,6 +158,14 @@ public class TripRequests extends AppCompatActivity {
                    textView1.setVisibility(View.VISIBLE);
                    textView2.setVisibility(View.VISIBLE);
                    findRequest.setVisibility(View.VISIBLE);
+
+                    findRequest.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(TripRequests.this,DriverFindRequests.class);
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
 
@@ -174,6 +182,14 @@ public class TripRequests extends AppCompatActivity {
           textView1.setVisibility(View.VISIBLE);
           textView2.setVisibility(View.VISIBLE);
           findRequest.setVisibility(View.VISIBLE);
+
+          findRequest.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  Intent intent = new Intent(TripRequests.this,DriverFindRequests.class);
+                  startActivity(intent);
+              }
+          });
 
       }
       }

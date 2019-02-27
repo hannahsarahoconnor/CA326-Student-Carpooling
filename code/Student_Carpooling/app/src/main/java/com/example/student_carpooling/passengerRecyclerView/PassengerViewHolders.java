@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.example.student_carpooling.R;
 
 public class PassengerViewHolders  extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public ImageView ProfilePic,ProfileIcon,MessageIcon;
+    public ImageView ProfilePic,ProfileIcon,MessageIcon,LocationIcon,DeleteIcon;
     public TextView UserName;
 
     public PassengerViewHolders(@NonNull View itemView) {
@@ -20,7 +20,8 @@ public class PassengerViewHolders  extends RecyclerView.ViewHolder implements Vi
 
         ProfileIcon = (ImageView) itemView.findViewById(R.id.profile);
         MessageIcon =  (ImageView) itemView.findViewById(R.id.message);
-
+        LocationIcon =  (ImageView) itemView.findViewById(R.id.location);
+        DeleteIcon =  (ImageView) itemView.findViewById(R.id.delete);
     }
 
 

@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
 import com.example.student_carpooling.R;
+import com.example.student_carpooling.UserLocation;
+import com.example.student_carpooling.UserProfile;
 import com.example.student_carpooling.usersRecyclerView.User;
 import com.example.student_carpooling.usersRecyclerView.UserViewHolders;
 
@@ -49,6 +51,9 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
         final String Username = list.get(i).getUserName();
         final String ProfilePicUrl = list.get(i).getProfilePicUrl();
         final String ID = list.get(i).getID();
+        final float lat = list.get(i).getLat();
+        final float lon = list.get(i).getLon();
+        final String _notificationKey = list.get(i).getNotificationKey();
 
         //userViewHolders.FullName.setText(Fullname);
 
@@ -72,9 +77,27 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
         passengerViewHolders.ProfileIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // Intent intent = new Intent(context, UserProfile.class);
-                //intent.putExtra("ID", ID);
-               // context.startActivity(intent);
+               Intent intent = new Intent(context, UserProfile.class);
+               intent.putExtra("ID", ID);
+               context.startActivity(intent);
+            }
+        });
+
+
+        passengerViewHolders.LocationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(context, "retrieving locations and forming route...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, UserLocation.class);
+                intent.putExtra("Username", Username);
+                intent.putExtra("ID", ID);
+                intent.putExtra("ProfilePicURL", ProfilePicUrl);
+                intent.putExtra("Lat", lat);
+                intent.putExtra("Lon", lon);
+                intent.putExtra("NotificationKey",_notificationKey);
+                context.startActivity(intent);
+
             }
         });
     }

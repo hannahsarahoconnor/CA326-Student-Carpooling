@@ -21,6 +21,10 @@
     <item android:title="Manage Trips">
         <menu>
             <item
+                android:id="@+id/nav_find_trips_requests"
+                android:icon="@drawable/ic_find"
+                android:title="Find Requests" />
+            <item
                 android:id="@+id/nav_create_trips"
                 android:icon="@drawable/ic_create_trip"
                 android:title="Create Trips" />

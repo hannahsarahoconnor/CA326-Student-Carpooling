@@ -5,11 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabItem;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,8 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.student_carpooling.tripRecyclerView.Trip;
-import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,41 +31,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-public class DriverTrips extends AppCompatActivity
+public class PassengerCreateRequests extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView NUsername, Nemail;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time;
-    private FirebaseAuth mAuth;
-    private DatabaseReference UserDb, reference;
-
+    DrawerLayout drawer;
     NavigationView navigationView;
-    private ImageView navProfile;;
+    Toolbar toolbar=null;
 
-    private TabLayout tabLayout;
-    private ViewPager tabSwitch;
-    private TabAdapter tabAdapter;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth mAuth;
+
+    private ImageView navProfile;
+    private TextView NUsername, Nemail;
+    private String email,UserID;
+    private DatabaseReference UserDb;
+    private String ProfilePicUrl;
 
     FirebaseUser CurrentUser;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_driver_trips);
+        setContentView(R.layout.activity_passenger_create_requests);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -78,46 +65,22 @@ public class DriverTrips extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         View hView =  navigationView.getHeaderView(0);
-        NUsername = hView.findViewById(R.id.UsernameNav);
-        Nemail = hView.findViewById(R.id.EmailNav);
-        navProfile = hView.findViewById(R.id.imageView);
+        NUsername = hView.findViewById(R.id.usernameNav);
+        Nemail = hView.findViewById(R.id.emailNav);
+        navProfile = hView.findViewById(R.id.ImageView);
 
         setupFirebaseListener();
 
-        tabLayout = findViewById(R.id.TabLayout);
-        tabSwitch = findViewById(R.id.Switch);
-        tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-
-        tabAdapter.addFragment(new PastTripFragment(),"Past");
-        tabAdapter.addFragment(new presentTripsFragment(),"Today");
-        tabAdapter.addFragment(new FutureTripFragment(),"Future");
-
-        tabSwitch.setAdapter(tabAdapter);
-        tabLayout.setupWithViewPager(tabSwitch);
-
-
-
-
-        //tabSwitch.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-
-        //example of what will be put inside resultTrips..
-       // Trip object = new Trip()
-
-        //add
-        //notify change
-
-
-
+        mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        UserID = mAuth.getCurrentUser().getUid();
+        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+        getUserDB();
     }
-    //get the unique keys of the trips under the user id
-
-
 
     @Override
     public void onBackPressed() {
@@ -132,7 +95,7 @@ public class DriverTrips extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.driver_main, menu);
+        getMenuInflater().inflate(R.menu.passenger, menu);
         return true;
     }
 
@@ -144,7 +107,7 @@ public class DriverTrips extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTrips.this);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(PassengerCreateRequests.this);
                 dialog.setTitle("Are you sure you want to delete your account?");
                 dialog.setMessage("By Doing this.....");
                 dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -155,13 +118,13 @@ public class DriverTrips extends AppCompatActivity
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
                                     //is deleted
-                                    Toast.makeText(DriverTrips.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(PassengerCreateRequests.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
                                     UserDb.removeValue();
-                                    Intent intent = new Intent(DriverTrips.this,MainActivity.class);
+                                    Intent intent = new Intent(PassengerCreateRequests.this,MainActivity.class);
                                     startActivity(intent);
                                 }
                                 else{
-                                    Toast.makeText(DriverTrips.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(PassengerCreateRequests.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -181,6 +144,7 @@ public class DriverTrips extends AppCompatActivity
                 break;
         }
 
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -190,44 +154,40 @@ public class DriverTrips extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id) {
-            case R.id.nav_message:
-                Intent msg = new Intent(DriverTrips.this, DriverMessage.class);
+        switch (id){
+            case R.id.pass_message:
+                Intent msg = new Intent(PassengerCreateRequests.this, PassengerMessage.class);
                 startActivity(msg);
                 break;
 
-            case R.id.nav_profile:
-                Intent profile = new Intent(DriverTrips.this, DriverProfile.class);
-                startActivity(profile);
+            case R.id.pass_profile:
+                Intent profile = new Intent(PassengerCreateRequests.this, PassengerProfile.class);
+                startActivity(profile );
                 break;
 
-            case R.id.nav_sign_out:
+            case R.id.pass_sign_out:
                 FirebaseAuth.getInstance().signOut();
 
-            case R.id.nav_create_trips:
-                Intent create = new Intent(DriverTrips.this, DriverCreate.class);
+            case R.id.pass_find_trips:
+                Intent create = new Intent(PassengerCreateRequests.this,FindTrips.class);
                 startActivity(create);
                 break;
 
-            case R.id.nav_my_trips:
-                Intent trips = new Intent(DriverTrips.this, DriverTrips.class);
+            case R.id.pass_trips:
+                Intent trips = new Intent(PassengerCreateRequests.this,PassengerTrips.class);
                 startActivity(trips);
                 break;
 
-            case R.id.nav_find_trips_requests:
-                Intent requests = new Intent(DriverTrips.this, DriverFindRequests.class);
+            case R.id.create_request:
+                Intent requests = new Intent(PassengerCreateRequests.this,PassengerCreateRequests.class);
                 startActivity(requests);
                 break;
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
 
 
     private void getUserDB(){
@@ -244,9 +204,10 @@ public class DriverTrips extends AppCompatActivity
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
+
                         if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                        }}
 
 
                 }
@@ -258,17 +219,19 @@ public class DriverTrips extends AppCompatActivity
             }
         });
     }
-    private void setupFirebaseListener() {
+
+    private void setupFirebaseListener(){
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                if(user != null){
                     String email = user.getEmail();
                     Nemail.setText(email);
-                } else {
-                    Toast.makeText(DriverTrips.this, "Sign Out", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(DriverTrips.this, MainActivity.class);
+                }
+                else{
+                    Toast.makeText(PassengerCreateRequests.this, "Sign Out", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(PassengerCreateRequests.this, MainActivity.class);
                     startActivity(intent);
                 }
             }
@@ -284,9 +247,17 @@ public class DriverTrips extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthStateListener != null) {
+        if(mAuthStateListener != null){
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
-
     }
+
+
+
+
+
+
+
+
+
 }

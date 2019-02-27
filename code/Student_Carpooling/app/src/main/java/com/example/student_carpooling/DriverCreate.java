@@ -131,7 +131,6 @@ public class DriverCreate extends AppCompatActivity
         toggle.syncState();
 
 
-
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View hView =  navigationView.getHeaderView(0);
@@ -505,6 +504,11 @@ public class DriverCreate extends AppCompatActivity
                 Intent trips = new Intent(DriverCreate.this, DriverTrips.class);
                 startActivity(trips);
                 break;
+
+            case R.id.nav_find_trips_requests:
+                Intent requests = new Intent(DriverCreate.this, DriverFindRequests.class);
+                startActivity(requests);
+                break;
         }
 
 
@@ -524,12 +528,13 @@ public class DriverCreate extends AppCompatActivity
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
+                        String DBUsername = map.get("Username").toString();
                         NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                        if(!ProfilePicUrl.equals("defaultPic")) {
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);};
                     }
 
 
@@ -542,6 +547,7 @@ public class DriverCreate extends AppCompatActivity
             }
         });
     }
+
     private void setupFirebaseListener() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override

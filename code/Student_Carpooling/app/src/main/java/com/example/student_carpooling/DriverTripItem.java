@@ -52,8 +52,9 @@ public class DriverTripItem extends AppCompatActivity {
     private TextView textView;
     private String email,UserID;
     private DatabaseReference UserDb;
-    private String TripID, UserName, profilePicurl;
+    private String TripID, UserName, profilePicurl, NotificationKey;
 
+    private float Lat,Lon;
     FirebaseUser CurrentUser;
     TextView starting, destination, time ,date, seats, luggage;
 
@@ -199,6 +200,7 @@ public class DriverTripItem extends AppCompatActivity {
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot id : dataSnapshot.getChildren()) {
                             final String passengerKey = id.getKey();
+
                             DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("users").child(passengerKey);
                             PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -214,14 +216,20 @@ public class DriverTripItem extends AppCompatActivity {
                                         }
                                         if (map.get("Username") != null) {
                                             UserName = map.get("Username").toString();
+                                            Toast.makeText(DriverTripItem.this, ""+UserName, Toast.LENGTH_SHORT).show();
+
+                                        }
+                                        if (map.get("NotificationKey") != null) {
+                                            NotificationKey = map.get("NotificationKey").toString();
 
                                         }
 
-                                        Passenger object = new Passenger(passengerKey, profilePicurl, UserName);
+
+                                        PassengerTripDB(passengerKey,UserID, TripID);
+
+                                        Passenger object = new Passenger(passengerKey, profilePicurl, UserName,Lat,Lon,NotificationKey);
                                         resultsPassengers.add(object);
                                         passengerAdapter.notifyDataSetChanged();
-
-
                                     }
                                 }
 
@@ -252,6 +260,37 @@ public class DriverTripItem extends AppCompatActivity {
             textView.setVisibility(View.VISIBLE);
         }
 
+
+    }
+
+    private void PassengerTripDB(final String PassID, String DriverID, String TripID){
+
+        DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("Passengers").child(PassID);
+        PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    //get the info and create a new user object
+                    //required -> Id, profilepicurl, username
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Lat") != null) {
+                        Lat = Float.valueOf(map.get("Lat").toString());
+
+                    }
+                    if (map.get("Lon") != null) {
+                        Lon = Float.valueOf(map.get("Lon").toString());
+
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

@@ -125,7 +125,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                 intent.putExtra("ID", _id);
                 context.startActivity(intent);
 
-
             }
         });
 
