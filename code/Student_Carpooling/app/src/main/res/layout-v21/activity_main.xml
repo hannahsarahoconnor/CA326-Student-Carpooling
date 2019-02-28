@@ -53,5 +53,18 @@
         android:text="@string/Login"
         android:background="#b1f7fc"
         android:textAllCaps="false"/>
+    <ProgressBar
+        android:id="@+id/indeterminateBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+
+
+
+
 
 </LinearLayout>

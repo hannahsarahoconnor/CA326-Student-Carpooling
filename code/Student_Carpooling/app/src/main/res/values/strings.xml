@@ -7,6 +7,7 @@
     <string name="Password">Password</string>
     <string name="Description">Image of our App Logo</string>
     <string name="Name">Name</string>
+    <string name="LoginPopUp">LoginPopUp</string>
     <string name="Username">Username</string>
     <string name="Surname">Surname</string>
     <string name="create_trip">Trip</string>
