@@ -26,6 +26,7 @@
     <string name="Retype">Retype Password</string>
     <string name="Driver">Driver</string>
     <string name="Rider">Rider</string>
+    <string name="Passenger">Passenger</string>
     <string-array name="CollegeDomains">
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>

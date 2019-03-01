@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@drawable/app_start"
     tools:openDrawer="start">
 
     <LinearLayout
@@ -16,13 +17,17 @@
 
         <TextView
             android:id="@+id/Type"
-            android:layout_width="200dp"
+            android:layout_width="wrap_content"
             android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
             android:layout_height="wrap_content"
-            android:text="Passenger"
-            android:layout_marginTop="50dp"
+            android:text="@string/Passenger"
+            android:layout_marginTop="80dp"
             android:layout_gravity="center"
+            android:background="@color/gradCentre"
             />
+
+
 
         <de.hdodenhof.circleimageview.CircleImageView
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -33,7 +38,7 @@
             android:layout_marginTop="50dp"
             android:layout_gravity="center"
             app:civ_border_width="2dp"
-            app:civ_border_color="#FF000000"
+            app:civ_border_color="@color/colorPrimary"
             />
 
         <Button
@@ -45,6 +50,8 @@
             android:id="@+id/ConfirmPic"
             />
 
+
+
         <TextView
             android:id="@+id/Username"
             android:layout_width="200dp"
@@ -53,6 +60,7 @@
             android:text="@string/Username"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:textColor="@color/colorPrimary"
             />
 
 
@@ -64,6 +72,7 @@
             android:text="@string/Name"
             android:layout_marginTop="20dp"
             android:layout_gravity="center"
+            android:textColor="@color/colorPrimary"
             />
 
         <TextView
@@ -80,8 +89,8 @@
             android:numStars="5"
             android:layout_width="240dp"
             android:layout_gravity="center"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"/>
 
         <!-- Rating bar will go here -->
 
