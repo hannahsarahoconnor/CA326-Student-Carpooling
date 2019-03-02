@@ -7,6 +7,8 @@
     <string name="Password">Password</string>
     <string name="Description">Image of our App Logo</string>
     <string name="Name">Name</string>
+    <string name="barmsg">Logging in...</string>
+    <string name="LoginPopUp">LoginPopUp</string>
     <string name="Username">Username</string>
     <string name="Surname">Surname</string>
     <string name="create_trip">Trip</string>
@@ -24,6 +26,7 @@
     <string name="Retype">Retype Password</string>
     <string name="Driver">Driver</string>
     <string name="Rider">Rider</string>
+    <string name="Passenger">Passenger</string>
     <string-array name="CollegeDomains">
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>

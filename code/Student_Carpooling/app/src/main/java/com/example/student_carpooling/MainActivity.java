@@ -1,6 +1,7 @@
 package com.example.student_carpooling;
 
 import android.app.Dialog;
+import android.app.MediaRouteButton;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         Button SignIn;
         Button Registration;
 
+
         LoginDialog = new Dialog(this);
         SignIn = findViewById(R.id.Login);
         Registration = findViewById(R.id.Register);
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 LoginPopUp();
                 //LoginDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 LoginDialog.show();
+
             }
         });
 
@@ -149,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
                 final String email = Email.getText().toString().trim();
                 final String password = Password.getText().toString().trim();
                 final String type = radioButton.getText().toString();
+                final ProgressBar bar;
+
+
 
                 if (email.equals("") && password.equals("")) {
                     Toast.makeText(MainActivity.this, "Please Enter your Email and Password", Toast.LENGTH_SHORT).show();
@@ -160,15 +168,20 @@ public class MainActivity extends AppCompatActivity {
 
 
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+                            final ProgressBar bar;
+                            bar = findViewById(R.id.indeterminateBar);
                             if (task.isSuccessful()) {
                                 LoginDialog.dismiss();
                                 checkEmailVerfication(mAuth, type);
+                                bar.setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(MainActivity.this, "Wrong Email or Password, Try again", Toast.LENGTH_SHORT).show();
                                 Email.setText("");
                                 Password.setText("");
+                                bar.setVisibility(View.INVISIBLE);
                             }
                         }
                     });
