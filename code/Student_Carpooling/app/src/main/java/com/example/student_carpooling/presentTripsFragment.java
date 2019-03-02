@@ -27,8 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -46,12 +48,13 @@ public class presentTripsFragment extends Fragment  {
     private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time,UserName,TripID;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
-    Date TripDate,date;
-    String datetrip;
+    Date tripdate;
     LinearLayout linearLayout;
     private int counter=0;
     TextView textView1, textView2;
     Button createRequest;
+
+    float DstLon, DstLat;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,6 +62,7 @@ public class presentTripsFragment extends Fragment  {
         tripRecyclerView = v.findViewById(R.id.trippresentRecycler);
         tripRecyclerView.setNestedScrollingEnabled(false); //not true?
         tripRecyclerView.setHasFixedSize(true);
+        resultsTrips.clear();
         PresentTripAdapter = new TripAdapter(getDataTrips(),getActivity());
         tripLayoutManager = new LinearLayoutManager(getActivity());
         tripRecyclerView.setLayoutManager(tripLayoutManager);
@@ -122,15 +126,6 @@ public class presentTripsFragment extends Fragment  {
                     //check that none of them are null
                     if(map.get("Date")!=null){
                         Date = map.get("Date").toString();
-                        StringTokenizer tokens = new StringTokenizer(Date, "/");
-                        Integer day = Integer.parseInt(tokens.nextToken());
-                        Integer month = Integer.parseInt(tokens.nextToken());
-                        Integer year = Integer.parseInt(tokens.nextToken());
-
-
-                        TripDate = new Date(year-1900,month-1,day);
-                        String pattern = "dd-MM-YYYY";
-                        datetrip =new SimpleDateFormat("dd-MM-yy",Locale.ENGLISH).format(TripDate);
 
                     }
                     if(map.get("Time")!=null){
@@ -153,30 +148,43 @@ public class presentTripsFragment extends Fragment  {
                     if(map.get("Username")!=null){
                         UserName = map.get("Username").toString();}
 
-                        //do the same with profile image
+                    if(map.get("DstLon")!=null){
+                        DstLon = Float.parseFloat(map.get("DstLon").toString());}
 
-                    Integer CurrentDay;
-                    Integer CurrentMonth;
-                    Integer CurrentYear;
-                    Integer CurrentHour;
-                    Integer CurrentMins;
-
-                    // split the Trips Date and compare against current
+                    if(map.get("DstLat")!=null){
+                        DstLat = Float.parseFloat(map.get("DstLat").toString());}
 
 
+                    //do the same with profile image
 
-                    String pattern = "dd-MM-yy";
-                    date = new Date();
-                    String date_n =new SimpleDateFormat(pattern).format(date);
-                    //17-02-2019
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                    try {
 
+                        String dateStr = Date + " " + Time;
+                        Date Datee = format.parse(dateStr);
+                        long mili = Datee.getTime();
+                        tripdate = new Date(mili);
+                        //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
+                    Date rightNow = Calendar.getInstance().getTime();
 
-                    if(date_n.equals(datetrip)) {
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(tripdate);
+                    cal2.setTime(rightNow);
+                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                    if(sameDay && tripdate.after(rightNow)){
                         TripID = ID;
 
+                        //
+
                         // this means its a past date...
-                        Trip object = new Trip(TripID, UserID,Date, Time, Seats, LuggageCheck, Starting, Destination);
+                        Trip object = new Trip(DstLat,DstLon,UserName, TripID, UserID,Date, Time, Seats, LuggageCheck, Starting, Destination);
                         resultsTrips.add(object);
                         PresentTripAdapter.notifyDataSetChanged();
                         counter++;

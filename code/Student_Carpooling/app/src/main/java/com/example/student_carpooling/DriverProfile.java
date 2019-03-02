@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,8 @@ public class DriverProfile extends AppCompatActivity
     private DatabaseReference UserDb;
     private String DBName, DBUsername, DBUni,UserID;
     private TextView NUsername, Nemail;
+
+    private RatingBar ratingBar;
 
     private Uri ResultUri;
     private String ProfilePicUrl;

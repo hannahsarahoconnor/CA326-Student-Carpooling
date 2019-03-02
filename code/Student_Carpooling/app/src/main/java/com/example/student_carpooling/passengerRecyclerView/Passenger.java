@@ -10,19 +10,69 @@ public class Passenger {
     private float lat;
     private float lon;
     private String Fullname;
+    private float DLat;
+    private float DLon;
+    private String TripID;
+    private String DriverUN;
+    private String Type;
 
 
-    public Passenger(String Fullname,String ID, String profilePicUrl, String UserName, float lat, float lon, String NotificationKey){
+    public Passenger(String Type, String DriverUN,String TripID, float DLat, float DLon, String Fullname,String ID, String profilePicUrl, String UserName, float lat, float lon, String NotificationKey){
         this.profilePicUrl = profilePicUrl;
+        this.TripID = TripID;
         this.Fullname = Fullname;
         this.UserName = UserName;
         this.ID = ID;
+        this.DriverUN = DriverUN;
         this.NotificationKey = NotificationKey;
         this.lat = lat;
         this.lon = lon;
+        this.DLat = DLat;
+        this.DLon = DLon;
+        this.Type = Type;
 
     }
     public Passenger(){
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public void setType(String type) {
+        Type = type;
+    }
+
+    public String getDriverUN() {
+        return DriverUN;
+    }
+
+    public void setDriverUN(String driverUN) {
+        DriverUN = driverUN;
+    }
+
+    public String getTripID() {
+        return TripID;
+    }
+
+    public void setTripID(String tripID) {
+        TripID = tripID;
+    }
+
+    public float getDLat() {
+        return DLat;
+    }
+
+    public float getDLon() {
+        return DLon;
+    }
+
+    public void setDLat(float DLat) {
+        this.DLat = DLat;
+    }
+
+    public void setDLon(float DLon) {
+        this.DLon = DLon;
     }
 
     public void setFullname(String fullname) {

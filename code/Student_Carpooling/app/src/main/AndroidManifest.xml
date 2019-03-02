@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.student_carpooling">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
@@ -20,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-
+        <activity android:name=".PassengerTripItem"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -34,8 +33,19 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".PassengerMap"
+            android:label="@string/title_activity_passenger_map" />
+
+        <meta-data
+            android:name="com.onesignal.BadgeCount"
+            android:value="ENABLE" />
+
+        <activity
+            android:name=".StartTrip"
+            android:label="@string/title_activity_start_trip" />
+        <activity
             android:name=".PassengerLocation"
-            android:label="@string/title_activity_passenger_location"></activity>
+            android:label="@string/title_activity_passenger_location" />
         <activity
             android:name=".DriverFindRequests"
             android:label="@string/title_activity_driver_find_requests"
@@ -45,9 +55,6 @@
             android:label="@string/title_activity_passenger_create_requests"
             android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".UserProfile" />
-        <activity
-            android:name=".UserLocation"
-            android:label="@string/title_activity_user_location" />
         <activity android:name=".TripRequests" />
         <activity
             android:name=".RequestMapActivity"

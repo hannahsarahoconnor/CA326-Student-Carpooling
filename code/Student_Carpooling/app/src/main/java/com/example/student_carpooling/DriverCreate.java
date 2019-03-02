@@ -6,6 +6,8 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -67,11 +69,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
 import java.util.HashMap;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -104,6 +109,7 @@ public class DriverCreate extends AppCompatActivity
     private boolean result = false;
     FirebaseUser CurrentUser;
 
+    private LatLng latLng;
 
 
 
@@ -162,19 +168,15 @@ public class DriverCreate extends AppCompatActivity
 
         autocompleteFragment.setCountry("IE");
         autocompleteFragmentDST.setCountry("IE");
-        autocompleteFragmentDST.setTypeFilter(TypeFilter.ESTABLISHMENT);
-        autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
-        autocompleteFragmentDST.setTypeFilter(TypeFilter.REGIONS);
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 //LatLng string_location = place.getLatLng();
-                double lat = (place.getLatLng()).latitude;
-                double lng = (place.getLatLng()).longitude;
                 String address = (String) place.getAddress();
                 destination = (String) place.getName();
-                Toast.makeText(DriverCreate.this,""+lat, Toast.LENGTH_SHORT).show();
+                geoLocate();
+
             }
 
             @Override
@@ -193,7 +195,7 @@ public class DriverCreate extends AppCompatActivity
                 //LatLng string_location = place.getLatLng();
                 //String address = (String) place.getAddress();
                 starting = (String) place.getName();
-                Toast.makeText(DriverCreate.this,""+starting,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(DriverCreate.this,""+starting,Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -313,11 +315,15 @@ public class DriverCreate extends AppCompatActivity
                         TripInfo.put("Username", DBUsername);
                         TripInfo.put("Starting", starting);
                         TripInfo.put("Destination",destination);
+                        TripInfo.put("DstLat", latLng.latitude);
+                        TripInfo.put("DstLon", latLng.longitude);
                         TripInfo.put("Date", startingDate);
                         TripInfo.put("Seats", numberSeats);
                         TripInfo.put("Time", startingTime);
                         TripInfo.put("Luggage", luggageCheck);
                         TripInfo.put("Note", Tripnote);
+                        TripInfo.put("Started", 0);
+                        TripInfo.put("Completed", 0);
 
                         ref.push().setValue(TripInfo);
                         Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
@@ -399,16 +405,28 @@ public class DriverCreate extends AppCompatActivity
 
     }
 
+    private void geoLocate(){
+    Geocoder geocoder = new Geocoder(DriverCreate.this);
+        Toast.makeText(this, ""+destination, Toast.LENGTH_SHORT).show();
 
+    List<Address> list = new ArrayList<>();
+        try {
+        list = geocoder.getFromLocationName(destination, 1);
 
+    } catch (
+    IOException e) {
+        Log.e(TAG, "IOException:" + e.getMessage());
+    }
+        if (list.size() > 0) {
+        Address address = list.get(0);
+        //Toast.makeText(RequestMapActivity.this, "" + address.toString(), Toast.LENGTH_LONG).show();
+        //moveCamera(new LatLng(address.getLatitude(),address.getLongitude(),address.getAddressLine(0));
+        // Toast.makeText(RequestMapActivity.this, "" + address.getAddressLine(0), Toast.LENGTH_LONG).show();
 
+        latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            //Toast.makeText(this, ""+address.getLatitude(), Toast.LENGTH_SHORT).show();
 
-
-
-
-
-
-
+        }}
 
     @Override
     public void onBackPressed() {
@@ -528,7 +546,7 @@ public class DriverCreate extends AppCompatActivity
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
+                        DBUsername = map.get("Username").toString();
                         NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){

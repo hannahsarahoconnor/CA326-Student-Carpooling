@@ -60,6 +60,9 @@ public class TripAdapter extends RecyclerView.Adapter<TripViewHolders>{
                 intent.putExtra("Date", list.get(i).getDate());
                 intent.putExtra("Seats", list.get(i).getSeats());
                 intent.putExtra("Luggage", list.get(i).getLuggageCheck());
+                intent.putExtra("Username", list.get(i).getUserName());
+                intent.putExtra("DstLat",list.get(i).getDstLat());
+                intent.putExtra("DstLon", list.get(i).getDstLon());
                 context.startActivity(intent);
             }
         });

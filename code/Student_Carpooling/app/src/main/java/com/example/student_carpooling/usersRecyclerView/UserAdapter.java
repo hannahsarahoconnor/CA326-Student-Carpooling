@@ -22,8 +22,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static android.os.Build.ID;
 
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
@@ -32,6 +33,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
 
     String LastMessage;
+
+    FirebaseUser firebaseUser;
 
 
     public UserAdapter(List<User> list, Context context) {
@@ -52,6 +55,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         UserViewHolders uvh = new UserViewHolders(layoutView);
         return uvh;
     }
+
+    public void swipePos(int position){
+        //delete from database
+        DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(firebaseUser.getUid()).child(ID);
+        RequestsDB.removeValue();
+        list.remove(position);
+        notifyDataSetChanged();
+    }
+
+
+
+
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolders userViewHolders, int i) {
@@ -82,12 +97,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
             }
         });
+
     }
 
     @Override
     public int getItemCount() {
         return this.list.size();
     }
+
 
     private void getRecentMessage(final String userID, final TextView msg, final String username) {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -121,5 +138,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         });
 
     }
+
 
 }

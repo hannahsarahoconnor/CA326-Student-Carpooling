@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.example.student_carpooling.tripRecyclerView.TripViewHolders;
+import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,8 +29,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -47,12 +52,14 @@ public class FutureTripFragment extends Fragment  {
     private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
-    Date TripDate,CurrentDate;
+    Date tripdate;
     LinearLayout linearLayout;
     NavigationView navigationView;
     private int counter=0;
     TextView textView1, textView2;
     Button createRequest;
+
+    float DstLon, DstLat;
 
 
 
@@ -62,6 +69,7 @@ public class FutureTripFragment extends Fragment  {
         tripRecyclerView = v.findViewById(R.id.tripFutureRecycler);
         tripRecyclerView.setNestedScrollingEnabled(false); //not true?
         tripRecyclerView.setHasFixedSize(true);
+        resultsTrips.clear();
         tripAdapter = new TripAdapter(getDataTrips(),getActivity());
         tripLayoutManager = new LinearLayoutManager(getActivity());
         tripRecyclerView.setLayoutManager(tripLayoutManager);
@@ -85,6 +93,7 @@ public class FutureTripFragment extends Fragment  {
         getTripIds();
 
 
+        //Collections.sort(resultsTrips);
 
 
         return v;
@@ -130,12 +139,8 @@ public class FutureTripFragment extends Fragment  {
                         if(map.get("Date")!=null){
                             Date = map.get("Date").toString();
                             StringTokenizer tokens = new StringTokenizer(Date, "/");
-                            Integer day = Integer.parseInt(tokens.nextToken());
-                            Integer month = Integer.parseInt(tokens.nextToken());
-                            Integer year = Integer.parseInt(tokens.nextToken());
-                            //year month date
-                            TripDate = new Date(year-1900,month-1,day);
-                            String date_n =new SimpleDateFormat("dd-MM-yy", Locale.ENGLISH).format(TripDate);
+
+
 
                         }
                         if(map.get("Time")!=null){
@@ -160,15 +165,39 @@ public class FutureTripFragment extends Fragment  {
                             UserName = map.get("Username").toString();}
 
 
+                        if(map.get("DstLon")!=null){
+                            DstLon = Float.parseFloat(map.get("DstLon").toString());}
+
+                        if(map.get("DstLat")!=null){
+                            DstLat = Float.parseFloat(map.get("DstLat").toString());}
 
 
-                        String pattern = "dd-MM-yy";
-                        Date date = new Date();
-                        String date_n =new SimpleDateFormat(pattern).format(date);
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
 
-                        if(TripDate.after(date)){
+                            String dateStr = Date + " " + Time;
+                            Date Datee = format.parse(dateStr);
+                            long mili = Datee.getTime();
+                            tripdate = new Date(mili);
+                            //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                        Date rightNow = Calendar.getInstance().getTime();
+
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        cal1.setTime(tripdate);
+                        cal2.setTime(rightNow);
+                        boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                        if(tripdate.after(rightNow)&&!sameDay){
                             // this means its a past date...
-                            Trip object = new Trip(ID, UserID,Date,Time,Seats,LuggageCheck,Starting,Destination);
+                            Trip object = new Trip(DstLat,DstLon,UserName,ID, UserID,Date,Time,Seats,LuggageCheck,Starting,Destination);
                             resultsTrips.add(object);
                             tripAdapter.notifyDataSetChanged();
 
@@ -208,7 +237,6 @@ public class FutureTripFragment extends Fragment  {
         private ArrayList<Trip> getDataTrips() {
 
             return resultsTrips;
-
         }
 
     @Override

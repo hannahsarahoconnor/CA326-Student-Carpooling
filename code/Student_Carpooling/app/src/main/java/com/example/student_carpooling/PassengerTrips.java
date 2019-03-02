@@ -4,9 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -21,6 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.student_carpooling.findTripsRecyclerView.FindTrip;
+import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
+import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTrip;
+import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTripAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +38,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class PassengerTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -49,7 +64,14 @@ public class PassengerTrips extends AppCompatActivity
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
 
+    String Time,Date,DriverId, TripId,Starting,Destination,DriverUsername,profileImageUrl, Name,Surname,Fullname,NotificationKey;
+
+    float lat, lon, DstLat,DstLon;
     FirebaseUser CurrentUser;
+
+    private RecyclerView tripRecyclerView;
+    private RecyclerView.Adapter tripAdapter;
+    private RecyclerView.LayoutManager tripLayoutManager;
 
 
     @Override
@@ -81,6 +103,170 @@ public class PassengerTrips extends AppCompatActivity
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
+
+        tripRecyclerView = findViewById(R.id.TripsRecycler);
+        tripRecyclerView.setNestedScrollingEnabled(true); //not true?
+        tripRecyclerView.setHasFixedSize(true);
+        tripAdapter = new PassengerTripAdapter(getDataTrips(),PassengerTrips.this);
+        tripLayoutManager = new LinearLayoutManager(PassengerTrips.this);
+        tripRecyclerView.setLayoutManager(tripLayoutManager);
+        tripRecyclerView.setAdapter(tripAdapter);
+
+
+        getDrivers();
+
+    }
+    //when driver accepts a passenger add a child to their info -> Trips > driver id > trip id
+    private ArrayList trips = new ArrayList<PassengerTrip>();
+    private ArrayList<PassengerTrip> getDataTrips() {
+        return trips;
+    }
+
+
+    private void getDrivers(){
+        DatabaseReference Driverids = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips");
+        Driverids.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        DriverId = snapshot.getKey();
+                        getTrips(DriverId);
+                        getDriverInfo(DriverId);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getDriverInfo(String ID){
+        DatabaseReference DriverPic = FirebaseDatabase.getInstance().getReference().child("users").child(ID);
+        DriverPic.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("profileImageUrl")!=null){
+                        profileImageUrl = map.get("profileImageUrl").toString();
+                    }
+                    if(map.get("Name")!=null){
+                        Name = map.get("Name").toString();
+                    }
+                    if(map.get("Surname")!=null){
+                        Surname = map.get("Surname").toString();
+                    }
+
+                    Fullname = Name + " " + Surname;
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getTrips(final String DriverKey){
+        DatabaseReference Tripids = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips").child(DriverKey);
+        Tripids.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    TripId = snapshot.getKey();
+                    getTripInfo(DriverKey,TripId);
+                    getCoordinates(DriverKey,TripId);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getCoordinates(String Driver, String Trip){
+        DatabaseReference Coord = FirebaseDatabase.getInstance().getReference().child("TripForms").child(Driver).child(Trip).child("Passengers").child(CurrentUser.getUid());
+        Coord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("lat")!=null){
+                        lat = Float.parseFloat(map.get("lat").toString());
+
+                    }
+                    if(map.get("lon")!=null){
+                        lon = Float.parseFloat(map.get("lon").toString());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void getTripInfo(String DriverKey, String TripKey){
+        DatabaseReference TripInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverKey).child(TripKey);
+        TripInfo.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                    if (map.get("Time") != null) {
+                        Time = map.get("Time").toString();
+                    }
+
+                    //check that none of them are null
+                    if (map.get("Date") != null) {
+                        Date = map.get("Date").toString();
+
+                    if (map.get("Starting") != null) {
+                        Starting = map.get("Starting").toString();
+                    }
+
+                    if (map.get("Destination") != null) {
+                        Destination = map.get("Destination").toString();
+                    }
+
+                   if (map.get("Username") != null) {
+                       DriverUsername = map.get("Username").toString();
+                    }
+
+                  if (map.get("DstLat") != null) {
+                      DstLat = Float.parseFloat(map.get("DstLat").toString());
+                   }
+
+                if(map.get("DstLon") != null) {
+                    DstLon = Float.parseFloat(map.get("DstLon").toString());
+                    }
+
+                    PassengerTrip object = new PassengerTrip(NotificationKey,Fullname,profileImageUrl,DriverUsername,TripId, DriverId, lat,lon,DstLat,DstLon,Starting, Destination,Time,Date);
+                    trips.add(object);
+                    tripAdapter.notifyDataSetChanged();
+
+                            }}
+
+    }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -206,7 +392,13 @@ public class PassengerTrips extends AppCompatActivity
 
                         if(!ProfilePicUrl.equals("defaultPic")) {
                             Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
-                        }}
+                        }
+                    }
+
+                    if(map.get("NotificationKey")!=null){
+                        NotificationKey= map.get("NotificationKey").toString();
+
+                    }
 
 
                 }
@@ -249,5 +441,11 @@ public class PassengerTrips extends AppCompatActivity
         if(mAuthStateListener != null){
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        trips.clear();
     }
 }

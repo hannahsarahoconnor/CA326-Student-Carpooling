@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -69,7 +70,7 @@ public class DriverMessage extends AppCompatActivity
     private ImageView navProfile;
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter userAdapter;
+    private UserAdapter userAdapter;
 
     private String UserName, profilePicurl;
 
@@ -123,6 +124,29 @@ public class DriverMessage extends AppCompatActivity
         userAdapter = new UserAdapter(getDataUsers(), DriverMessage.this);
         userLayoutManager = new LinearLayoutManager(DriverMessage.this);
         recyclerView.setAdapter(userAdapter);
+
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                Toast.makeText(DriverMessage.this, "on Swiped ", Toast.LENGTH_SHORT).show();
+                //Remove swiped item from list and notify the RecyclerView
+                //final int position = viewHolder.getAdapterPosition();
+                //adapter.notifyItemRemoved(position);
+                // resultsUsers.remove(position);
+                //                userAdapter.notifyDataSetChanged();
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
 
 
         searchUsers = findViewById(R.id.searchBar);

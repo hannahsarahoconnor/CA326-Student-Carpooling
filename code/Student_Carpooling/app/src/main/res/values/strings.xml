@@ -28,12 +28,6 @@
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>
         <item>live.ie</item>
-        <item>nci.ie</item>
-        <item>ucc.ie</item>
-        <item>ucd.ie</item>
-        <item>ul.ie</item>
-        <item>nuigalway.ie</item>
-        <item>mumail.ie</item>
     </string-array>
     <string-array name="no_seats">
         <item>1</item>
@@ -71,5 +65,7 @@
     <string name="title_activity_passenger_create_requests">PassengerCreateRequests</string>
     <string name="title_activity_driver_find_requests">DriverFindRequests</string>
     <string name="title_activity_passenger_location">Map</string>
+    <string name="title_activity_start_trip">Map</string>
+    <string name="title_activity_passenger_map">Map</string>
 
 </resources>

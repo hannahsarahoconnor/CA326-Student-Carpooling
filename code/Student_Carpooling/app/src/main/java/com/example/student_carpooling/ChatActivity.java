@@ -1,12 +1,18 @@
 package com.example.student_carpooling;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -240,7 +246,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private void readMessage(final String CurrentId, final String OtherId){
+    private void readMessage(final String CurrentId, final String OtherId) {
         messageList = new ArrayList<>();
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -252,15 +258,15 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageList.clear();
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
-                    if(message.getRecipient().equals(CurrentId)&&message.getSender().equals(OtherId) ||
-                    message.getSender().equals(CurrentId) && message.getRecipient().equals(OtherId)){
+                    if (message.getRecipient().equals(CurrentId) && message.getSender().equals(OtherId) ||
+                            message.getSender().equals(CurrentId) && message.getRecipient().equals(OtherId)) {
                         messageList.add(message);
                         //notify adapter
                     }
 
-                    messageAdapter = new MessageAdapter(messageList,ChatActivity.this);
+                    messageAdapter = new MessageAdapter(messageList, ChatActivity.this);
                     messageRecyclerView.setAdapter(messageAdapter);
                 }
             }
@@ -270,7 +276,9 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+    }
 
 
 
-}}
+
+}

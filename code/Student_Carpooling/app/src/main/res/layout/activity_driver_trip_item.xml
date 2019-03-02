@@ -183,6 +183,7 @@
 
 
         <Button
+            android:visibility="visible"
             android:id="@+id/Requests"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -196,6 +197,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
         <Button
+            android:visibility="visible"
             android:id="@+id/Start"
             android:layout_marginTop="10dp"
             android:layout_width="210dp"
@@ -206,6 +208,7 @@
             android:layout_gravity="center"/>
 
         <Button
+            android:visibility="visible"
             android:id="@+id/Cancel"
             android:layout_marginTop="10dp"
             android:layout_width="210dp"

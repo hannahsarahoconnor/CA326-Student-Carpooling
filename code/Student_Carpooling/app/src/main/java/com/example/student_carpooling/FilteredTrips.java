@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,23 +59,26 @@ public class FilteredTrips extends AppCompatActivity {
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail, txt;
-    private String ProfilePicUrl, UserID, Date, Destination, Seats, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName, DriverProfilePicUrl, DeclineResult, PassengerResult;
+    private String ProfilePicUrl, UserID, Day, Destination, Seats, hours, mins, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName, DriverProfilePicUrl, DeclineResult, PassengerResult;
     private FirebaseAuth mAuth;
     private String DBUsername;
     private DatabaseReference UserDb, reference;
-    Date TripDate, date;
+    Date tripdate;
     private String DriverKey;
     FirebaseUser CurrentUser;
     private int counter = 0;
 
-    String Un;
+    String Un="";
 
+    String Id="";
 
+    int check=0;
     Toolbar toolbar;
 
     TextView textView1, textView2;
     Button createRequest;
-    ArrayList declined;
+    ArrayList<String> declined;
+    ArrayList<String> passengers;
 
 
     NavigationView navigationView;
@@ -85,9 +89,6 @@ public class FilteredTrips extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtered_trips2);
 
-
-        declined = new ArrayList<String>();
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Trip Results");
@@ -97,9 +98,14 @@ public class FilteredTrips extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //be able to go back out of the activity
-                finish();
-            }
-        });
+        finish();
+    }
+});
+
+        Toast.makeText(this, "p"+Un.length(), Toast.LENGTH_SHORT).show();
+        declined = new ArrayList<>();
+
+        passengers = new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
@@ -138,6 +144,27 @@ public class FilteredTrips extends AppCompatActivity {
 
 
         getDriverId();
+
+        //for trip in results:.. if in declined... remove.. notify change
+
+
+        //if (counter == 0) {
+
+            //recycler view is empty, set the visibility of button and text view
+           // tripRecyclerView.setVisibility(View.GONE);
+           // textView1.setVisibility(View.VISIBLE);
+           // textView2.setVisibility(View.VISIBLE);
+            //createRequest.setVisibility(View.VISIBLE);
+
+           // createRequest.setOnClickListener(new View.OnClickListener() {
+           //     @Override
+           //     public void onClick(View v) {
+           //         Intent intent = new Intent(FilteredTrips.this, PassengerCreateRequests.class);
+           //         startActivity(intent);
+          //      }
+          //  });
+
+      //  }
 
 
         //not working yet..
@@ -227,8 +254,15 @@ public class FilteredTrips extends AppCompatActivity {
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
                         //then get the info under that unique ID
                         String TripKey = id.getKey();
-                        UserTripDB(Key, TripKey);
+                        if(declined.size()>0){
+                            declined.clear();
+                        }
+                        if(passengers.size()>0){
+                            passengers.clear();
+                        }
                         getDeclinedList(Key,TripKey);
+                        getPassengerList(Key,TripKey);
+                        UserTripDB(Key, TripKey);
                     }
                 }
             }
@@ -288,25 +322,37 @@ public class FilteredTrips extends AppCompatActivity {
 
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
+                    if (map.get("Time") != null) {
+                        Time = map.get("Time").toString();
+                        StringTokenizer tokens = new StringTokenizer(Time, ":");
+                        hours = tokens.nextToken();
+                        mins = tokens.nextToken();
+                    }
 
                     //check that none of them are null
                     if (map.get("Date") != null) {
-                        Date = map.get("Date").toString();
-                        StringTokenizer tokens = new StringTokenizer(Date, "/");
+                        Day = map.get("Date").toString();
+                        StringTokenizer tokens = new StringTokenizer(Day, "/");
                         Integer day = Integer.parseInt(tokens.nextToken());
                         Integer month = Integer.parseInt(tokens.nextToken());
                         Integer year = Integer.parseInt(tokens.nextToken());
                         //year month date
                         // year in date is saying 3919 rather than 2019
+                        //TripDate = new Date(year - 1900, month - 1, day, 10, 0);
+                        // String date_n = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(TripDate);
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
 
-                        Calendar calendar = Calendar.getInstance();
+                            String dateStr = Day + " " + Time;
+                            Date Datee = format.parse(dateStr);
+                            long mili = Datee.getTime();
+                            tripdate = new Date(mili);
+                            //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
 
-                        TripDate = new Date(year - 1900, month - 1, day);
-                        String date_n = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(TripDate);
 
-                    }
-                    if (map.get("Time") != null) {
-                        Time = map.get("Time").toString();
                     }
 
                     if (map.get("Seats") != null) {
@@ -328,13 +374,8 @@ public class FilteredTrips extends AppCompatActivity {
                     }
 
 
-                    String pattern = "dd-MM-yy";
-                    date = new Date();
-                    String Currentdate = new SimpleDateFormat(pattern).format(date);
-
                     if (!Key.equals(CurrentUser.getUid())) {
                         //make sure its not a past trips or isnt one that was created by that user.
-                        int compare = date.compareTo(TripDate);
                         // if date greater, tripdate is a past d
                         String[] timeSplit = Time.split(":");
                         Integer hours = Integer.parseInt(timeSplit[0]);
@@ -344,49 +385,45 @@ public class FilteredTrips extends AppCompatActivity {
                         // TripDate = new Date(year-1900, month - 1, day);
 
                         //create an array list?
+                        Date rightNow = Calendar.getInstance().getTime();
 
-                        if (date.before(TripDate)) {
-                            DatabaseReference passengerCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(Key).child(ID).child("Passengers");
-                            //requestCheck.
-                            passengerCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                            String KeyCheck = id.getKey();
-                                            if (!KeyCheck.equals(CurrentUser.getUid())) {
 
-                                                if(!declined.contains(CurrentUser.getUid())){
-                                                //continue
-                                                                        //not declined, add the trip
-                                                Fullname = First + " " + Surname;
-                                                //Toast.makeText(FilteredTrips.this, ""+CurrentUser.getUid(),Toast.LENGTH_LONG).show();
-                                                //
-                                               if((Integer.parseInt(Seats)!=0)){
-                                                FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Date, Starting, Destination, Seats, LuggageCheck, Note, Key);
+                        if (rightNow.before(tripdate)) {
 
-                                                results.add(object);
-                                                FiltertripAdapter.notifyDataSetChanged();
-                                                counter++;
-                                                //Toast.makeText(FilteredTrips.this,""+counter,Toast.LENGTH_LONG).show();
 
-                                                if (counter == 0) {
+                           // Toast.makeText(FilteredTrips.this, "", Toast.LENGTH_SHORT).show();
+                            //if (!declined.contains(CurrentUser.getUid())){
 
-                                                    //recycler view is empty, set the visibility of button and text view
-                                                    tripRecyclerView.setVisibility(View.GONE);
-                                                    textView1.setVisibility(View.VISIBLE);
-                                                    textView2.setVisibility(View.VISIBLE);
-                                                    createRequest.setVisibility(View.VISIBLE);
+                                //if(!passengers.contains(CurrentUser.getUid())){
+                                //continue
+                                //not declined, add the trip
 
-                                                    createRequest.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                            Intent intent = new Intent(FilteredTrips.this, PassengerCreateRequests.class);
-                                                            startActivity(intent);
-                                                        }
-                                                    });
 
-                                                }}}}}}}
+                                Fullname = First + " " + Surname;
+                                if(passengers.size() >0){
+                                   Id = passengers.get(0);
+                                }
+                            if(declined.size() >0){
+                                Un = declined.get(0);
+                            }
+
+
+
+                            Toast.makeText(FilteredTrips.this, ""+Id, Toast.LENGTH_SHORT).show();
+                                if ((Integer.parseInt(Seats) != 0)) {
+                                       //if(Id.length() == 0 && Un.length() == 0){
+                                        FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, Seats, LuggageCheck, Note, Key);
+
+                                        results.add(object);
+                                        FiltertripAdapter.notifyDataSetChanged();
+                                        //declined.clear();
+                                        // passengers.clear();
+                                        //Toast.makeText(FilteredTrips.this, ""+results.size(), Toast.LENGTH_SHORT).show();
+                            }}
+                                }
+                        }}
+
+
 
 
                                 //Toast.makeText(FilteredTrips.this,KeyCheck, Toast.LENGTH_SHORT).show();
@@ -401,19 +438,6 @@ public class FilteredTrips extends AppCompatActivity {
 
                         }
 
-                    }
-                }
-
-            }
-
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
 
     private ArrayList results = new ArrayList<FindTrip>();
@@ -446,7 +470,11 @@ public class FilteredTrips extends AppCompatActivity {
 
     private void addToList(String id){
         declined.add(id);
-        //Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private void addToPassList(String id){
+        passengers.add(id);
     }
 
 
@@ -482,5 +510,32 @@ public class FilteredTrips extends AppCompatActivity {
 
             }
         });
-    }}
+    }
+    private void getPassengerList(String Key,String TripKey) {
+        //get those declined and add to list
+        DatabaseReference passengerCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(Key).child(TripKey).child("Passengers");
+        //requestCheck.
+        passengerCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        String KeyCheck = id.getKey();
 
+                        if(KeyCheck!=null) {
+                            if (KeyCheck.equals(CurrentUser.getUid())) {
+                                addToPassList(KeyCheck);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+}

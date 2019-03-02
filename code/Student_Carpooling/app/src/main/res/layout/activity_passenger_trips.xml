@@ -8,10 +8,33 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="PassengerTrips"
+    android:background="@color/colorPrimaryDark"
+    android:layout_above="@+id/relLayout1">
+
+
+<android.support.v7.widget.RecyclerView
+android:layout_marginTop="60dp"
+android:layout_width="match_parent"
+android:scrollbars="vertical"
+android:layout_height="match_parent"
+android:id="@+id/TripsRecycler"
+    />
+
+    </RelativeLayout>
+
     <include
         layout="@layout/app_bar_passenger"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

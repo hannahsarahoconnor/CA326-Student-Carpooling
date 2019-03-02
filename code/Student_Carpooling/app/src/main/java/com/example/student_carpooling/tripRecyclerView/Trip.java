@@ -11,10 +11,12 @@ public class Trip {
     private String Starting;
     private String Destination;
     private String DriverID;
+    private float DstLon;
+    private float DstLat;
 
 
 
-    public Trip(String TripID,String DriverID,String Date,String Time,String Seats,String LuggageCheck, String Starting, String Destination ){
+    public Trip(float DstLat, float DstLon, String UserName, String TripID,String DriverID,String Date,String Time,String Seats,String LuggageCheck, String Starting, String Destination ){
         this.Date = Date;
         this.Time = Time;
         this.UserName = UserName;
@@ -24,11 +26,29 @@ public class Trip {
         this.Destination = Destination;
         this.TripID = TripID;
         this.DriverID = DriverID;
+        this.DstLat = DstLat;
+        this.DstLon = DstLon;
 
     }
 
     //may not need the set functions
 
+
+    public float getDstLat() {
+        return DstLat;
+    }
+
+    public void setDstLat(float dstLat) {
+        DstLat = dstLat;
+    }
+
+    public float getDstLon() {
+        return DstLon;
+    }
+
+    public void setDstLon(float dstLon) {
+        DstLon = dstLon;
+    }
 
     public void setTripID(String tripID) {
         TripID = tripID;

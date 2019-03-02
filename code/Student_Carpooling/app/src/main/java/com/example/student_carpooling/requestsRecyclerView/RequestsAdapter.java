@@ -11,11 +11,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
-import com.example.student_carpooling.DriverTripItem;
+import com.example.student_carpooling.PassengerLocation;
 import com.example.student_carpooling.R;
 import com.example.student_carpooling.SendNotification;
-import com.example.student_carpooling.TripRequests;
-import com.example.student_carpooling.UserLocation;
 import com.example.student_carpooling.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +31,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
 
     private List<Requests> list;
     private Context context;
-
 
 
     public RequestsAdapter(List<Requests> list, Context context) {
@@ -59,7 +56,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
     public void onBindViewHolder(@NonNull final RequestsViewHolders requestsViewHolders, int i) {
         requestsViewHolders.UserName.setText(list.get(i).getUsername());
 
-
         final String url = list.get(i).getProfilePicUrl();
         if (!url.equals("defaultPic")) {
             Glide.with(context).load(url).into(requestsViewHolders.ProfilePic);
@@ -76,12 +72,61 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         requestsViewHolders.UserName.setText(_username);
 
 
+        requestsViewHolders.ProfileIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //view their profile
+                Intent intent = new Intent(context, UserProfile.class);
+                intent.putExtra("ID", _id);
+                context.startActivity(intent);
+
+            }
+        });
+
+        requestsViewHolders.DeclineIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
+                //remove request and add to declined list, to prevent user from constantly requesting
+                final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                DatabaseReference DeclineDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Declined").child(_id);
+                Map DeclineInfo = new HashMap();
+                DeclineInfo.put("ID", _id);
+                DeclineDB.setValue(DeclineInfo);
+
+                //remove from request list
+                DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("TripRequests").child(_id);
+                RequestsDB.removeValue();
+                Toast.makeText(context, "Request declined for  " + _username, Toast.LENGTH_SHORT).show();
+                new SendNotification(_driverUsername + " declined your request", "Student Carpooling", _notificationKey);
+                //refresh the activity
+                list.remove(requestsViewHolders.getAdapterPosition());
+                notifyDataSetChanged();
+
+                // get reference and remove UserDb.removeValue();
+            }
+        });
+
+        requestsViewHolders.MessageIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(context, "Starting new chat..." + _username, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("Username", _username);
+                intent.putExtra("ID", _id);
+                intent.putExtra("Fullname", _fullname);
+                intent.putExtra("ProfilePicURL", url);
+                context.startActivity(intent);
+            }
+        });
+
         requestsViewHolders.LocationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //view their location on the map
                 Toast.makeText(context, "retrieving locations and forming route...", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, UserLocation.class);
+                Intent intent = new Intent(context, PassengerLocation.class);
                 intent.putExtra("Username", _username);
                 intent.putExtra("ID", _id);
                 intent.putExtra("ProfilePicURL", url);
@@ -114,7 +159,9 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                                     DatabaseReference PassengersDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Passengers").child(_id);
                                     Map PassengerInfo = new HashMap();
                                     PassengerInfo.put("Username", _username);
+                                    PassengerInfo.put("Fullname",_fullname);
                                     PassengerInfo.put("profileImageUrl", url);
+                                    PassengerInfo.put("NotificationKey", _notificationKey);
                                     PassengerInfo.put("lat", lat);
                                     PassengerInfo.put("lon", lon);
                                     PassengersDB.setValue(PassengerInfo);
@@ -124,6 +171,12 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                                     Toast.makeText(context, "Request accepted for  " + _username, Toast.LENGTH_SHORT).show();
                                     //send notification to passenger
                                     new SendNotification(_driverUsername + " accepted your request", "Student Carpooling", _notificationKey);
+
+                                    //add the trip info to passenger user info ...
+                                    DatabaseReference PassengerInfoDB = FirebaseDatabase.getInstance().getReference().child("users").child(_id).child("Trips").child(firebaseUser.getUid()).child(TripID);
+                                    Map TripInfo = new HashMap();
+                                    TripInfo.put("TripID",TripID);
+                                    PassengerInfoDB.setValue(TripInfo);
 
 
                                     //update the seat count...
@@ -149,7 +202,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                                         }
                                     });
 
-
                                     //refresh the activity
                                     list.remove(requestsViewHolders.getAdapterPosition());
                                     notifyDataSetChanged();
@@ -168,55 +220,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                 });
 
 
-                requestsViewHolders.ProfileIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //view their profile
-                        Intent intent = new Intent(context, UserProfile.class);
-                        intent.putExtra("ID", _id);
-                        context.startActivity(intent);
-
-                    }
-                });
-
-                requestsViewHolders.DeclineIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //remove request and add to declined list, to prevent user from constantly requesting
-                        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                        DatabaseReference DeclineDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Declined").child(_id);
-                        Map DeclineInfo = new HashMap();
-                        DeclineInfo.put("ID", _id);
-                        DeclineDB.setValue(DeclineInfo);
-
-                        //remove from request list
-                        DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("TripRequests").child(_id);
-                        RequestsDB.removeValue();
-                        Toast.makeText(context, "Request declined for  " + _username, Toast.LENGTH_SHORT).show();
-                        new SendNotification(_driverUsername + " declined your request", "Student Carpooling", _notificationKey);
-                        //refresh the activity
-                        list.remove(requestsViewHolders.getAdapterPosition());
-                        notifyDataSetChanged();
-
-                        // get reference and remove UserDb.removeValue();
-                    }
-                });
-
-                requestsViewHolders.MessageIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        Toast.makeText(context, "Starting new chat..." + _username, Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(context, ChatActivity.class);
-                        intent.putExtra("Username", _username);
-                        intent.putExtra("ID", _id);
-                        intent.putExtra("Fullname", _fullname);
-                        intent.putExtra("ProfilePicURL", url);
-                        context.startActivity(intent);
-                    }
-                });
             }
-
         });
 
     }
