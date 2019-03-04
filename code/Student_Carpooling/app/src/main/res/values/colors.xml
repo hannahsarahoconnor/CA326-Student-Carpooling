@@ -3,9 +3,7 @@
     <color name="colorPrimary">#0A0A64</color>
     <color name="colorPrimaryDark">#a2e8f0</color>
     <color name="colorAccent">#fb0505</color>
-    <color name="white">#ffffff</color>
     <color name="gradStart">#87B6FE</color>
     <color name="gradStop">#32DEFE</color>
     <color name="gradCentre">#B9F3FE</color>
-
 </resources>

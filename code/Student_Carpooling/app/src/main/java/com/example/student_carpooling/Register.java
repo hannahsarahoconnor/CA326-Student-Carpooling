@@ -19,6 +19,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -168,6 +169,7 @@ public class Register extends AppCompatActivity {
                                             UserInfo.put("Type", true);
                                             UserInfo.put("profileImageUrl", "defaultPic");
                                             UserInfo.put("Search", username.toLowerCase());
+                                            UserInfo.put("CompletedTrips",0);
 
                                             currentUser.setValue(UserInfo);
                                             sendVerificationEmail();

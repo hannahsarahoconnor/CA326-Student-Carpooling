@@ -3,7 +3,9 @@ package com.example.student_carpooling;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,9 +41,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Driver;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class DriverTripItem extends AppCompatActivity {
 
@@ -52,10 +61,11 @@ public class DriverTripItem extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView textView;
+    private TextView textView, cancelledTV,PassengerText;
     private String email,UserID;
+    private ImageView delete;
     private DatabaseReference UserDb, StartedDb;
-    private String TripID, UserName, profilePicurl, NotificationKey, Name,Surname,Fullname, DriverUsername, isStarted,isCompleted,Type;
+    private String TripID, UserName, profilePicurl, NotificationKey, Name,Surname,Fullname, DriverUsername, isStarted,isCompleted,Type, DriverNotKey;
 
     private float Lat,Lon, dlat, dlon;
     FirebaseUser CurrentUser;
@@ -63,11 +73,15 @@ public class DriverTripItem extends AppCompatActivity {
 
     String Seats;
 
-    String _username;
+    long mili, mili2,now;
+
+    String _username,driverUrl;
+
+    Date rightNow,tripdate,expiredTripdate;
 
     Intent intent;
 
-    int completed, started, passengerCount=0;
+    int completed, started,cancelled, passengerCount=0;
 
     private LinearLayoutManager passengerLayoutManager,seatsLayoutManager;
 
@@ -84,12 +98,15 @@ public class DriverTripItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_trip_item);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setTitle("Trip Information");
+        toolbar.setTitle("Hi ");toolbar.setTitleTextColor(Color.WHITE);
+
 
         textView = findViewById(R.id.text);
+        cancelledTV = findViewById(R.id.cancelled);
+        PassengerText = findViewById(R.id.passengerText);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +121,25 @@ public class DriverTripItem extends AppCompatActivity {
         CurrentUser = mAuth.getCurrentUser();
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+        UserDb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    if(map.get("NotificationKey")!=null){
+                        DriverNotKey = map.get("NotificationKey").toString();
+                    }
+                    if(map.get("profileImageUrl")!=null){
+                        driverUrl = map.get("profileImageUrl").toString();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         recyclerView = findViewById(R.id.passengerRecycler);
         recyclerView.setNestedScrollingEnabled(true);
@@ -134,12 +170,13 @@ public class DriverTripItem extends AppCompatActivity {
         request = findViewById(R.id.Requests);
         start = findViewById(R.id.Start);
 
+        delete = findViewById(R.id.deleteTrip);
         intent = getIntent();
 
-        String _starting = intent.getStringExtra("Starting");
-        String _destination = intent.getStringExtra("Destination");
-        String _date = intent.getStringExtra("Date");
-        String _time = intent.getStringExtra("Time");
+        final String _starting = intent.getStringExtra("Starting");
+        final String _destination = intent.getStringExtra("Destination");
+        final String _date = intent.getStringExtra("Date");
+        final String _time = intent.getStringExtra("Time");
         String _seats = intent.getStringExtra("Seats");
         String _luggage = intent.getStringExtra("Luggage");
         _username = intent.getStringExtra("Username");
@@ -148,8 +185,11 @@ public class DriverTripItem extends AppCompatActivity {
         dlon = intent.getFloatExtra("DstLon",0);
 
 
+        rightNow = Calendar.getInstance().getTime();
+        now = rightNow.getTime();
 
-
+        //add a timer to remind the driver their trip is to start in an hour
+        //add a timer to remind driver to start this trip
 
         TripID = intent.getStringExtra("TripID");
 
@@ -158,20 +198,65 @@ public class DriverTripItem extends AppCompatActivity {
         date.setText(_date);
         time.setText(_time);
         StartedDb = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
-        StartedDb.addListenerForSingleValueEvent(new ValueEventListener() {
+        StartedDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                if (map.get("Started") != null) {
-                    started = Integer.parseInt(map.get("Started").toString());
-                }
                 if (map.get("Completed") != null) {
                     completed = Integer.parseInt(map.get("Completed").toString());
                     //Toast.makeText(DriverTripItem.this, "" + completed, Toast.LENGTH_SHORT).show();
-                    if(completed == 1){
+                }
+
+
+                if (map.get("Cancelled") != null) {
+                   // cancelled = Integer.parseInt(map.get("Cancelled").toString());
+
+                    if(Integer.parseInt(map.get("Cancelled").toString()) == 1 ||Integer.parseInt(map.get("Completed").toString())==1){
+
                         cancel.setVisibility(View.INVISIBLE);
                         request.setVisibility(View.INVISIBLE);
                         start.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        SeatrecyclerView.setVisibility(View.GONE);
+                        PassengerText.setVisibility(View.GONE);
+                        cancelledTV.setVisibility(View.VISIBLE);
+                        delete.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                if (map.get("Started") != null) {
+                    started = Integer.parseInt(map.get("Started").toString());
+                    Toast.makeText(DriverTripItem.this, ""+started, Toast.LENGTH_SHORT).show();
+                    if(Integer.parseInt(map.get("Started").toString()) == 0) {
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
+                            //Split the original time and add 5 hours
+                            StringTokenizer tokens = new StringTokenizer(_time, ":");
+                            int hours = Integer.parseInt(tokens.nextToken()) + 5;
+                            String mins = tokens.nextToken();
+                            String ExpiredTime = Integer.toString(hours) + ":" + mins;
+                            String ExpiredDateStr = _date + " " + ExpiredTime;
+                            Date ExpiredDate = format.parse(ExpiredDateStr);
+                            long mili2 = ExpiredDate.getTime();
+                            expiredTripdate = new Date(mili2);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(rightNow.after(expiredTripdate)){
+                            //this trip has expired
+                            cancel.setVisibility(View.INVISIBLE);
+                            request.setVisibility(View.INVISIBLE);
+                            start.setVisibility(View.INVISIBLE);
+                            recyclerView.setVisibility(View.GONE);
+                            SeatrecyclerView.setVisibility(View.GONE);
+                            PassengerText.setVisibility(View.GONE);
+                            cancelledTV.setVisibility(View.VISIBLE);
+                            cancelledTV.setText("This trip has expired");
+                            delete.setVisibility(View.VISIBLE);
+
+                        }
                     }
 
                 }
@@ -221,29 +306,212 @@ public class DriverTripItem extends AppCompatActivity {
         getPassengers();
 
 
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //replace its content with cancelled --> true
+                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
+                dialog.setTitle("Are you sure you want to delete this trip?");
+                dialog.setMessage("Please message your passengers informing them why you wish to cancel as all participating passengers will be notified of this cancellation and will be able to review your account.Also, you will no longer have access to this trips' passengers");
+                dialog.setPositiveButton("Cancel Trip", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                        //TripDB.removeValue();
+                        //DatabaseReference NewDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                        TripDB.child("Cancelled").setValue(1);
+                        Toast.makeText(DriverTripItem.this, "This trip has been cancelled", Toast.LENGTH_LONG).show();
+                        //send notification to passengers of the cancellation
+                        for(String key : PassengerNotKey){
+                            new SendNotification(_username+" has cancelled your trip, click on the trip details to leave a review", "Student Carpooling",key);
+                        }
+                        Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
+                        startActivity(intent);
 
-            cancel.setOnClickListener(new View.OnClickListener() {
+                    }
+
+
+                });
+
+                dialog.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+
+            }
+        });
+
+        request.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(started == 0){
+                    Intent intent = new Intent(DriverTripItem.this, TripRequests.class);
+                    intent.putExtra("TripID", TripID);
+                    startActivity(intent);}
+                    else{
+                        Toast.makeText(DriverTripItem.this, "This carpool has already started, you cannot accept any more new passengers", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        StringTokenizer tokens = new StringTokenizer(_time, ":");
+        int hours = Integer.parseInt(tokens.nextToken()) -1;
+        String mins = tokens.nextToken();
+        String newTime = Integer.toString(hours) + ":" + mins;
+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+        try {
+
+            String dateStr = _date + " " + newTime;
+            String dateStr2 = _date + " " + _time;
+            Date Datee = format.parse(dateStr);
+            Date Date = format.parse(dateStr2);
+            mili = Datee.getTime();
+            mili2 = Date.getTime();
+            tripdate = new Date(mili2);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        CountDownTimer countDownTimer = new CountDownTimer(mili-now,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mili = millisUntilFinished;
+            }
+
+            @Override
+            public void onFinish() {
+                new SendNotification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling",DriverNotKey);
+                //new SendNotification to passengers
+                for (String notKey : PassengerNotKey) {
+                    new SendNotification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling", notKey);
+                }
+
+            }
+        };
+
+        countDownTimer.start();
+        CountDownTimer countDownTimer2 = new CountDownTimer(mili2-now,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mili2 = millisUntilFinished;
+            }
+
+            @Override
+            public void onFinish() {
+                new SendNotification("Your trip to "+_destination+ " is scheduled to start, please start the trip", "Student Carpooling",DriverNotKey);
+
+            }
+        };
+
+        countDownTimer2.start();
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DriverTripItem.this);
+                builder.setTitle("Are you sure you want to delete this trip?").setMessage("You will no longer be able to see the details of this trip,are you sure?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
+                        //dont wanna delete it completed as then the passenger cant see, add value -> deleted, so that it wont be show in their page
+                        DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUser.getUid()).child(TripID);
+                        trips.child("Deleted").setValue(1);
+
+                        Intent intent = new Intent(DriverTripItem.this,DriverTrips.class);
+                        startActivity(intent);
+                        finish();
+                        dialog.dismiss();
+
+                    }
+                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
+                                dialog.cancel();
+
+                            }
+                        });
+                final AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+
+
+        start.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                if(started==1){
+                        //continue to activity
+                        startTrip();
+                    }
+
+
+                 else if(rightNow.before(tripdate) && started==0){
+                        //show dialog confirming if they want to start this trip early
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
+                        dialog.setTitle("Are you sure you want to start this trip early?");
+                        dialog.setMessage("You trip isn't scheduled to start yet, are you sure you wish to continue>");
+                        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (started == 0) {
+                                    if (PassengerNotKey.size() > 0) {
+                                        for (String notKey : PassengerNotKey) {
+                                            new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
+                                        }
+                                    }
+                                }
+                                DatabaseReference StartUpdate = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                                StartUpdate.child("Started").setValue(1);
+                                startTrip();
+                            }
+
+
+                        });
+
+                        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        AlertDialog alertDialog = dialog.create();
+                        alertDialog.show();
+
+                    }
+               else {
+                    //only send the notification when the trip first starts, as the driver can click in and out and map without constantly resending the notifications each time
+                    // if the trip is past the date/trip, the driver cannot start it..
                     AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
-                    dialog.setTitle("Are you sure you want to delete this trip?");
-                    dialog.setMessage("By Doing this, all participating passengers will be notified of this cancellation and will be able to review your account");
-                    dialog.setPositiveButton("Delete Trip", new DialogInterface.OnClickListener() {
+                    dialog.setTitle("Are you sure you want to start this trip");
+                    dialog.setMessage("By starting this trip, all passengers of this trip will be notified and will be able to track your location");
+                    dialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
-                            TripDB.removeValue();
-                            Toast.makeText(DriverTripItem.this, "This trip has been deleted", Toast.LENGTH_LONG).show();
-
-                            Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
-                            startActivity(intent);
-                            //send notification to passengers of the cancellation
+                            if (started == 0) {
+                                if (PassengerNotKey.size() > 0) {
+                                    for (String notKey : PassengerNotKey) {
+                                        new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
+                                    }
+                                }
+                            }
+                            DatabaseReference StartUpdate = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                            StartUpdate.child("Started").setValue(1);
+                            startTrip();
                         }
 
 
                     });
 
-                    dialog.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -254,50 +522,22 @@ public class DriverTripItem extends AppCompatActivity {
                     alertDialog.show();
 
                 }
-            });
-
-            request.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(DriverTripItem.this, TripRequests.class);
-                    intent.putExtra("TripID", TripID);
-                    startActivity(intent);
                 }
             });
 
-            start.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Show a dialog first to confirm that want to start this trip
+    }
+    //if an hour after, the trip isnt started.. left users rate??
 
 
-                    //get a passenger counts
-                    if (passengerAdapter.getItemCount() != 0) {
-
-                        //only send the notification when the trip first starts, as the driver can click in and out and map without constantly resending the notifications each time
-                        // if the trip is past the date/trip, the driver cannot start it..
-                        //if (!Boolean.parseBoolean(isStarted) && !Boolean.parseBoolean(isCompleted)) {
-                       if(started == 0){
-                        for (String notKey : PassengerNotKey) {
-                            new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
-                        }}
-                    PassengerNotKey.clear();
-                    Toast.makeText(DriverTripItem.this, "" + PassengerNotKey.size(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(DriverTripItem.this, StartTrip.class);
-                    intent.putExtra("DLat",dlat);
-                    intent.putExtra("DLon", dlon);
-                    intent.putExtra("TripID", TripID);
-                    intent.putExtra("Username", _username);
-                    startActivity(intent);
-                } else
-
-                {
-                    Toast.makeText(DriverTripItem.this, "This trip doesn't have any passengers", Toast.LENGTH_SHORT).show();
-                }}
-
-            });
-
-        }
+    private void startTrip(){
+        Intent intent = new Intent(DriverTripItem.this, StartTrip.class);
+        intent.putExtra("DLat", dlat);
+        intent.putExtra("DLon", dlon);
+        intent.putExtra("TripID", TripID);
+        intent.putExtra("Username", _username);
+        intent.putExtra("driverUrl",driverUrl);
+        startActivity(intent);
+    }
 
 
 

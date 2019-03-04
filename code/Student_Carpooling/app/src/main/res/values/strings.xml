@@ -7,8 +7,6 @@
     <string name="Password">Password</string>
     <string name="Description">Image of our App Logo</string>
     <string name="Name">Name</string>
-    <string name="barmsg">Logging in...</string>
-    <string name="LoginPopUp">LoginPopUp</string>
     <string name="Username">Username</string>
     <string name="Surname">Surname</string>
     <string name="create_trip">Trip</string>
@@ -26,7 +24,6 @@
     <string name="Retype">Retype Password</string>
     <string name="Driver">Driver</string>
     <string name="Rider">Rider</string>
-    <string name="Passenger">Passenger</string>
     <string-array name="CollegeDomains">
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>
@@ -61,12 +58,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_filtered_trips">Trip Results</string>
-    <string name="title_activity_driver_trip_item">Trip Information</string>
+    <string name="title_activity_driver_trip_item"> </string>
+    <string name="title_activity_passenger_trip_item">Trip Information</string>
     <string name="title_activity_driver_message">Active Chats</string>
     <string name="title_activity_request_map">Map</string>
     <string name="title_activity_user_location">Map</string>
-    <string name="title_activity_passenger_create_requests">PassengerCreateRequests</string>
-    <string name="title_activity_driver_find_requests">DriverFindRequests</string>
+    <string name="title_activity_passenger_create_requests">Create Requests</string>
+    <string name="title_activity_driver_find_requests">Find Requests</string>
     <string name="title_activity_passenger_location">Map</string>
     <string name="title_activity_start_trip">Map</string>
     <string name="title_activity_passenger_map">Map</string>

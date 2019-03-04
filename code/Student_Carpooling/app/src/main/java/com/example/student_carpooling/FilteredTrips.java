@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide;
 import com.example.student_carpooling.findTripsRecyclerView.FindTrip;
 import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
 import com.example.student_carpooling.seatRecyclerView.Seat;
+import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,6 +36,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -53,13 +55,14 @@ import java.util.StringTokenizer;
 public class FilteredTrips extends AppCompatActivity {
 
 
+    private Intent intent;
     private RecyclerView tripRecyclerView;
     private RecyclerView.Adapter FiltertripAdapter;
     private RecyclerView.LayoutManager tripLayoutManager;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail, txt;
-    private String ProfilePicUrl, UserID, Day, Destination, Seats, hours, mins, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName, DriverProfilePicUrl, DeclineResult, PassengerResult;
+    private String ProfilePicUrl, UserID,Started,Cancelled, Day, Destination, Seats, hours, mins, Starting, LuggageCheck, First, Surname, Fullname, Note, Time, UserName, DriverProfilePicUrl, DeclineResult, PassengerResult;
     private FirebaseAuth mAuth;
     private String DBUsername;
     private DatabaseReference UserDb, reference;
@@ -67,6 +70,8 @@ public class FilteredTrips extends AppCompatActivity {
     private String DriverKey;
     FirebaseUser CurrentUser;
     private int counter = 0;
+
+    private String inputDst, inputStart, inputDate, inputLuggage;
 
     String Un="";
 
@@ -79,7 +84,6 @@ public class FilteredTrips extends AppCompatActivity {
     Button createRequest;
     ArrayList<String> declined;
     ArrayList<String> passengers;
-
 
     NavigationView navigationView;
     private ImageView navProfile;
@@ -102,7 +106,14 @@ public class FilteredTrips extends AppCompatActivity {
     }
 });
 
-        Toast.makeText(this, "p"+Un.length(), Toast.LENGTH_SHORT).show();
+        intent = getIntent();
+        inputDate = intent.getStringExtra("Date");
+        inputStart = intent.getStringExtra("Starting");
+        inputDst = intent.getStringExtra("Destination");
+        inputLuggage = intent.getStringExtra("Luggage");
+
+
+        //Toast.makeText(this, "p"+Un.length(), Toast.LENGTH_SHORT).show();
         declined = new ArrayList<>();
 
         passengers = new ArrayList<>();
@@ -148,27 +159,8 @@ public class FilteredTrips extends AppCompatActivity {
         //for trip in results:.. if in declined... remove.. notify change
 
 
-        //if (counter == 0) {
-
-            //recycler view is empty, set the visibility of button and text view
-           // tripRecyclerView.setVisibility(View.GONE);
-           // textView1.setVisibility(View.VISIBLE);
-           // textView2.setVisibility(View.VISIBLE);
-            //createRequest.setVisibility(View.VISIBLE);
-
-           // createRequest.setOnClickListener(new View.OnClickListener() {
-           //     @Override
-           //     public void onClick(View v) {
-           //         Intent intent = new Intent(FilteredTrips.this, PassengerCreateRequests.class);
-           //         startActivity(intent);
-          //      }
-          //  });
-
-      //  }
 
 
-        //not working yet..
-        sortList();
     }
 
 
@@ -315,6 +307,7 @@ public class FilteredTrips extends AppCompatActivity {
             }
         });
 
+
         TripsDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -366,12 +359,21 @@ public class FilteredTrips extends AppCompatActivity {
                         Note = map.get("Note").toString();
                     }
                     if (map.get("Starting") != null) {
-                        Starting = map.get("Starting").toString().toUpperCase();
+                        Starting = map.get("Starting").toString();
                     }
 
                     if (map.get("Destination") != null) {
-                        Destination = map.get("Destination").toString().toUpperCase();
+                        Destination = map.get("Destination").toString();
                     }
+
+                    if (map.get("Started") != null) {
+                        Started = map.get("Started").toString();
+                    }
+
+                    if (map.get("Cancelled") != null) {
+                        Cancelled = map.get("Cancelled").toString();
+                    }
+
 
 
                     if (!Key.equals(CurrentUser.getUid())) {
@@ -388,40 +390,93 @@ public class FilteredTrips extends AppCompatActivity {
                         Date rightNow = Calendar.getInstance().getTime();
 
 
-                        if (rightNow.before(tripdate)) {
 
-
-                           // Toast.makeText(FilteredTrips.this, "", Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(FilteredTrips.this, "", Toast.LENGTH_SHORT).show();
                             //if (!declined.contains(CurrentUser.getUid())){
 
-                                //if(!passengers.contains(CurrentUser.getUid())){
-                                //continue
-                                //not declined, add the trip
+                            //if(!passengers.contains(CurrentUser.getUid())){
+                            //continue
+                            //not declined, add the trip
 
 
-                                Fullname = First + " " + Surname;
-                                if(passengers.size() >0){
-                                   Id = passengers.get(0);
-                                }
-                            if(declined.size() >0){
-                                Un = declined.get(0);
+                            Fullname = First + " " + Surname;
+                            //if(passengers.size() >0){
+                            //    Id = passengers.get(0);
+                            // }
+                            // if(declined.size() >0){
+                            //    Un = declined.get(0);
+                            // }
+                            if (Starting.startsWith(inputStart)) {
+                                if (Destination.startsWith(inputDst)) {
+                                    if(LuggageCheck.equals(inputLuggage)){
+                                        if(Day.equals(inputDate)) {
+
+                                            if (Integer.parseInt(Cancelled) != 1) {
+                                                if (Integer.parseInt(Started) != 1) {
+                                                    if ((Integer.parseInt(Seats) != 0)) {
+                                                        //if(Id.length() == 0 && Un.length() == 0){
+
+
+                                                        FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, Seats, LuggageCheck, Note, Key);
+
+                                                        results.add(object);
+                                                        results.sort(new Comparator<FindTrip>() {
+                                                            @Override
+                                                            public int compare(FindTrip o1, FindTrip o2) {
+                                                                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                                                String date1 = o1.getDate() + " " + o1.getTime();
+                                                                String date2 = o2.getDate() + " " + o2.getTime();
+                                                                Date Date1 = null;
+                                                                Date Date2 = null;
+                                                                try {
+                                                                    Date1 = format.parse(date1);
+                                                                    Date2 = format.parse(date2);
+                                                                } catch (ParseException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                                long mili = Date1.getTime();
+                                                                long mili2 = Date2.getTime();
+                                                                Date datenew1 = new Date(mili);
+                                                                Date datenew2 = new Date(mili2);
+
+
+                                                                return datenew1.compareTo(datenew2);
+
+                                                            }
+                                                        });
+
+                                                        FiltertripAdapter.notifyDataSetChanged();
+                                                        counter = counter + 1;
+
+                                                        Toast.makeText(FilteredTrips.this, "" + counter, Toast.LENGTH_SHORT).show();
+                                                        //declined.clear();
+                                                        // passengers.clear();
+                                                        //Toast.makeText(FilteredTrips.this, ""+results.size(), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+
+
+                                if (counter == 0) {
+
+                                    //recycler view is empty, set the visibility of button and text view
+                                    tripRecyclerView.setVisibility(View.GONE);
+                                    textView1.setVisibility(View.VISIBLE);
+                                    textView2.setVisibility(View.VISIBLE);
+                                    createRequest.setVisibility(View.VISIBLE);
+
+                                    createRequest.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent = new Intent(FilteredTrips.this, PassengerCreateRequests.class);
+                                            startActivity(intent);
+                                        }
+                                    });
+
+                                }}
+                                }}
                             }
-
-
-
-                            Toast.makeText(FilteredTrips.this, ""+Id, Toast.LENGTH_SHORT).show();
-                                if ((Integer.parseInt(Seats) != 0)) {
-                                       //if(Id.length() == 0 && Un.length() == 0){
-                                        FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, Seats, LuggageCheck, Note, Key);
-
-                                        results.add(object);
-                                        FiltertripAdapter.notifyDataSetChanged();
-                                        //declined.clear();
-                                        // passengers.clear();
-                                        //Toast.makeText(FilteredTrips.this, ""+results.size(), Toast.LENGTH_SHORT).show();
-                            }}
-                                }
-                        }}
+                        }
+                        }}}
 
 
 

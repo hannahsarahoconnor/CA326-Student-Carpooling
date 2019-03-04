@@ -6,10 +6,10 @@ public class PassengerTrip {
     private String DriverPicUrl;
     private String TripId;
     private String DriverID;
-    private double lat;
-    private double lon;
-    private double dstlat;
-    private double dstlon;
+    private float lat;
+    private float lon;
+    private float dstlat;
+    private float dstlon;
     private String Starting;
     private String Destination;
     private String Time;
@@ -19,7 +19,7 @@ public class PassengerTrip {
     private String NotificationKey;
 
 
-    public PassengerTrip(String NotificationKey,String DriverName, String DriverPicUrl,String DriverUsername, String TripId, String DriverID, double lat, double lon, double dstlat, double dstlon, String Starting,String Destination, String Time, String Date){
+    public PassengerTrip(String NotificationKey,String DriverName, String DriverPicUrl,String DriverUsername, String TripId, String DriverID, float lat, float lon, float dstlat, float dstlon, String Starting,String Destination, String Time, String Date){
         this.DriverName = DriverName;
         this.DriverUsername = DriverUsername;
         this.TripId = TripId;
@@ -71,11 +71,11 @@ public class PassengerTrip {
         return DriverUsername;
     }
 
-    public void setLon(double lon) {
+    public void setLon(float lon) {
         this.lon = lon;
     }
 
-    public void setLat(double lat) {
+    public void setLat(float lat) {
         this.lat = lat;
     }
 
@@ -107,7 +107,7 @@ public class PassengerTrip {
         Date = date;
     }
 
-    public double getDstlat() {
+    public float getDstlat() {
         return dstlat;
     }
 
@@ -119,11 +119,11 @@ public class PassengerTrip {
         Time = time;
     }
 
-    public double getDstlon() {
+    public float getDstlon() {
         return dstlon;
     }
 
-    public double getLat() {
+    public float getLat() {
         return lat;
     }
 
@@ -131,7 +131,7 @@ public class PassengerTrip {
         return TripId;
     }
 
-    public double getLon() {
+    public float getLon() {
         return lon;
     }
 
@@ -139,11 +139,11 @@ public class PassengerTrip {
         return Time;
     }
 
-    public void setDstlat(double dstlat) {
+    public void setDstlat(float dstlat) {
         this.dstlat = dstlat;
     }
 
-    public void setDstlon(double dstlon) {
+    public void setDstlon(float dstlon) {
         this.dstlon = dstlon;
     }
 

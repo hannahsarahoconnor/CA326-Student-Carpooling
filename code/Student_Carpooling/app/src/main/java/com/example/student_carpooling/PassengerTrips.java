@@ -64,7 +64,7 @@ public class PassengerTrips extends AppCompatActivity
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
 
-    String Time,Date,DriverId, TripId,Starting,Destination,DriverUsername,profileImageUrl, Name,Surname,Fullname,NotificationKey;
+    String Time,Date,DriverId, TripId,Starting,Destination,DriverUsername,profileImageUrl, Name,Surname,Fullname,NotificationKey,Cancelled;
 
     float lat, lon, DstLat,DstLon;
     FirebaseUser CurrentUser;
@@ -218,7 +218,7 @@ public class PassengerTrips extends AppCompatActivity
             }
         });
     }
-    private void getTripInfo(String DriverKey, String TripKey){
+    private void getTripInfo(String DriverKey, final String TripKey){
         DatabaseReference TripInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverKey).child(TripKey);
         TripInfo.addValueEventListener(new ValueEventListener() {
             @Override
@@ -250,11 +250,12 @@ public class PassengerTrips extends AppCompatActivity
                       DstLat = Float.parseFloat(map.get("DstLat").toString());
                    }
 
-                if(map.get("DstLon") != null) {
-                    DstLon = Float.parseFloat(map.get("DstLon").toString());
+                    if(map.get("DstLon") != null) {
+                      DstLon = Float.parseFloat(map.get("DstLon").toString());
                     }
 
-                    PassengerTrip object = new PassengerTrip(NotificationKey,Fullname,profileImageUrl,DriverUsername,TripId, DriverId, lat,lon,DstLat,DstLon,Starting, Destination,Time,Date);
+
+                    PassengerTrip object = new PassengerTrip(NotificationKey,Fullname,profileImageUrl,DriverUsername,TripKey, DriverId, lat,lon,DstLat,DstLon,Starting, Destination,Time,Date);
                     trips.add(object);
                     tripAdapter.notifyDataSetChanged();
 

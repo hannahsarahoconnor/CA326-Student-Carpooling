@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTrip;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,6 +33,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Driver;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +50,7 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
 
     private Button Back;
 
-    String TripId, DriverId;
+    String TripId, DriverId,Completed;
 
     float DstLat, DstLon, Lat, Lon;
 
@@ -57,9 +59,10 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
     Intent intent;
     private FirebaseAuth mAuth;
 
-    String CurrentUserID, _driverUsername,_notificationKey;
+    String CurrentUserID, _driverUsername,_notificationKey,PicUrl;
 
     int arrived = 0;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,102 +96,154 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (LocationPermissionsGranted) {
+        intent = getIntent();
 
-            //get data from intent
+        TripId = intent.getStringExtra("TripID");
+        DriverId = intent.getStringExtra("DriverID");
+        _notificationKey = intent.getStringExtra("NotificationKey");
 
-            intent = getIntent();
+        PicUrl = intent.getStringExtra("PicUrl");
 
-            TripId = intent.getStringExtra("TripID");
-            DriverId = intent.getStringExtra("DriverID");
-            _notificationKey = intent.getStringExtra("NotificationKey");
 
-            //DstLat = intent.getFloatExtra("DstLat",0);
-            //DstLon = intent.getFloatExtra("DstLon",0);
+        DatabaseReference CompletedCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId);
+        CompletedCheck.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if(map.get("Completed")!=null){
+                        Completed = map.get("Completed").toString();
+                        Toast.makeText(PassengerMap.this, "Hi: "+Completed, Toast.LENGTH_SHORT).show();
 
-            //place your pick up marker
-            DatabaseReference PickUpLocation = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId).child("Passengers").child(CurrentUserID);
-            PickUpLocation.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        if(map.get("lat")!=null){
-                            Lat = Float.parseFloat(map.get("lat").toString());
+                        if(Integer.parseInt(Completed)==0){
+
+                        if (LocationPermissionsGranted) {
+
+                            //get data from intent
+
+                            //DstLat = intent.getFloatExtra("DstLat",0);
+                            //DstLon = intent.getFloatExtra("DstLon",0);
+
+                            //place your pick up marker
+                            DatabaseReference PickUpLocation = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId).child("Passengers").child(CurrentUserID);
+                            PickUpLocation.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                        if (map.get("lat") != null) {
+                                            Lat = Float.parseFloat(map.get("lat").toString());
+                                        }
+                                        if (map.get("lon") != null) {
+                                            Lon = Float.parseFloat(map.get("lon").toString());
+                                        }
+                                        passengerLoc = new com.google.android.gms.maps.model.LatLng(Lat, Lon);
+                                        MarkerOptions options = new MarkerOptions().position(passengerLoc).title("Your Pickup Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                                        mMap.addMarker(options);
+                                        CameraPosition cameraPosition = new CameraPosition.Builder().target(passengerLoc).tilt(70)
+                                                .zoom(15)
+                                                .build();
+                                        //mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            DatabaseReference Dst = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId);
+                            Dst.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                        if (map.get("DstLat") != null) {
+                                            DstLat = Float.parseFloat(map.get("DstLat").toString());
+                                        }
+                                        if (map.get("DstLon") != null) {
+                                            DstLon = Float.parseFloat(map.get("DstLon").toString());
+                                        }
+                                        DstLoc = new com.google.android.gms.maps.model.LatLng(DstLat, DstLon);
+                                        MarkerOptions options = new MarkerOptions().position(DstLoc).title("Your Destination").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                                        mMap.addMarker(options);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+                            //PickUpLocation();
+                            //DestinationLoc();
+
+
+                            //add destination marker
+
+                            handler.postDelayed(runnable, 1000);
+                            //get the new location every second
+
+
                         }
-                        if(map.get("lon")!=null){
-                            Lon = Float.parseFloat(map.get("lon").toString());
+                        mMap.getUiSettings().setZoomControlsEnabled(true);
+                        //this may not be needed?
+                        if (ActivityCompat.checkSelfPermission(PassengerMap.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PassengerMap.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
                         }
-                        passengerLoc = new com.google.android.gms.maps.model.LatLng(Lat, Lon);
-                        MarkerOptions options = new MarkerOptions().position(passengerLoc).title("Your Pickup Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                        mMap.addMarker(options);
-                        CameraPosition cameraPosition = new CameraPosition.Builder().target(passengerLoc).tilt(70)
-                                .zoom(15)
-                                .build();
-                        //mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                        mMap.setMyLocationEnabled(true);
+                        mMap.getUiSettings().setMyLocationButtonEnabled(false);
 
+                       }
+                    if(Integer.parseInt(Completed)==1) {
+                        //the trip is ended -> prompt rating system
+                        Intent intent = new Intent(PassengerMap.this, TripComplete.class);
+                        intent.putExtra("TripID", TripId);
+                        intent.putExtra("DriverID", DriverId);
+                        intent.putExtra("DriverUsername", _driverUsername);
+                        intent.putExtra("driverUrl", PicUrl);
+                        intent.putExtra("Cancelled", "0");
+
+                        //update completed trip count
+                        final DatabaseReference completed = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+                        completed.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        completed.child("CompletedTrips").setValue(count+1);
+                        startActivity(intent);
+                        finish();
+                    }
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
-            });
-
-            DatabaseReference Dst = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId);
-            Dst.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists()){
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        if(map.get("DstLat")!=null){
-                            DstLat = Float.parseFloat(map.get("DstLat").toString());
-                        }
-                        if(map.get("DstLon")!=null){
-                            DstLon = Float.parseFloat(map.get("DstLon").toString());
-                        }
-                        DstLoc = new com.google.android.gms.maps.model.LatLng(DstLat,DstLon);
-                        MarkerOptions options = new MarkerOptions().position(DstLoc).title("Your Destination").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                        mMap.addMarker(options);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-
-
-
-            //PickUpLocation();
-            //DestinationLoc();
-
-
-            //add destination marker
-
-            handler.postDelayed(runnable, 1000);
-            //get the new location every second
-
-
-        }
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        //this may not be needed?
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            }
+        });
+       // Toast.makeText(this, ""+Completed, Toast.LENGTH_SHORT).show();
     }
 
     private Handler handler = new Handler();
@@ -217,6 +272,7 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                     passengerLoc = new com.google.android.gms.maps.model.LatLng(Lat, Lon);
                     MarkerOptions options = new MarkerOptions().position(passengerLoc).title("Your Pickup Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
                     mMap.addMarker(options);
+
 
                 }
             }
@@ -300,6 +356,10 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                         Toast.makeText(PassengerMap.this, "The Driver is at your pickup Location", Toast.LENGTH_SHORT).show();
                         new SendNotification(_driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
                         //dont want the passenger to get repeated notifications
+
+                        //could update the databse under passenger--> PickedUp = 1 and driver can view this, and if picked up, remove pick --> show snackbar?
+                        DatabaseReference PickedUp = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverId).child(TripId).child("Passengers").child(CurrentUserID);
+                        PickedUp.child("PickedUp").setValue(1);
                     }
 
 

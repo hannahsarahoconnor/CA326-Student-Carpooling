@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
 import com.example.student_carpooling.R;
 import com.example.student_carpooling.RequestMapActivity;
+import com.example.student_carpooling.UserProfile;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -132,6 +133,15 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
+                        }
+                    });
+
+                    ProfileIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, UserProfile.class);
+                            intent.putExtra("ID", _id);
+                            context.startActivity(intent);
                         }
                     });
 

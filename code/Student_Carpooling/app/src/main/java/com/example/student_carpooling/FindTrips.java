@@ -70,8 +70,7 @@ public class FindTrips extends AppCompatActivity
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
 
-    private TextView DateInput, Time;
-    TimePickerDialog timePickerDialog;
+    private TextView DateInput;
     DatePickerDialog datePickerDialog;
     Calendar calendar;
     int hour;
@@ -140,30 +139,21 @@ public class FindTrips extends AppCompatActivity
 
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                //LatLng string_location = place.getLatLng();
-                //String address = (String) place.getAddress();
                 StartingPt = (String) place.getName();
-                Toast.makeText(FindTrips.this,""+StartingPt,Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(@NonNull Status status) {
-                // TODO: Handle the error.
-                // Log.i(TAG, "An error occurred: " + status);
                 Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
             }
         });
 
         autocompleteFragment.setHint("Starting Point?");
-       // autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
 
         AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDEST);
 
         autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
-        //autocompleteFragmentDST.setTypeFilter(TypeFilter.ADDRESS);
         autocompleteFragmentDST.setCountry("IE");
 
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -188,32 +178,8 @@ public class FindTrips extends AppCompatActivity
 
 // Set up a PlaceSelectionListener to handle the response.
 
-
-        Time = findViewById(R.id.TimeInput);
-        Time.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //show the current time by defaultPic rather than 12:00
-                calendar = Calendar.getInstance();
-                hour = calendar.get(Calendar.HOUR_OF_DAY);
-                minutes = calendar.get(Calendar.MINUTE);
-
-
-                timePickerDialog = new TimePickerDialog(FindTrips.this, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        //how to show if time is am or pm, rather than 24 hours
-                        // FORMAT THIS TO BE IN FORM HH:MM
-                        String format = (String.format(Locale.US,"%02d:%02d", hourOfDay, minute));
-                        Time.setText(format);
-                    }
-
-                },hour,minutes,false);
-                timePickerDialog.show();
-            }
-        });
-
         //Getting time input
+
 
         DateInput = findViewById(R.id.DateInput);
         DateInput.setOnClickListener(new View.OnClickListener() {
@@ -242,22 +208,17 @@ public class FindTrips extends AppCompatActivity
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // final String StartingPoint = StartingPt.getText().toString();
-               // final String DstPoint = DestinationPt.getText().toString();
                 final String startingDate = DateInput.getText().toString();
-                final String startingTime = Time.getText().toString();
                 int radioId = radioGroup.getCheckedRadioButtonId();
                 radioButton = findViewById(radioId);
                 final String luggage = radioButton.getText().toString();
 
-
                 //pass this info to the next activity
                Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
-               //intent.putExtra("Starting", StartingPoint);
-               //intent.putExtra("Destination", DstPoint);
-               //intent.putExtra("Date", startingDate);
-               // intent.putExtra("Time", startingTime);
-               // intent.putExtra("Luggage", luggage);
+               intent.putExtra("Starting",StartingPt);
+               intent.putExtra("Destination",DestinationPt);
+               intent.putExtra("Date", startingDate);
+                intent.putExtra("Luggage", luggage);
                 startActivity(intent);
                 finish();
             }

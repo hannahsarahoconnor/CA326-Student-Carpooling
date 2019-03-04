@@ -57,7 +57,7 @@ public class DriverProfile extends AppCompatActivity
     private ImageView profilePic;
     private DatabaseReference UserDb;
     private String DBName, DBUsername, DBUni,UserID;
-    private TextView NUsername, Nemail;
+    private TextView NUsername, Nemail, ratingText,TripCount;
 
     private RatingBar ratingBar;
 
@@ -65,7 +65,6 @@ public class DriverProfile extends AppCompatActivity
     private String ProfilePicUrl;
     private Button Confirm;
     private ImageView navProfile;
-
     FirebaseUser CurrentUser;
 
 
@@ -78,6 +77,9 @@ public class DriverProfile extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
+        TripCount = findViewById(R.id.tripcount);
+        ratingBar = findViewById(R.id.rating);
+        ratingText = findViewById(R.id.ratingText);
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
@@ -95,6 +97,7 @@ public class DriverProfile extends AppCompatActivity
         getUserDB();
 
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -110,8 +113,6 @@ public class DriverProfile extends AppCompatActivity
 
 
         setupFirebaseListener();
-
-
 
 
         profilePic.setOnClickListener(new View.OnClickListener() {
@@ -246,29 +247,55 @@ public class DriverProfile extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //makes sure the data is present, else the app will crash if not
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0) {
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Name")!=null){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Name") != null) {
                         DBName = map.get("Name").toString();
                         Name.setText(DBName);
 
                     }
-                    if(map.get("University")!=null){
+                    if (map.get("University") != null) {
                         DBUni = map.get("University").toString();
                         Uni.setText(DBUni);
                     }
-                    if(map.get("Username")!=null){
+                    if (map.get("CompletedTrips") != null) {
+                        String completed = map.get("CompletedTrips").toString();
+                        TripCount.setText(completed + "completed carpools");
+                    }
+                    if (map.get("Username") != null) {
                         DBUsername = map.get("Username").toString();
                         Username.setText(DBUsername);
                         NUsername.setText(DBUsername);
                     }
-                    if(map.get("profileImageUrl")!=null){
+                    if (map.get("profileImageUrl") != null) {
                         ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
-                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }}
+                        if (!ProfilePicUrl.equals("defaultPic")) {
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                        }
+                    }
+                    int ratingSum = 0;
+                    float ratingTotal = 0;
+                    float ratingAvg =0;
+                    for(DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()){
+                        ratingSum = ratingSum + Integer.valueOf(rates.getValue().toString());
+                        ratingTotal++;
+                    }
+
+                    //calculate average and set bar
+                    if(ratingTotal != 0){
+                        ratingAvg  = ratingSum/ratingTotal;
+                        ratingBar.setRating(ratingAvg);
+                        ratingText.setText(Math.round(ratingTotal) + " total ratings");
+                        ratingText.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        //set the text to visible
+                        ratingText.setVisibility(View.VISIBLE);
+                    }
+
+                }
 
 
                 }

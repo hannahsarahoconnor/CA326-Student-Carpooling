@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.student_carpooling.tripRecyclerView.Trip;
 import com.example.student_carpooling.tripRecyclerView.TripAdapter;
@@ -31,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -47,15 +49,16 @@ public class PastTripFragment extends Fragment  {
     private RecyclerView.LayoutManager tripLayoutManager;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView NUsername, Nemail;
     private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time, UserName;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
-    Date tripdate;
+    Date tripdate, expiredTripdate;
     LinearLayout linearLayout;
     NavigationView navigationView;
 
     float DstLon, DstLat;
+
+    String Deleted,Completed,Started;
 
 
     @Override
@@ -68,19 +71,15 @@ public class PastTripFragment extends Fragment  {
         tripAdapter = new TripAdapter(getDataTrips(),getActivity());
         tripLayoutManager = new LinearLayoutManager(getActivity());
         tripRecyclerView.setLayoutManager(tripLayoutManager);
-
         tripRecyclerView.setAdapter(tripAdapter);
 
 
-
-        linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
-
         mAuth = FirebaseAuth.getInstance();
         UserID = mAuth.getCurrentUser().getUid();
-
-
-
         getTripIds();
+
+
+        linearLayout = (LinearLayout) v.findViewById(R.id.linearLayout);
 
         return v;
 
@@ -154,13 +153,24 @@ public class PastTripFragment extends Fragment  {
                         DstLat = Float.parseFloat(map.get("DstLat").toString());}
 
 
+                    if(map.get("Deleted")!=null){
+                        Deleted = map.get("Deleted").toString();
+                    }
+                    if(map.get("Completed")!=null){
+                        Completed = map.get("Completed").toString();
+                    }
+                    if(map.get("Started")!=null){
+                        Started = map.get("Started").toString();
+                    }
+
                     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                     try {
-                    String dateStr = Date + " " + Time;
-                     Date Datee = format.parse(dateStr);
-                     long mili = Datee.getTime();
+                     String dateStr = Date + " " + Time;
+                     Date TripDate = format.parse(dateStr);
+                     long mili = TripDate.getTime();
                      tripdate = new Date(mili);
-                    //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+
+
                    } catch (ParseException e) {
                     e.printStackTrace();
                   }
@@ -172,10 +182,42 @@ public class PastTripFragment extends Fragment  {
                     // current date is before trip date..
                     if((rightNow.after(tripdate))){
                         // this means its a past date...
-                        Trip object = new Trip(DstLat,DstLon,UserName,ID,UserID,Date,Time,Seats,LuggageCheck,Starting,Destination);
-                        resultsTrips.add(object);
-                        tripAdapter.notifyDataSetChanged();
 
+                        if(Integer.parseInt(Deleted)!= 1) {
+                            Trip object = new Trip(DstLat, DstLon, UserName, ID, UserID, Date, Time, Seats, LuggageCheck, Starting, Destination);
+                            //sort the trips based on their date in milisec
+
+
+                            //the trip is expired after 5 hours after if not started
+
+
+                            resultsTrips.add(object);
+                            resultsTrips.sort(new Comparator<Trip>() {
+                                @Override
+                                public int compare(Trip o1, Trip o2) {
+                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                    String date1 = o1.getDate() + " " + o1.getTime();
+                                    String date2 = o2.getDate() + " " + o2.getTime();
+                                    Date Date1 = null;
+                                    Date Date2 = null;
+                                    try {
+                                        Date1 = format.parse(date1);
+                                        Date2 = format.parse(date2);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    long mili = Date1.getTime();
+                                    long mili2 = Date2.getTime();
+                                    Date datenew1 = new Date(mili);
+                                    Date datenew2 = new Date(mili2);
+
+
+                                    return datenew2.compareTo(datenew1);
+
+                                }
+                            });
+                            tripAdapter.notifyDataSetChanged();
+                        }
                    }
 
 

@@ -79,6 +79,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class DriverCreate extends AppCompatActivity
@@ -126,7 +127,7 @@ public class DriverCreate extends AppCompatActivity
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
+        UserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
@@ -324,6 +325,8 @@ public class DriverCreate extends AppCompatActivity
                         TripInfo.put("Note", Tripnote);
                         TripInfo.put("Started", 0);
                         TripInfo.put("Completed", 0);
+                        TripInfo.put("Cancelled",0);
+                        TripInfo.put("Deleted",0);
 
                         ref.push().setValue(TripInfo);
                         Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();

@@ -162,6 +162,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                                     PassengerInfo.put("Fullname",_fullname);
                                     PassengerInfo.put("profileImageUrl", url);
                                     PassengerInfo.put("NotificationKey", _notificationKey);
+                                    PassengerInfo.put("PickedUp",0);
                                     PassengerInfo.put("lat", lat);
                                     PassengerInfo.put("lon", lon);
                                     PassengersDB.setValue(PassengerInfo);

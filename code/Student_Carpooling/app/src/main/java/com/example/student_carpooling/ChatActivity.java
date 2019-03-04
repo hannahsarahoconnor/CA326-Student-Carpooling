@@ -1,5 +1,7 @@
 package com.example.student_carpooling;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -42,7 +44,7 @@ public class ChatActivity extends AppCompatActivity {
 
     Intent intent;
 
-    ImageView otherProfilePic;
+    ImageView otherProfilePic,delete;
 
     ImageButton btn_send;
     EditText text_send;
@@ -57,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
     List<Message> messageList;
     RecyclerView messageRecyclerView;
     LinearLayoutManager msgLayoutManager;
-    String CurrentUsername,OtherUserKey;
+    String CurrentUsername,OtherUserKey,Type;
 
    DatabaseReference msgDB, reference, ref;
 
@@ -78,9 +80,12 @@ public class ChatActivity extends AppCompatActivity {
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Username")!=null){
-                        CurrentUsername = map.get("Username").toString();}
+                    CurrentUsername = map.get("Username").toString();}
 
-                    }
+                     if(map.get("Type")!=null){
+                        Type = map.get("Type").toString();}
+
+            }
             }
 
             @Override
@@ -96,7 +101,6 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +123,7 @@ public class ChatActivity extends AppCompatActivity {
         btn_send = findViewById(R.id.send);
         text_send = findViewById(R.id.message);
 
+        delete = findViewById(R.id.delete);
         TextView otherUserName = findViewById(R.id.otherUsername);
         otherProfilePic = findViewById(R.id.otherPic);
         otherFullname = findViewById(R.id.otherFullName);
@@ -160,6 +165,47 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChatActivity.this);
+                builder.setTitle("Are you sure you want to leave this chat?").setMessage("This chat will be deleted from your view and theirs. You wont be able to contact this user again unless in terms of a carpool, are you sure?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
+                        //delete the chat list from this users end only
+                        DatabaseReference chats = FirebaseDatabase.getInstance().getReference().child("ChatList").child(CurrentUserID).child(OtherUserID);
+                        DatabaseReference chats2 = FirebaseDatabase.getInstance().getReference().child("ChatList").child(OtherUserID).child(CurrentUserID);
+                        chats.removeValue();
+                        chats2.removeValue();
+
+                        //get current user type
+                        if(Type.equals("Driver")) {
+                            Intent intent = new Intent(ChatActivity.this,DriverMessage.class);
+                            startActivity(intent);
+                            finish();
+                            dialog.dismiss();
+                        }
+                        else {
+                            Intent intent = new Intent(ChatActivity.this,PassengerMessage.class);
+                            startActivity(intent);
+                            finish();
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
+                                dialog.cancel();
+
+                            }
+                        });
+                final AlertDialog alert = builder.create();
+                alert.show();
+            }
+
         });
 
 

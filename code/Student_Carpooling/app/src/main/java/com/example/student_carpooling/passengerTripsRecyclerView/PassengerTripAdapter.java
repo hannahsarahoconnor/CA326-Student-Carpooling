@@ -56,10 +56,10 @@ public class PassengerTripAdapter  extends RecyclerView.Adapter<PassengerTripVie
         final String TripId = list.get(i).getTripId();
         final String DriverId = list.get(i).getDriverID();
         final String DriverPicUrl = list.get(i).getDriverPicUrl();
-        final double lat = list.get(i).getLat();
-        final double lon = list.get(i).getLon();
-        final double dstlat = list.get(i).getDstlat();
-        final double dstlon = list.get(i).getDstlon();
+        final float lat = list.get(i).getLat();
+        final float lon = list.get(i).getLon();
+        final float dstlat = list.get(i).getDstlat();
+        final float dstlon = list.get(i).getDstlon();
         final String NotificationKey = list.get(i).getNotificationKey();
 
         passengerTripViewHolders.itemView.setOnClickListener(new View.OnClickListener() {

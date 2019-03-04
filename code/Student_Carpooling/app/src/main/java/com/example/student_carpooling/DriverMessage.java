@@ -126,28 +126,6 @@ public class DriverMessage extends AppCompatActivity
         recyclerView.setAdapter(userAdapter);
 
 
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                Toast.makeText(DriverMessage.this, "on Swiped ", Toast.LENGTH_SHORT).show();
-                //Remove swiped item from list and notify the RecyclerView
-                //final int position = viewHolder.getAdapterPosition();
-                //adapter.notifyItemRemoved(position);
-                // resultsUsers.remove(position);
-                //                userAdapter.notifyDataSetChanged();
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-
 
         searchUsers = findViewById(R.id.searchBar);
 
@@ -179,7 +157,6 @@ public class DriverMessage extends AppCompatActivity
 
 
         }}
-
                 private void closeKeyboard(){
                     View view = this.getCurrentFocus();
                     if(view != null){
@@ -207,14 +184,11 @@ public class DriverMessage extends AppCompatActivity
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             //previous list is cleared - works
                             resultsUsers.clear();
-                            //this isnt working
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 // if (dataSnapshot.getChildrenCount() > 0){
                                 final String id = snapshot.getKey();
                                 // only show it if it's a reciever or sender to the currrent user.// how get this info -> function check, pass the id to a func
                                 if((!id.equals(CurrentUser.getUid()) && (chatters.contains(id)))){
-                                    Toast.makeText(DriverMessage.this, id, Toast.LENGTH_SHORT).show();
-
                                     resultsUsers.clear();
                                     DatabaseReference GetUserDB = FirebaseDatabase.getInstance().getReference().child("users").child(id);
                                     GetUserDB.addListenerForSingleValueEvent(new ValueEventListener() {

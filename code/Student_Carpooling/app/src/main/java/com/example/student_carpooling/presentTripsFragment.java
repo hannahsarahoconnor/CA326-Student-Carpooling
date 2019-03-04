@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -186,6 +187,30 @@ public class presentTripsFragment extends Fragment  {
                         // this means its a past date...
                         Trip object = new Trip(DstLat,DstLon,UserName, TripID, UserID,Date, Time, Seats, LuggageCheck, Starting, Destination);
                         resultsTrips.add(object);
+                        resultsTrips.sort(new Comparator<Trip>() {
+                            @Override
+                            public int compare(Trip o1, Trip o2) {
+                                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                String date1 = o1.getDate() + " " + o1.getTime();
+                                String date2 = o2.getDate() + " " + o2.getTime();
+                                Date Date1 = null;
+                                Date Date2 = null;
+                                try {
+                                    Date1 = format.parse(date1);
+                                    Date2 = format.parse(date2);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                long mili = Date1.getTime();
+                                long mili2 = Date2.getTime();
+                                Date datenew1 = new Date(mili);
+                                Date datenew2 = new Date(mili2);
+
+
+                                return datenew1.compareTo(datenew2);
+
+                            }
+                        });
                         PresentTripAdapter.notifyDataSetChanged();
                         counter++;
 

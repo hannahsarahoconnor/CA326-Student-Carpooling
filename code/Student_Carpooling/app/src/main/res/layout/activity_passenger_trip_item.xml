@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PassengerTripItem"
+    tools:context="PassengerTripItem"
     android:background="@color/colorPrimaryDark"
     android:layout_above="@+id/relLayout1">
 
@@ -31,6 +31,15 @@
             android:textColor="@color/quantum_white_100"
             >
 
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="280dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_delete"
+                android:visibility="invisible"/>
 
 
 
@@ -107,6 +116,8 @@
 
 
         <TextView
+            android:id="@+id/driverText"
+            android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -123,6 +134,7 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/DriverProfilePic"
                 android:layout_width="30dp"
+                android:visibility="visible"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:gravity="start"
@@ -130,6 +142,7 @@
 
             <TextView
                 android:id="@+id/DriverUserName"
+                android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -146,6 +159,7 @@
             <ImageView
                 android:layout_toRightOf="@+id/DriverUserName"
                 android:id="@+id/profile"
+                android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -158,6 +172,7 @@
 
             <ImageView
                 android:id="@+id/message"
+                android:visibility="visible"
                 android:layout_toRightOf="@+id/profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -186,7 +201,9 @@
         >
 
         <TextView
+            android:id="@+id/passengerText"
             android:text="Passengers"
+            android:visibility="visible"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/quantum_googred700"
@@ -213,6 +230,26 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:visibility="gone"/>
+
+
+        <TextView
+            android:id="@+id/CancelText"
+            android:text="This driver has cancelled this trip,\n click the button below if you want to leave a review for this driver "
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:textColor="@color/quantum_black_100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/CancelButton"
+            android:layout_marginTop="150dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Review Driver"/>
 
     </LinearLayout>
 

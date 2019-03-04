@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,24 +59,22 @@ public class PassengerProfile extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail;
+    private TextView NUsername, Nemail,TripCount;
     private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-    private TextView Name,Username,Uni;
+    private TextView Name,Username,Uni,ratingText;
 
     private ImageView profilePic;
     private String DBName, DBUsername, DBUni;
 
+    private RatingBar ratingBar;
 
     private Uri ResultUri;
     private Button Confirm;
 
 
     FirebaseUser CurrentUser;
-
-
-
 
 
     @Override
@@ -93,6 +92,11 @@ public class PassengerProfile extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        TripCount = findViewById(R.id.tripcount);
+
+        ratingBar = findViewById(R.id.rating);
+        ratingText = findViewById(R.id.ratingText);
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
@@ -286,6 +290,10 @@ public class PassengerProfile extends AppCompatActivity
                         DBUni = map.get("University").toString();
                         Uni.setText(DBUni);
                     }
+                    if (map.get("CompletedTrips") != null) {
+                        String completed = map.get("CompletedTrips").toString();
+                        TripCount.setText(completed + "completed carpools");
+                    }
                     if(map.get("Username")!=null){
                         DBUsername = map.get("Username").toString();
                         Username.setText(DBUsername);
@@ -302,6 +310,27 @@ public class PassengerProfile extends AppCompatActivity
                             Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
                             Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
                         }}
+
+                    int ratingSum = 0;
+                    float ratingTotal = 0;
+                    float ratingAvg =0;
+                    for(DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()){
+                        ratingSum = ratingSum + Integer.valueOf(rates.getValue().toString());
+                        ratingTotal++;
+                    }
+
+                    //calculate average and set bar
+                    if(ratingTotal != 0){
+                        ratingAvg  = ratingSum/ratingTotal;
+                        ratingBar.setRating(ratingAvg);
+                        ratingText.setText(Math.round(ratingTotal) + " total ratings");
+                        ratingText.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        //set the text to visible
+                        ratingText.setVisibility(View.VISIBLE);
+                    }
+
 
 
                 }

@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="10dp"
+        android:textSize="25sp"
+        android:text="Report User" />
+
+    <EditText
+        android:background="@color/colorPrimaryDark"
+        android:id="@+id/reason"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="Enter your reason.."
+        android:inputType="textMultiLine|text"
+        android:padding="10dp"
+        android:layout_below="@+id/textView" />
+
+    <Button
+        android:gravity="center"
+        android:id="@+id/Submit"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Submit"
+        android:layout_below="@+id/reason"/>
+
+    <Button
+        android:id="@+id/Cancel"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Cancel"
+        android:layout_below="@+id/reason"
+        android:layout_toRightOf="@+id/Submit"
+ />
+
+
+</RelativeLayout>
