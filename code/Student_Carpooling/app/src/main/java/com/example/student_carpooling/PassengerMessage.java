@@ -488,6 +488,18 @@ public class PassengerMessage extends AppCompatActivity
                 AlertDialog alertDialog = dialog.create();
                 alertDialog.show();
                 break;
+
+            case R.id.help:
+                //go to new activity
+                Intent intent = new Intent(PassengerMessage.this,PassengerHelp.class);
+                startActivity(intent);
+                break;
+
+            case R.id.contact:
+                Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
+                startActivity(intent1);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }

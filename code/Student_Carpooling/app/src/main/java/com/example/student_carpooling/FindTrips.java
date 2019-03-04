@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -49,8 +50,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -77,10 +82,11 @@ public class FindTrips extends AppCompatActivity
     int minutes;
     int year;
     int month;
+    private Date date,rightNow;
     int dayOfMonth;
     private RadioGroup radioGroup;;
     private RadioButton radioButton;
-    private String StartingPt, DestinationPt;
+    private String StartingPt="", DestinationPt="";
     private Button filter;
     private String DBUsername;
 
@@ -208,19 +214,49 @@ public class FindTrips extends AppCompatActivity
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String startingDate = DateInput.getText().toString();
+                String startingDate ="";
+                String luggage ="";
+                startingDate = DateInput.getText().toString();
+                //covert startingDate to mili secs
+
+
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                try {
+                    Date Datee = format.parse(startingDate+ " 00:00");
+                    long mili = Datee.getTime();
+                    date = new Date(mili);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+                rightNow = Calendar.getInstance().getTime();
                 int radioId = radioGroup.getCheckedRadioButtonId();
                 radioButton = findViewById(radioId);
-                final String luggage = radioButton.getText().toString();
-
+                luggage = radioButton.getText().toString();
                 //pass this info to the next activity
-               Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
+                Calendar cal1 = Calendar.getInstance();
+                Calendar cal2 = Calendar.getInstance();
+                cal1.setTime(date);
+                cal2.setTime(rightNow);
+
+
+                boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                        cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                if(rightNow.before(date)||sameDay){
+                Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
                intent.putExtra("Starting",StartingPt);
                intent.putExtra("Destination",DestinationPt);
                intent.putExtra("Date", startingDate);
                 intent.putExtra("Luggage", luggage);
                 startActivity(intent);
-                finish();
+                finish();}
+                else{
+                    Toast.makeText(FindTrips.this, "Please don't select a past date", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

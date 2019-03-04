@@ -6,4 +6,16 @@
         android:orderInCategory="100"
         android:title="Delete Account"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/help"
+        android:orderInCategory="100"
+        android:title="Help"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/contact"
+        android:orderInCategory="100"
+        android:title="Contact Admins"
+        app:showAsAction="never"/>
 </menu>

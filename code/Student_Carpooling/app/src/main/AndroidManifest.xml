@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".TripComplete"></activity>
+        <activity android:name=".PassengerHelp"></activity>
+        <activity android:name=".TripComplete" />
         <activity android:name=".PassengerTripItem" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

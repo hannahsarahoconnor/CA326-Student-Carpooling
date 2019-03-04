@@ -273,6 +273,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
 
             handler.postDelayed(runnable, 1000);
+            Passengerhandler.postDelayed(Passengerrunnable, 600000);
             //get the new location every second
 
 
@@ -281,15 +282,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
         }
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //permission check
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         mMap.setMyLocationEnabled(true);
@@ -305,6 +298,16 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
             handler.postDelayed(this, 1000);
         }
     };
+
+    private Handler Passengerhandler = new Handler();
+    private Runnable Passengerrunnable = new Runnable() {
+        @Override
+        public void run() {
+            addPassengers();
+            Passengerhandler.postDelayed(this, 600000);
+        }
+    };
+
 
     private void getDriverLocation() {
 
@@ -396,6 +399,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
 
     private void addPassengers(){
+            refreshMap();
             DatabaseReference Passengers = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID).child("Passengers");
             Passengers.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

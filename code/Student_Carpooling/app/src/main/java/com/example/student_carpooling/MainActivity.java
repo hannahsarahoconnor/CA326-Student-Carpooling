@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -163,13 +164,17 @@ public class MainActivity extends AppCompatActivity {
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+                            final ProgressBar bar;
+                            bar = findViewById(R.id.indeterminateBar);
                             if (task.isSuccessful()) {
                                 LoginDialog.dismiss();
                                 checkEmailVerfication(mAuth, type);
+                                bar.setVisibility(View.VISIBLE);
                             } else {
                                 Toast.makeText(MainActivity.this, "Wrong Email or Password, Try again", Toast.LENGTH_SHORT).show();
                                 Email.setText("");
                                 Password.setText("");
+                                bar.setVisibility(View.INVISIBLE);
                             }
                         }
                     });

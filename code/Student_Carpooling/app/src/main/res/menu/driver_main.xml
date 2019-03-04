@@ -16,7 +16,7 @@
     <item
         android:id="@+id/contact"
         android:orderInCategory="100"
-        android:title="Contact Developers"
+        android:title="Contact Admins"
         app:showAsAction="never"/>
 
 </menu>
