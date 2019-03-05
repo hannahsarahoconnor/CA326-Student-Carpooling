@@ -7,6 +7,9 @@
     <string name="Password">Password</string>
     <string name="Description">Image of our App Logo</string>
     <string name="Name">Name</string>
+    <string name="ForgotPassword">Forgot Password?</string>
+    <string name="CreateTrip">Create a Trip</string>
+    <string name="NewTrip">New Trip</string>
     <string name="Username">Username</string>
     <string name="Surname">Surname</string>
     <string name="create_trip">Trip</string>

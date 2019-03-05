@@ -10,7 +10,7 @@
     android:padding="5dp"
     android:layout_gravity="center"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/side_nav_bar"
     >
 
     <TextView
@@ -35,6 +35,8 @@
         android:hint="@string/Email"
         android:inputType="textEmailAddress"
         android:autofillHints="email"
+        android:background="#33B13737"
+
         tools:targetApi="o"/>
 
     <EditText
@@ -45,6 +47,7 @@
         android:hint="@string/Password"
         android:inputType="textPassword"
         android:autofillHints="email"
+        android:background="#33B13737"
         tools:targetApi="o"/>
 
     <RadioGroup
