@@ -15,6 +15,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -54,17 +55,17 @@ public class Register extends AppCompatActivity {
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
                 finish();
             }
         });
+
         //stores login status
 
         //can save other user information to database from getting the user ID that is assigned from creation using Auth

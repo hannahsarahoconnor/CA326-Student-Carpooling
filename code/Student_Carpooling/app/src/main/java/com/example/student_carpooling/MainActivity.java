@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     UserID = mAuth2.getCurrentUser().getUid();
                     DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
                     //check to see what user type they are
-                    UserDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                    UserDb.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()){
@@ -99,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
         // need a way of keeping the user signed in after closing app.
         Button SignIn;
         Button Registration;
+        Button ResetPassword;
 
         LoginDialog = new Dialog(this);
         SignIn = findViewById(R.id.Login);
         Registration = findViewById(R.id.Register);
+        ResetPassword = findViewById(R.id.Reset);
 
         SignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +121,16 @@ public class MainActivity extends AppCompatActivity {
                 moveToRegister();
             }
         });
+
+        ResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ResetPassword.class);
+                startActivity(intent);
+            }
+        });
+
+
 
     }
 

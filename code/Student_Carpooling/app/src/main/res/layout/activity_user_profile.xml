@@ -18,6 +18,14 @@
         android:background="@color/colorPrimary"
 
         >
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ic_back" />
+
     </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

@@ -49,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageButton btn_send;
     EditText text_send;
 
-    String CurrentUserID, OtherUserID;
+    String CurrentUserID, OtherUserID,AdminID;
     FirebaseAuth mAuth;
 
     TextView otherFullname;
@@ -60,7 +60,6 @@ public class ChatActivity extends AppCompatActivity {
     RecyclerView messageRecyclerView;
     LinearLayoutManager msgLayoutManager;
     String CurrentUsername,OtherUserKey,Type;
-
    DatabaseReference msgDB, reference, ref;
 
     @Override
@@ -97,17 +96,17 @@ public class ChatActivity extends AppCompatActivity {
 
 
 
+        ImageView back = findViewById(R.id.back);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
                 finish();
             }
         });
+
 
 
         //set up Recycler View
@@ -133,12 +132,18 @@ public class ChatActivity extends AppCompatActivity {
         OtherUserID = intent.getStringExtra("ID");
         otherUserName.setText(StrOtherUserName);
         otherFullname.setText(StrOtherFullName);
+        AdminID = "tFRougwMUphm8B95q7EAToUoYci1";
 
         //Other User id is showing the current User Id instead
 
        // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
        if(!(OtherProfilePicUrl.equals("defaultPic"))){
             Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
+       }
+
+       if(OtherUserID.equals(AdminID)){
+           String Message = "This is an automated message. Please send us your query and a member of our team get back to you shortly!";
+           SendNewMessage(Message,AdminID,CurrentUserID);
        }
 
 

@@ -477,7 +477,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                 .build();
         //mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        MarkerOptions options = new MarkerOptions().position(Loc).title("Your Destination");
+        MarkerOptions options = new MarkerOptions().position(Loc).title("Your Destination").snippet("Calculate the route to your destination?");
         mMap.addMarker(options);
     }
 

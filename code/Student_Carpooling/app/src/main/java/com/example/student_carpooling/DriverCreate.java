@@ -95,7 +95,7 @@ public class DriverCreate extends AppCompatActivity
     private DatabaseReference UserDb, ref;
     NavigationView navigationView;
     private ImageView navProfile;
-    private TextView DateInput, Time, Destination;
+    private TextView DateInput, Time;
     TimePickerDialog timePickerDialog;
     DatePickerDialog datePickerDialog;
     Calendar calendar;
@@ -105,18 +105,17 @@ public class DriverCreate extends AppCompatActivity
     int month;
     int dayOfMonth;
     private String startingDate, startingTime;
-    private RadioGroup radioGroup;;
+    private RadioGroup radioGroup;
     private RadioButton radioButton;
     private EditText TripNote;
     private String DBUsername, numberSeats,oldDate, oldTime;
     private String starting ,destination;
-    private int result = 0;
+    private boolean result = false;
     FirebaseUser CurrentUser;
 
-    private Date tripdate, olddate,oldtripdate;
+    private Date tripdate,trip,oldtripdate;
 
     private LatLng latLng;
-
 
 
     int AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -299,114 +298,68 @@ public class DriverCreate extends AppCompatActivity
         Create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //final String StartingPoint = StartingPt.getText().toString();
-                //final String DstPoint = DestinationPt.getText().toString();
+
+                Date rightNow = Calendar.getInstance().getTime();
                 final String startingDate = DateInput.getText().toString();
                 final String startingTime = Time.getText().toString();
                 int radioId = radioGroup.getCheckedRadioButtonId();
                 radioButton = findViewById(radioId);
                 final String luggageCheck = radioButton.getText().toString();
                 final String Tripnote = TripNote.getText().toString();
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                try {
+
+                    String dateStr = startingDate + " " + startingTime;
+                    Date Datee = format.parse(dateStr);
+                    long mili = Datee.getTime();
+                    trip = new Date(mili);
+                    //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if(rightNow.after(trip)){
+                    Toast.makeText(DriverCreate.this, "past date", Toast.LENGTH_SHORT).show();
+                }
+
                 if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
                     Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    //check to make sure it doesnt conflict with another pre existing trip made by that driver
-                    DatabaseReference TripIDCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                    TripIDCheck.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                    final String key = id.getKey();
+                    Date_TimeCheck(startingDate,startingTime);
 
-                                    DatabaseReference TripDetailsCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(key);
-                                    TripDetailsCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()) {
-                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                                if (map.get("Date") != null) {
-                                                    oldDate = map.get("Date").toString();
-                                                }
-                                                if (map.get("Time") != null) {
-                                                    oldTime = map.get("Time").toString();
-                                                }
+                    if(result){
 
-                                                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                                                try {
-                                                    String dateStr = startingDate + " " + startingTime;
-                                                    String dateStr2 = oldDate + " " + oldTime;
-                                                    Date TripDate = format.parse(dateStr);
-                                                    Date OldTripDate = format.parse(dateStr2);
-                                                    long mili = TripDate.getTime();
-                                                    long mili2 = OldTripDate.getTime();
-                                                    tripdate = new Date(mili);
-                                                    oldtripdate = new Date(mili2);
-                                                } catch (ParseException e) {
-                                                    e.printStackTrace();
-                                                }
-
-                                                if(oldtripdate.equals(tripdate)){
-                                                    result = 1;
-                                                    Toast.makeText(DriverCreate.this, "check"+result, Toast.LENGTH_SHORT).show();
-                                                }
-
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                                }
-
-                                Toast.makeText(DriverCreate.this, "check2"+result, Toast.LENGTH_SHORT).show();
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    Toast.makeText(DriverCreate.this, "check3"+result, Toast.LENGTH_SHORT).show();
-                    //if(result==1){
-                        //oast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
-                   // }
-
-                    //  if(result==0){
-
-                    //   ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                    //    Map TripInfo = new HashMap();
+                        ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                        Map TripInfo = new HashMap();
                         //add driver username and maybe name to the form too
-                    //    TripInfo.put("Username", DBUsername);
-                    ////   TripInfo.put("Starting", starting);
-                    //    TripInfo.put("Destination",destination);
-                    //    TripInfo.put("DstLat", latLng.latitude);
-                    //    TripInfo.put("DstLon", latLng.longitude);
-                    //    TripInfo.put("Date", startingDate);
-                    //    TripInfo.put("Seats", numberSeats);
-                    //    TripInfo.put("Time", startingTime);
-                    //    TripInfo.put("Luggage", luggageCheck);
-                   //     TripInfo.put("Note", Tripnote);
-                    //    TripInfo.put("Started", 0);
-                     //   TripInfo.put("Completed", 0);
-                    //    TripInfo.put("Cancelled",0);
-                    //    TripInfo.put("Deleted",0);
+                        TripInfo.put("Username", DBUsername);
+                        TripInfo.put("Starting", starting);
+                        TripInfo.put("Destination",destination);
+                        TripInfo.put("DstLat", latLng.latitude);
+                        TripInfo.put("DstLon", latLng.longitude);
+                        TripInfo.put("Date", startingDate);
+                        TripInfo.put("Seats", numberSeats);
+                        TripInfo.put("Time", startingTime);
+                        TripInfo.put("Luggage", luggageCheck);
+                        TripInfo.put("Note", Tripnote);
+                        TripInfo.put("Started", 0);
+                        TripInfo.put("Completed", 0);
+                        TripInfo.put("Cancelled",0);
+                        TripInfo.put("Deleted",0);
 
-                    //    ref.push().setValue(TripInfo);
-                     //   Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
-                    //    startActivity(new Intent(DriverCreate.this, DriverTrips.class));
-                    //    finish();
+                        ref.push().setValue(TripInfo);
+                        Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
 
+                        startActivity(new Intent(DriverCreate.this, DriverTrips.class));
+                        finish();
 
-                   // }
                     }
+                     //   DateInput.setText("");
+                    //    Time.setText("");
+
+
+                }
 
 
             }
@@ -417,12 +370,72 @@ public class DriverCreate extends AppCompatActivity
     }
 
 
+    private void Date_TimeCheck(final String Date, final String Time){
+        DatabaseReference TripIDCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+        TripIDCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        //get the id for trip
+                        final String key = id.getKey();
+                        DatabaseReference TripDetailsCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(key);
+                        TripDetailsCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                    if (map.get("Date") != null) {
+                                        oldDate = map.get("Date").toString();
+                                    }
+                                    if (map.get("Time") != null) {
+                                        oldTime = map.get("Time").toString();
+                                    }
 
+                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                    try {
+                                        String dateStr2 = oldDate + " " + oldTime;
+                                        Date OldTripDate = format.parse(dateStr2);
+                                        Date TripDate = format.parse(Date + " " + Time);
+                                        long mili2 = OldTripDate.getTime();
+                                        long mili = TripDate.getTime();
+                                        oldtripdate = new Date(mili2);
+                                        tripdate = new Date(mili);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
 
-    private void Date_TimeCheck(final String Date,final String Time){
+                                    if(oldtripdate.equals(tripdate)){
+                                        Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
+                                        result = false;
+                                    }
+                                    else{
+                                        result = true;
+                                        return;
+                                    }
+                                }
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
+
+
 
     private void geoLocate(){
     Geocoder geocoder = new Geocoder(DriverCreate.this);
@@ -501,6 +514,40 @@ public class DriverCreate extends AppCompatActivity
                 AlertDialog alertDialog = dialog.create();
                 alertDialog.show();
                 break;
+
+
+            case R.id.help:
+                Intent intent = new Intent(DriverCreate.this,DriverHelp.class);
+                startActivity(intent);
+                break;
+
+            case R.id.contact:
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(DriverCreate.this);
+                dialog1.setTitle("Contact Admins");
+                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent1 = new Intent(DriverCreate.this,ChatActivity.class);
+                        intent1.putExtra("Username","StudentCarpooling");
+                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                        intent1.putExtra("Fullname","Admins");
+                        intent1.putExtra("ProfilePicURL","defaultPic");
+                        startActivity(intent1);
+                    }
+                });
+
+                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog1 = dialog1.create();
+                alertDialog1.show();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);

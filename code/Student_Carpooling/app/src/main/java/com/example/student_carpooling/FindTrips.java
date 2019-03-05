@@ -214,50 +214,52 @@ public class FindTrips extends AppCompatActivity
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String startingDate ="";
-                String luggage ="";
+                String startingDate;
+                String luggage = "";
                 startingDate = DateInput.getText().toString();
                 //covert startingDate to mili secs
 
+                if (!TextUtils.isEmpty(startingDate)) {
 
-                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                try {
-                    Date Datee = format.parse(startingDate+ " 00:00");
-                    long mili = Datee.getTime();
-                    date = new Date(mili);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                    try {
+                        Date Datee = format.parse(startingDate + " 00:00");
+                        long mili = Datee.getTime();
+                        date = new Date(mili);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
 
-
-
-
-                rightNow = Calendar.getInstance().getTime();
-                int radioId = radioGroup.getCheckedRadioButtonId();
-                radioButton = findViewById(radioId);
-                luggage = radioButton.getText().toString();
-                //pass this info to the next activity
-                Calendar cal1 = Calendar.getInstance();
-                Calendar cal2 = Calendar.getInstance();
-                cal1.setTime(date);
-                cal2.setTime(rightNow);
+                    rightNow = Calendar.getInstance().getTime();
+                    int radioId = radioGroup.getCheckedRadioButtonId();
+                    radioButton = findViewById(radioId);
+                    luggage = radioButton.getText().toString();
+                    //pass this info to the next activity
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(date);
+                    cal2.setTime(rightNow);
 
 
-                boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
-                        cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 
-                if(rightNow.before(date)||sameDay){
-                Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
-               intent.putExtra("Starting",StartingPt);
-               intent.putExtra("Destination",DestinationPt);
-               intent.putExtra("Date", startingDate);
-                intent.putExtra("Luggage", luggage);
-                startActivity(intent);
-                finish();}
-                else{
-                    Toast.makeText(FindTrips.this, "Please don't select a past date", Toast.LENGTH_SHORT).show();
+                    if (rightNow.before(date) || sameDay) {
+                        Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
+                        intent.putExtra("Starting", StartingPt);
+                        intent.putExtra("Destination", DestinationPt);
+                        intent.putExtra("Date", startingDate);
+                        intent.putExtra("Luggage", luggage);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(FindTrips.this, "Please don't select a past date", Toast.LENGTH_SHORT).show();
+                    }
+                } else{
+                    Toast.makeText(FindTrips.this, "Enter a date", Toast.LENGTH_SHORT).show();
                 }
             }
+
         });
 
 

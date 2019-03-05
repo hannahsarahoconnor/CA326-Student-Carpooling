@@ -100,28 +100,12 @@ public class DriverTrips extends AppCompatActivity
         tabSwitch.setAdapter(tabAdapter);
         tabLayout.setupWithViewPager(tabSwitch);
 
+        tabSwitch.setCurrentItem(1);
 
-
-
-
-
-
-
-        //tabSwitch.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-
-        //example of what will be put inside resultTrips..
-       // Trip object = new Trip()
-
-        //add
-        //notify change
-
+       // viewpager.setCurrentItem(posotion);
 
 
     }
-    //get the unique keys of the trips under the user id
-
-
 
     @Override
     public void onBackPressed() {

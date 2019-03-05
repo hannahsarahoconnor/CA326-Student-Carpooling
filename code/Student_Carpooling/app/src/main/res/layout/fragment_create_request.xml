@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".CreateRequestFragment"
+        android:orientation="vertical"
+        android:id="@+id/linearLayout2">
+
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/quantum_white_100">
+
+
+        <LinearLayout
+            android:paddingTop="45dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/relLayout1"
+            android:background="@color/quantum_white_100"
+            >
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20sp"
+                >
+
+                <fragment android:id="@+id/autocomplete_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                    />
+
+
+            </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/relLayout2"
+                android:background="@color/quantum_white_100"
+                >
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20sp">
+
+
+                    <fragment android:id="@+id/autocomplete_fragmentDST"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                        android:background="@null"
+                        />
+
+                </android.support.v7.widget.CardView>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/DateInput"
+                    android:layout_width="150dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:hint="Date"
+                    android:clickable="true"
+                    style="@android:style/Widget.EditText"
+                    android:autofillHints="starting point"
+                    tools:targetApi="o"/>
+
+                <TextView
+                    android:id="@+id/TimeInput"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="160dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    style="@android:style/Widget.EditText"
+                    android:clickable="true"
+                    android:hint="Time" />
+
+            </LinearLayout>
+            <LinearLayout android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <RadioGroup
+                    android:id="@+id/LuggageInput"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_marginTop="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="Luggage Space? "
+                        android:textColor="@android:color/black"
+                        android:textSize="20dp" />
+
+                    <RadioButton
+                        android:id="@+id/Yes"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Yes"
+                        android:checked="true"/>
+
+                    <RadioButton
+                        android:id="@+id/No"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="300dp"
+                        android:layout_height="wrap_content"
+                        android:text="No" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:text="Note:"
+                android:textColor="@android:color/black"
+                android:textSize="20dp" />
+
+            <android.support.v7.widget.CardView
+                android:layout_width="350dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp">
+
+                <EditText
+                    android:id="@+id/Note"
+                    android:hint="Please put additional notes for the driver here"
+                    android:layout_width="350dp"
+                    android:layout_height="100dp" />
+            </android.support.v7.widget.CardView>
+
+
+
+            <Button
+                android:id="@+id/submitt"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="Submit"
+                android:textSize="20sp"
+                android:textColor="@color/quantum_white_100"
+                android:background="@color/colorPrimary"
+                android:textAllCaps="false"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

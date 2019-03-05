@@ -204,14 +204,25 @@ public class DriverTripItem extends AppCompatActivity {
                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                 if (map.get("Completed") != null) {
                     completed = Integer.parseInt(map.get("Completed").toString());
-                    //Toast.makeText(DriverTripItem.this, "" + completed, Toast.LENGTH_SHORT).show();
+
+                    if(Integer.parseInt(map.get("Completed").toString())==1){
+                        cancel.setVisibility(View.INVISIBLE);
+                        request.setVisibility(View.INVISIBLE);
+                        start.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        SeatrecyclerView.setVisibility(View.GONE);
+                        PassengerText.setVisibility(View.GONE);
+                        cancelledTV.setVisibility(View.VISIBLE);
+                        cancelledTV.setText("This trip has been completed");
+                        delete.setVisibility(View.VISIBLE);
+                    }
                 }
 
 
                 if (map.get("Cancelled") != null) {
                    // cancelled = Integer.parseInt(map.get("Cancelled").toString());
 
-                    if(Integer.parseInt(map.get("Cancelled").toString()) == 1 ||Integer.parseInt(map.get("Completed").toString())==1){
+                    if(Integer.parseInt(map.get("Cancelled").toString()) == 1){
 
                         cancel.setVisibility(View.INVISIBLE);
                         request.setVisibility(View.INVISIBLE);
@@ -577,7 +588,7 @@ public class DriverTripItem extends AppCompatActivity {
 
     private void PassengerInfo(final String ID){
         DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Passengers").child(ID);
-        PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+        PassengerInfo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //get lon and lat
@@ -609,7 +620,7 @@ public class DriverTripItem extends AppCompatActivity {
     private void PassengerUserInfo(final String PassID,final float Lat,final float Lon){
 
         DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("users").child(PassID);
-        PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+        PassengerInfo.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -740,7 +751,7 @@ public class DriverTripItem extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        resultsPassengers.clear();
+       // resultsPassengers.clear();
 
     }
 

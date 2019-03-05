@@ -218,6 +218,7 @@ public class PassengerTripItem extends AppCompatActivity {
                                 intent.putExtra("Lon", Lon);
                                 intent.putExtra("PicUrl", _PicUrl);
                                 intent.putExtra("NotificationKey", NotificationKey);
+                                intent.putExtra("Username", _driverUsername);
                                 startActivity(intent);
                             }
                         });

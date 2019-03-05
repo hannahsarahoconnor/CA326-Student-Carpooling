@@ -21,6 +21,13 @@
             android:background="@color/colorPrimary"
 
             >
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_back" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/otherPic"
@@ -86,6 +93,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/chatRecycler"
+        android:scrollbars="vertical"
         android:layout_below="@+id/app_bar_chat"
         android:layout_above="@+id/relLayout2"/>
 
@@ -124,3 +132,4 @@
 
 
 </RelativeLayout>
+

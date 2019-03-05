@@ -122,7 +122,7 @@ public class PassengerMessage extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //showKeyboard();
+                showKeyboard();
                 resultsUsers.clear();
                 searchUser(s.toString().toLowerCase());
                 //closeKeyboard();
@@ -152,16 +152,13 @@ public class PassengerMessage extends AppCompatActivity
             inm.hideSoftInputFromWindow(view.getWindowToken(),0);
         }
     }
-
-    //private void showKeyboard(){
-        //View view = this.getCurrentFocus();
-       // if (view.requestFocus()) {
-        //    InputMethodManager imm = (InputMethodManager)
-        //            getSystemService(Context.INPUT_METHOD_SERVICE);
-        //    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-       // }
-
-   // }
+  private void showKeyboard(){
+    View view = this.getCurrentFocus();
+      if (view.requestFocus()) {
+        InputMethodManager imm = (InputMethodManager)
+                  getSystemService(Context.INPUT_METHOD_SERVICE);
+         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+       } }
     private void searchUser(String s){
         closeKeyboard();
         final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -236,10 +233,6 @@ public class PassengerMessage extends AppCompatActivity
         });
 
     }
-
-
-
-
 
 
     private void getRecievers() {
@@ -405,29 +398,6 @@ public class PassengerMessage extends AppCompatActivity
         return resultsUsers;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -491,13 +461,36 @@ public class PassengerMessage extends AppCompatActivity
 
             case R.id.help:
                 //go to new activity
+                //tFRougwMUphm8B95q7EAToUoYci1
                 Intent intent = new Intent(PassengerMessage.this,PassengerHelp.class);
                 startActivity(intent);
                 break;
 
             case R.id.contact:
-                Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
-                startActivity(intent1);
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerMessage.this);
+                dialog1.setTitle("Contact Admins");
+                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
+                        intent1.putExtra("Username","StudentCarpooling");
+                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                        intent1.putExtra("Fullname","Admins");
+                        intent1.putExtra("ProfilePicURL","defaultPic");
+                        startActivity(intent1);
+                    }
+                });
+
+                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog1 = dialog1.create();
+                alertDialog1.show();
                 break;
 
         }

@@ -21,8 +21,10 @@
             android:id="@+id/searchBar"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:textColor="@color/quantum_white_100"
+            android:textColorHint="@color/quantum_white_100"
             android:background="@color/colorPrimary"
-            android:hint="Search..." />
+            android:hint=" Search chats..."/>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"

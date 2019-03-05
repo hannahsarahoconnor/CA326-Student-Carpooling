@@ -330,6 +330,41 @@ public class PassengerTrips extends AppCompatActivity
                 AlertDialog alertDialog = dialog.create();
                 alertDialog.show();
                 break;
+
+            case R.id.help:
+                //go to new activity
+                //tFRougwMUphm8B95q7EAToUoYci1
+                Intent intent = new Intent(PassengerTrips.this,PassengerHelp.class);
+                startActivity(intent);
+                break;
+
+            case R.id.contact:
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerTrips.this);
+                dialog1.setTitle("Contact Admins");
+                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent1 = new Intent(PassengerTrips.this,ChatActivity.class);
+                        intent1.putExtra("Username","StudentCarpooling");
+                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                        intent1.putExtra("Fullname","Admins");
+                        intent1.putExtra("ProfilePicURL","defaultPic");
+                        startActivity(intent1);
+                    }
+                });
+
+                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog1 = dialog1.create();
+                alertDialog1.show();
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);

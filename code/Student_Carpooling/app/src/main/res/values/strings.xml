@@ -63,7 +63,7 @@
     <string name="title_activity_driver_message">Active Chats</string>
     <string name="title_activity_request_map">Map</string>
     <string name="title_activity_user_location">Map</string>
-    <string name="title_activity_passenger_create_requests">Create Requests</string>
+    <string name="title_activity_passenger_create_requests">Trip Requests</string>
     <string name="title_activity_driver_find_requests">Find Requests</string>
     <string name="title_activity_passenger_location">Map</string>
     <string name="title_activity_start_trip">Map</string>

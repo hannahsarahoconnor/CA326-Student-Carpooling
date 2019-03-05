@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -49,6 +51,12 @@ public class PassengerCreateRequests extends AppCompatActivity
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
 
+
+    private TabLayout tabLayout;
+    private ViewPager tabSwitch;
+    private TabAdapter tabAdapter;
+
+
     FirebaseUser CurrentUser;
 
     @Override
@@ -64,6 +72,18 @@ public class PassengerCreateRequests extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        tabLayout = findViewById(R.id.TabLayout);
+        tabSwitch = findViewById(R.id.Switch);
+        tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+        tabAdapter.addFragment(new CreateRequestFragment(),"Create Request");
+        tabAdapter.addFragment(new MyRequestFragment(),"My Requests");
+
+        tabSwitch.setAdapter(tabAdapter);
+        tabLayout.setupWithViewPager(tabSwitch);
+
+        tabSwitch.setCurrentItem(1);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -142,6 +162,39 @@ public class PassengerCreateRequests extends AppCompatActivity
                 AlertDialog alertDialog = dialog.create();
                 alertDialog.show();
                 break;
+
+            case R.id.help:
+                Intent intent = new Intent(PassengerCreateRequests.this,PassengerHelp.class);
+                startActivity(intent);
+                break;
+
+            case R.id.contact:
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerCreateRequests.this);
+                dialog1.setTitle("Contact Admins");
+                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent1 = new Intent(PassengerCreateRequests.this,ChatActivity.class);
+                        intent1.putExtra("Username","StudentCarpooling");
+                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                        intent1.putExtra("Fullname","Admins");
+                        intent1.putExtra("ProfilePicURL","defaultPic");
+                        startActivity(intent1);
+                    }
+                });
+
+                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog1 = dialog1.create();
+                alertDialog1.show();
+                break;
+
         }
 
 

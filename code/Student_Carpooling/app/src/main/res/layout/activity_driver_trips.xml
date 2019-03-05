@@ -22,8 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            app:tabSelectedTextColor="@color/quantum_black_100"
-            app:tabTextColor="@android:color/white"/>
+            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabTextColor="@color/quantum_white_100"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/Switch"

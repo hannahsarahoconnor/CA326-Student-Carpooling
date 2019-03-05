@@ -9,6 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.student_carpooling.tripRequestsRecyclerView.RequestTrip;
+import com.example.student_carpooling.tripRequestsRecyclerView.RequestTripAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +37,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 public class DriverFindRequests extends AppCompatActivity
@@ -40,19 +51,28 @@ public class DriverFindRequests extends AppCompatActivity
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
-    private String ProfilePicUrl, UserID, Date, Destination, Seats, Starting, LuggageCheck, Time;
+    private String ProfilePicUrl;
     private FirebaseAuth mAuth;
     private DatabaseReference UserDb, reference;
 
     NavigationView navigationView;
     private ImageView navProfile;
-    ;
+
+    private RecyclerView tripRecyclerView;
+    private RequestTripAdapter tripAdapter;
+    private RecyclerView.LayoutManager tripLayoutManager;
+
+    private String UserID,Starting,Date,Destination,Note,Username, Fullname, First, Surname,Time,LuggageCheck,Day,PassengerURL,PassUsername;
+
+    private java.util.Date tripdate;
 
     private TabLayout tabLayout;
     private ViewPager tabSwitch;
     private TabAdapter tabAdapter;
 
     FirebaseUser CurrentUser;
+
+    String PassengerKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +106,192 @@ public class DriverFindRequests extends AppCompatActivity
 
         setupFirebaseListener();
 
+
+
+        tripRecyclerView = findViewById(R.id.requestsRecycler);
+        tripRecyclerView.setNestedScrollingEnabled(false); //not true?
+        tripRecyclerView.setHasFixedSize(true);
+        //resultsTrips.clear();
+        tripAdapter = new RequestTripAdapter(getDataTrips(),DriverFindRequests.this);
+        tripRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        tripRecyclerView.setAdapter(tripAdapter);
+
+        getPassengerIDs();
     }
+
+
+    private void getPassengerIDs(){
+
+        final DatabaseReference PassengerID = FirebaseDatabase.getInstance().getReference().child("TripRequests");
+        PassengerID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        PassengerKey = id.getKey();
+                        getRequestIds(PassengerKey);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getRequestIds(final String PassID){
+        DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripRequests").child(PassID);
+        TripIDs.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    //if there is any info there
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        //then get the info under that unique ID
+                        String RequestKey = id.getKey();
+                        getRequestData(PassID,RequestKey);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getRequestData(final String PassID, final String RequestID){
+        DatabaseReference RequestIDs = FirebaseDatabase.getInstance().getReference().child("TripRequests").child(PassID).child(RequestID);
+        RequestIDs.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                    if (map.get("Time") != null) {
+                        Time = map.get("Time").toString();
+                    }
+
+                    //check that none of them are null
+                    if (map.get("Date") != null) {
+                        Day = map.get("Date").toString();
+                    }
+                    if (map.get("Fullname") != null) {
+                        Fullname = map.get("Fullname").toString();
+                    }
+
+                    if (map.get("Luggage") != null) {
+                        LuggageCheck = map.get("Luggage").toString();
+                    }
+                    if (map.get("Note") != null) {
+                        Note = map.get("Note").toString();
+                    }
+                    if (map.get("Starting") != null) {
+                        Starting = map.get("Starting").toString();
+                    }
+
+                    if (map.get("Destination") != null) {
+                        Destination = map.get("Destination").toString();
+                    }
+
+                    if (map.get("Username") != null) {
+                        PassUsername = map.get("Username").toString();
+                    }
+
+                    if (map.get("ProfilePic") != null) {
+                        PassengerURL = map.get("ProfilePic").toString();
+                    }
+
+                    if (!PassID.equals(UserID)) {
+                        Date rightNow = Calendar.getInstance().getTime();
+
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
+
+                            String dateStr = Day + " " + Time;
+                            Date Datee = format.parse(dateStr);
+                            long mili = Datee.getTime();
+                            tripdate = new Date(mili);
+                            //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        //only show upcoming requests
+
+                        if (rightNow.before(tripdate)) {
+
+                            RequestTrip object = new RequestTrip(RequestID,"Driver",Note, PassUsername, PassID,PassengerURL, Day, Time,Fullname, LuggageCheck, Starting, Destination);
+                            //sort the trips based on their date in milisec
+
+
+                            //the trip is expired after 5 hours after if not started
+                            resultsTrips.add(object);
+                            resultsTrips.sort(new Comparator<RequestTrip>() {
+                                @Override
+                                public int compare(RequestTrip o1, RequestTrip o2) {
+                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                    String date1 = o1.getDate() + " " + o1.getTime();
+                                    String date2 = o2.getDate() + " " + o2.getTime();
+                                    Date Date1 = null;
+                                    Date Date2 = null;
+                                    try {
+                                        Date1 = format.parse(date1);
+                                        Date2 = format.parse(date2);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                    long mili = Date1.getTime();
+                                    long mili2 = Date2.getTime();
+                                    Date datenew1 = new Date(mili);
+                                    Date datenew2 = new Date(mili2);
+
+
+                                    return datenew2.compareTo(datenew1);
+
+                                }
+                            });
+                            tripAdapter.notifyDataSetChanged();
+                        }
+
+
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+
+
+    private ArrayList resultsTrips = new ArrayList<RequestTrip>();
+
+    private ArrayList<RequestTrip> getDataTrips() {
+        return resultsTrips;
+
+    }
+
+
+    //This is required to reset the Recycler View, otherwise each time the trips available will duplicate
+    @Override
+    public void onResume() {
+        super.onResume();
+        //resultsTrips.clear();
+
+    }
+
 
     @Override
     public void onBackPressed() {

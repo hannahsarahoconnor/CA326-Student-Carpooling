@@ -101,6 +101,7 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
         TripId = intent.getStringExtra("TripID");
         DriverId = intent.getStringExtra("DriverID");
         _notificationKey = intent.getStringExtra("NotificationKey");
+        _driverUsername = intent.getStringExtra("Username");
 
         PicUrl = intent.getStringExtra("PicUrl");
 
@@ -113,7 +114,6 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                     if(map.get("Completed")!=null){
                         Completed = map.get("Completed").toString();
-                        Toast.makeText(PassengerMap.this, "Hi: "+Completed, Toast.LENGTH_SHORT).show();
 
                         if(Integer.parseInt(Completed)==0){
 
@@ -194,13 +194,6 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                         mMap.getUiSettings().setZoomControlsEnabled(true);
                         //this may not be needed?
                         if (ActivityCompat.checkSelfPermission(PassengerMap.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(PassengerMap.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
                             return;
                         }
                         mMap.setMyLocationEnabled(true);
@@ -354,7 +347,7 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                         arrived++;
                         //send notification and display toast message
                         Toast.makeText(PassengerMap.this, "The Driver is at your pickup Location", Toast.LENGTH_SHORT).show();
-                        new SendNotification(_driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
+                        new SendNotification("Your driver " + _driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
                         //dont want the passenger to get repeated notifications
 
                         //could update the databse under passenger--> PickedUp = 1 and driver can view this, and if picked up, remove pick --> show snackbar?

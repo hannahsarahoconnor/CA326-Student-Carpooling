@@ -319,22 +319,11 @@ public class FilteredTrips extends AppCompatActivity {
 
                     if (map.get("Time") != null) {
                         Time = map.get("Time").toString();
-                        StringTokenizer tokens = new StringTokenizer(Time, ":");
-                        hours = tokens.nextToken();
-                        mins = tokens.nextToken();
                     }
 
                     //check that none of them are null
                     if (map.get("Date") != null) {
                         Day = map.get("Date").toString();
-                        StringTokenizer tokens = new StringTokenizer(Day, "/");
-                        Integer day = Integer.parseInt(tokens.nextToken());
-                        Integer month = Integer.parseInt(tokens.nextToken());
-                        Integer year = Integer.parseInt(tokens.nextToken());
-                        //year month date
-                        // year in date is saying 3919 rather than 2019
-                        //TripDate = new Date(year - 1900, month - 1, day, 10, 0);
-                        // String date_n = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(TripDate);
                         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                         try {
 
@@ -377,18 +366,7 @@ public class FilteredTrips extends AppCompatActivity {
                     }
 
 
-
                     if (!Key.equals(CurrentUser.getUid())) {
-                        //make sure its not a past trips or isnt one that was created by that user.
-                        // if date greater, tripdate is a past d
-                        String[] timeSplit = Time.split(":");
-                        Integer hours = Integer.parseInt(timeSplit[0]);
-                        Integer mins = Integer.parseInt(timeSplit[1]);
-                        Integer totalMins = (hours * 60) + mins;
-
-                        // TripDate = new Date(year-1900, month - 1, day);
-
-                        //create an array list?
                         Date rightNow = Calendar.getInstance().getTime();
 
                         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
@@ -403,108 +381,89 @@ public class FilteredTrips extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
-                            // Toast.makeText(FilteredTrips.this, "", Toast.LENGTH_SHORT).show();
-                            //if (!declined.contains(CurrentUser.getUid())){
+                        // Toast.makeText(FilteredTrips.this, "", Toast.LENGTH_SHORT).show();
+                        //if (!declined.contains(CurrentUser.getUid())){
 
-                            //if(!passengers.contains(CurrentUser.getUid())){
-                            //continue
-                            //not declined, add the trip
-
-
-                            Fullname = First + " " + Surname;
-                            //if(passengers.size() >0){
-                            //    Id = passengers.get(0);
-                            // }
-                            // if(declined.size() >0){
-                            //    Un = declined.get(0);
-                            // }
-                           //user can put in blank and leave all trip going to dst, and dont have to specific a starting point
-
-                            if (Starting.contains("DCU")||inputStart == null) {
-                                if (Destination.contains(inputDst)||inputDst == null) {
-                                    if(LuggageCheck.equals(inputLuggage)){
-                                        if(Day.equals(inputDate) || inputDate == null) {
-                                            if (rightNow.before(tripdate)) {
-                                                if (Integer.parseInt(Cancelled) != 1) {
-                                                    if (Integer.parseInt(Started) != 1) {
-                                                        if ((Integer.parseInt(Seats) != 0)) {
-                                                            //if(Id.length() == 0 && Un.length() == 0){
+                        //if(!passengers.contains(CurrentUser.getUid())){
+                        //continue
+                        //not declined, add the trip
 
 
-                                                            FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, Seats, LuggageCheck, Note, Key);
+                        Fullname = First + " " + Surname;
+                        //if(passengers.size() >0){
+                        //    Id = passengers.get(0);
+                        // }
+                        // if(declined.size() >0){
+                        //    Un = declined.get(0);
+                        // }
+                        //user can put in blank and leave all trip going to dst, and dont have to specific a starting point
 
-                                                            results.add(object);
-                                                            results.sort(new Comparator<FindTrip>() {
-                                                                @Override
-                                                                public int compare(FindTrip o1, FindTrip o2) {
-                                                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                                                                    String date1 = o1.getDate() + " " + o1.getTime();
-                                                                    String date2 = o2.getDate() + " " + o2.getTime();
-                                                                    Date Date1 = null;
-                                                                    Date Date2 = null;
-                                                                    try {
-                                                                        Date1 = format.parse(date1);
-                                                                        Date2 = format.parse(date2);
-                                                                    } catch (ParseException e) {
-                                                                        e.printStackTrace();
-                                                                    }
-                                                                    long mili = Date1.getTime();
-                                                                    long mili2 = Date2.getTime();
-                                                                    Date datenew1 = new Date(mili);
-                                                                    Date datenew2 = new Date(mili2);
-                                                                    return datenew1.compareTo(datenew2);
+                        if (Starting.contains(inputStart) || inputStart == null) {
+                            if (Destination.contains(inputDst) || inputDst == null) {
+                                if (LuggageCheck.equals(inputLuggage)) {
+                                    if (Day.equals(inputDate) || inputDate == null) {
+                                        if (rightNow.before(tripdate)) {
+                                            if (Integer.parseInt(Cancelled) != 1) {
+                                                if (Integer.parseInt(Started) != 1) {
+                                                    if ((Integer.parseInt(Seats) != 0)) {
+                                                        //if(Id.length() == 0 && Un.length() == 0){
 
+
+                                                        FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, Seats, LuggageCheck, Note, Key);
+
+                                                        results.add(object);
+                                                        results.sort(new Comparator<FindTrip>() {
+                                                            @Override
+                                                            public int compare(FindTrip o1, FindTrip o2) {
+                                                                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                                                String date1 = o1.getDate() + " " + o1.getTime();
+                                                                String date2 = o2.getDate() + " " + o2.getTime();
+                                                                Date Date1 = null;
+                                                                Date Date2 = null;
+                                                                try {
+                                                                    Date1 = format.parse(date1);
+                                                                    Date2 = format.parse(date2);
+                                                                } catch (ParseException e) {
+                                                                    e.printStackTrace();
                                                                 }
-                                                            });
+                                                                long mili = Date1.getTime();
+                                                                long mili2 = Date2.getTime();
+                                                                Date datenew1 = new Date(mili);
+                                                                Date datenew2 = new Date(mili2);
+                                                                return datenew1.compareTo(datenew2);
 
-                                                            FiltertripAdapter.notifyDataSetChanged();
-                                                            counter = counter + 1;
+                                                            }
+                                                        });
 
-                                                            Toast.makeText(FilteredTrips.this, "" + counter, Toast.LENGTH_SHORT).show();
+                                                        FiltertripAdapter.notifyDataSetChanged();
+                                                        counter = 1;
 
 
-                                                            //declined.clear();
-                                                            // passengers.clear();
-                                                            //Toast.makeText(FilteredTrips.this, ""+results.size(), Toast.LENGTH_SHORT).show();
-                                                        }
+
+
+                                                        //declined.clear();
+                                                        // passengers.clear();
+                                                        //Toast.makeText(FilteredTrips.this, ""+results.size(), Toast.LENGTH_SHORT).show();
                                                     }
-
                                                 }
 
-
                                             }
 
 
-                                            }
                                         }
+
 
                                     }
                                 }
+
+                            }
+                        }
                     }
 
-                                }
-                if (counter == 0) {
-
-                    //recycler view is empty, set the visibility of button and text view
-                    tripRecyclerView.setVisibility(View.GONE);
-                    textView1.setVisibility(View.VISIBLE);
-                    textView2.setVisibility(View.VISIBLE);
-                    createRequest.setVisibility(View.VISIBLE);
-
-                    createRequest.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(FilteredTrips.this, PassengerCreateRequests.class);
-                            startActivity(intent);
-                        }
-                    });
-
-                }}
+                }
 
 
-
-
-
+            }
                                 //Toast.makeText(FilteredTrips.this,KeyCheck, Toast.LENGTH_SHORT).show();
 
 
@@ -515,6 +474,7 @@ public class FilteredTrips extends AppCompatActivity {
                             });
 
 
+        Toast.makeText(FilteredTrips.this, "" + counter, Toast.LENGTH_SHORT).show();
                         }
 
 
@@ -531,21 +491,6 @@ public class FilteredTrips extends AppCompatActivity {
         return results;
 
     }
-
-
-    //not working
-    private void sortList() {
-
-        Collections.sort(results, new Comparator<FindTrip>() {
-            @Override
-            public int compare(FindTrip o1, FindTrip o2) {
-                return o1.getTime().compareTo(o2.getTime());
-            }
-        });
-        FiltertripAdapter.notifyDataSetChanged();
-
-    }
-
 
     private void addToList(String id){
         declined.add(id);
