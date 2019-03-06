@@ -99,13 +99,14 @@
         android:background="#D5953A"
         android:id="@+id/main"
         android:visibility="visible">
-        <ImageView
-        android:layout_width="400dp"
-        android:layout_height="500dp"
-        android:layout_gravity="center"
-        android:src="@drawable/logo_new_2"
 
-        android:contentDescription="@string/Description" />
+        <ImageView
+            android:layout_width="400dp"
+            android:layout_height="500dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/Description"
+
+            android:src="@drawable/logo_new_2" />
     </LinearLayout>
 
 </LinearLayout>
