@@ -351,6 +351,7 @@ public class DriverMain extends AppCompatActivity
 
                     Date rightNow = Calendar.getInstance().getTime();
 
+
                     Calendar cal1 = Calendar.getInstance();
                     Calendar cal2 = Calendar.getInstance();
                     cal1.setTime(tripdate);
