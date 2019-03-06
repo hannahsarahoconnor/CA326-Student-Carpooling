@@ -89,6 +89,9 @@ public class FindTrips extends AppCompatActivity
     private String StartingPt="", DestinationPt="";
     private Button filter;
     private String DBUsername;
+    private EditText DriverName;
+
+    private String apiKey;
 
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String TAG = "FindTrips";
@@ -120,6 +123,8 @@ public class FindTrips extends AppCompatActivity
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
+        DriverName = findViewById(R.id.DriverName);
+
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.usernameNav);
         Nemail = hView.findViewById(R.id.emailNav);
@@ -128,12 +133,12 @@ public class FindTrips extends AppCompatActivity
 
         setupFirebaseListener();
 
-        String apiKey = "AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA";
+        apiKey = getResources().getString(R.string.google_maps_places_key);
         Places.initialize(getApplicationContext(), apiKey);
 
         //Create a new Places client instance.
         if (!Places.isInitialized()) {
-        PlacesClient placesClient = Places.createClient(this);}
+            PlacesClient placesClient = Places.createClient(this);}
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentSTART);
@@ -171,7 +176,6 @@ public class FindTrips extends AppCompatActivity
                 //CharSequence address = place.getAddress();
                 final CharSequence address = place.getAddress();
                 DestinationPt = (String) place.getName();
-                Toast.makeText(FindTrips.this,""+ address,Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -216,6 +220,7 @@ public class FindTrips extends AppCompatActivity
             public void onClick(View v) {
                 String startingDate;
                 String luggage = "";
+                String driverName = DriverName.getText().toString();
                 startingDate = DateInput.getText().toString();
                 //covert startingDate to mili secs
 
@@ -250,13 +255,22 @@ public class FindTrips extends AppCompatActivity
                         intent.putExtra("Destination", DestinationPt);
                         intent.putExtra("Date", startingDate);
                         intent.putExtra("Luggage", luggage);
+                        intent.putExtra("Driver","");
                         startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(FindTrips.this, "Please don't select a past date", Toast.LENGTH_SHORT).show();
                     }
-                } else{
-                    Toast.makeText(FindTrips.this, "Enter a date", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!TextUtils.isEmpty(driverName)) {
+                        Intent intent = new Intent(FindTrips.this, FilteredTrips.class);
+                        intent.putExtra("Driver", driverName);
+                        startActivity(intent);
+                        finish();
+
+                    } else {
+                        Toast.makeText(FindTrips.this, "Enter a date or search by driver instead", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 

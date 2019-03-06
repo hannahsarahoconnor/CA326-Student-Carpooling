@@ -112,6 +112,7 @@ public class DriverCreate extends AppCompatActivity
     private String starting ,destination;
     private boolean result = false;
     FirebaseUser CurrentUser;
+    private String apiKey;
 
     private Date tripdate,trip,oldtripdate;
 
@@ -154,7 +155,7 @@ public class DriverCreate extends AppCompatActivity
 
         // Initialize Places.
 
-        String apiKey = "AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA";
+        apiKey = getResources().getString(R.string.google_maps_places_key);
         Places.initialize(getApplicationContext(), apiKey);
 
         //Create a new Places client instance.
@@ -355,7 +356,7 @@ public class DriverCreate extends AppCompatActivity
                         finish();
 
                     }
-                     //   DateInput.setText("");
+                    //   DateInput.setText("");
                     //    Time.setText("");
 
 
@@ -438,20 +439,20 @@ public class DriverCreate extends AppCompatActivity
 
 
     private void geoLocate(){
-    Geocoder geocoder = new Geocoder(DriverCreate.this);
+        Geocoder geocoder = new Geocoder(DriverCreate.this);
         Toast.makeText(this, ""+destination, Toast.LENGTH_SHORT).show();
 
-    List<Address> list = new ArrayList<>();
+        List<Address> list = new ArrayList<>();
         try {
-        list = geocoder.getFromLocationName(destination, 1);
+            list = geocoder.getFromLocationName(destination, 1);
 
-    } catch (
-    IOException e) {
-        Log.e(TAG, "IOException:" + e.getMessage());
-    }
+        } catch (
+                IOException e) {
+            Log.e(TAG, "IOException:" + e.getMessage());
+        }
         if (list.size() > 0) {
-        Address address = list.get(0);
-        latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            Address address = list.get(0);
+            latLng = new LatLng(address.getLatitude(), address.getLongitude());
         }}
 
     @Override
@@ -673,4 +674,3 @@ public class DriverCreate extends AppCompatActivity
         }
     }
 }
-

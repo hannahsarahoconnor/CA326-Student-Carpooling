@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.text.LoginFilter;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -51,10 +52,14 @@ public class DriverMain extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail;
+    private TextView NUsername, Nemail,Welcome;
     private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
+    String DBUsername, Date, Time;
+    String WelcomeMessage;
+    private Date tripdate;
+    int count = 0;
 
     FirebaseUser CurrentUser;
 
@@ -72,7 +77,7 @@ public class DriverMain extends AppCompatActivity
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
-
+        Welcome = findViewById(R.id.welcome);
 
         OneSignal.startInit(this).init();
         //notify one signal that the user wishes to recieves nofications
@@ -103,6 +108,9 @@ public class DriverMain extends AppCompatActivity
         navProfile = hView.findViewById(R.id.imageView);
 
         setupFirebaseListener();
+
+
+
     }
 
     @Override
@@ -252,6 +260,7 @@ public class DriverMain extends AppCompatActivity
     }
 
     private void getUserDB(){
+        //DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -260,17 +269,21 @@ public class DriverMain extends AppCompatActivity
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
+                        DBUsername = map.get("Username").toString();
                         NUsername.setText(DBUsername);
+                        //Welcome.setText("Hello " + DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
                         if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);};
+                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
                     }
 
 
+
                 }
+               getTripIds(DBUsername);
+
             }
 
             @Override
@@ -278,9 +291,96 @@ public class DriverMain extends AppCompatActivity
                 //not needed
             }
         });
+
+    }
+    private void getTripIds(final String Username){
+        DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+        TripIDs.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    //if there is any info there
+                    for(DataSnapshot id : dataSnapshot.getChildren()){
+                        //then get the info under that unique ID
+                        String key = id.getKey();
+                        getTripCount(key, Username);
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    private void setupFirebaseListener(){
+
+    private void getTripCount(String Key,final String Username) {
+        DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(Key);
+        TripsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+
+                    //check that none of them are null
+                    if (map.get("Date") != null) {
+                        Date = map.get("Date").toString();
+
+                    }
+                    if (map.get("Time") != null) {
+                        Time = map.get("Time").toString();
+                    }
+
+
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                    try {
+
+                        String dateStr = Date + " " + Time;
+                        Date Datee = format.parse(dateStr);
+                        long mili = Datee.getTime();
+                        tripdate = new Date(mili);
+                        //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    Date rightNow = Calendar.getInstance().getTime();
+
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(tripdate);
+                    cal2.setTime(rightNow);
+                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                    if(sameDay && tripdate.after(rightNow)){
+                        count++;
+                    }
+
+
+                }
+                if(count >0){
+                Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
+                else{
+                   Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+        private void setupFirebaseListener(){
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

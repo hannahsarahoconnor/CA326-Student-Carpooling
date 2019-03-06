@@ -54,13 +54,8 @@ public class ResetPassword extends AppCompatActivity {
         ResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String email = Email.getText().toString().trim();
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(getApplicationContext(), "Please Enter an email", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
+                 try{
                     mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -74,7 +69,9 @@ public class ResetPassword extends AppCompatActivity {
                         }
                     });
 
-                }
+                }catch (Exception e){
+                     Toast.makeText(getApplicationContext(), "Please Enter an email", Toast.LENGTH_SHORT).show();
+                 }
 
 
 

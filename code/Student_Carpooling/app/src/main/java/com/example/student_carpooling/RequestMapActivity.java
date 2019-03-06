@@ -68,6 +68,8 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
 
     private FirebaseAuth mAuth;
 
+    private String apiKey;
+
 
 
     @Override
@@ -105,7 +107,7 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        String apiKey = "AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA";
+        apiKey = getResources().getString(R.string.google_maps_places_key);
         Places.initialize(getApplicationContext(), apiKey);
 
         //Create a new Places client instance.
@@ -128,51 +130,51 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
                 intent = getIntent();
                 DriverID = intent.getStringExtra("DriverID");
                 TripID = intent.getStringExtra("TripID");
-               try{
-                if(!PickUp.equals("null")){
+                try{
+                    if(!PickUp.equals("null")){
 
-                    Toast.makeText(RequestMapActivity.this, ""+DriverID, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RequestMapActivity.this, ""+DriverID, Toast.LENGTH_SHORT).show();
 
-                   //get driver notification key to send notification key to information them of the request
-                    DatabaseReference _DriverNotificationKey = FirebaseDatabase.getInstance().getReference().child("users").child(DriverID);
-                    _DriverNotificationKey.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                            if(map.get("NotificationKey")!=null){
-                                driverNotificationKey = map.get("NotificationKey").toString();
-                                new SendNotification("You have a new request","Student Carpooling",driverNotificationKey);
+                        //get driver notification key to send notification key to information them of the request
+                        DatabaseReference _DriverNotificationKey = FirebaseDatabase.getInstance().getReference().child("users").child(DriverID);
+                        _DriverNotificationKey.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                                if(map.get("NotificationKey")!=null){
+                                    driverNotificationKey = map.get("NotificationKey").toString();
+                                    new SendNotification("You have a new request","Student Carpooling",driverNotificationKey);
 
-                            }}
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }}
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                    //add the hash map of request (info passenger id, lat & long) to the tripdetails
-                    DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("TripRequests").child(CurrentUserID);
-                    Map RequestInfo = new HashMap();
-                    RequestInfo.put("Lat", latLng.latitude);
-                    RequestInfo.put("Lon",latLng.longitude);
-                    TripDB.setValue(RequestInfo);
-                    Toast.makeText(RequestMapActivity.this, "Request Sent", Toast.LENGTH_SHORT).show();
-                    finish();
+                            }
+                        });
+                        //add the hash map of request (info passenger id, lat & long) to the tripdetails
+                        DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID).child("TripRequests").child(CurrentUserID);
+                        Map RequestInfo = new HashMap();
+                        RequestInfo.put("Lat", latLng.latitude);
+                        RequestInfo.put("Lon",latLng.longitude);
+                        TripDB.setValue(RequestInfo);
+                        Toast.makeText(RequestMapActivity.this, "Request Sent", Toast.LENGTH_SHORT).show();
+                        finish();
 
-                }}
+                    }}
                 catch (NullPointerException e){
 
-                   Toast.makeText(RequestMapActivity.this, "Please enter a pick up point", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RequestMapActivity.this, "Please enter a pick up point", Toast.LENGTH_SHORT).show();
 
-               }}
+                }}
 
         });
 
-       Cancel.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               finish();
-           }
-       });
+        Cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
     }
 
@@ -221,7 +223,7 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
             Address address = list.get(0);
             //Toast.makeText(RequestMapActivity.this, "" + address.toString(), Toast.LENGTH_LONG).show();
             //moveCamera(new LatLng(address.getLatitude(),address.getLongitude(),address.getAddressLine(0));
-           // Toast.makeText(RequestMapActivity.this, "" + address.getAddressLine(0), Toast.LENGTH_LONG).show();
+            // Toast.makeText(RequestMapActivity.this, "" + address.getAddressLine(0), Toast.LENGTH_LONG).show();
 
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
@@ -252,8 +254,8 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
         MarkerOptions options = new MarkerOptions().position(latLng).title(title);
-            mMap.addMarker(options);
-        }
+        mMap.addMarker(options);
+    }
 
 
     private void initMap(){

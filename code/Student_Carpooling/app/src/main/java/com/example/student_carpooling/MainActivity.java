@@ -73,53 +73,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth2 = FirebaseAuth.getInstance();
 
 
-        mAuthListener = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if(user!=null){
-                    UserID = mAuth2.getCurrentUser().getUid();
-                    DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-                    //check to see what user type they are
-                    UserDb.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()){
-                                //data originally added is kept in this format
-                                Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                                if(map.get("Type")!=null){
-                                    UserType = map.get("Type").toString();
-                                }}
+        checkIfLoggedIn();
 
-                                if(UserType.equals("Driver")){
-                                    Intent intent = new Intent(MainActivity.this, DriverMain.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                else if(UserType.equals("Passenger")){
-                                    Intent intent = new Intent(MainActivity.this, PassengerActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-
-        };
-        //else nothing is done.
-
-        //Already signed in and chose a type of user
-
-        // need a way of keeping the user signed in after closing app.
         Button SignIn;
         Button Registration;
         Button ResetPassword;
@@ -187,15 +142,8 @@ public class MainActivity extends AppCompatActivity {
                 final String password = Password.getText().toString().trim();
                 final String type = radioButton.getText().toString();
 
-                if (email.equals("") && password.equals("")) {
-                    Toast.makeText(MainActivity.this, "Please Enter your Email and Password", Toast.LENGTH_SHORT).show();
-                } else if (password.equals("")) {
-                    Toast.makeText(MainActivity.this, "Please Enter your Password", Toast.LENGTH_SHORT).show();
-                } else if (email.equals("")) {
-                    Toast.makeText(MainActivity.this, "Please Enter your Email", Toast.LENGTH_SHORT).show();
-                } else {
 
-
+                try {
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -213,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
+                }catch(Exception e){
+                    Toast.makeText(MainActivity.this, "Please enter both your email and password", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -254,6 +204,52 @@ public class MainActivity extends AppCompatActivity {
             mAuth.signOut();
         }
 
+    }
+
+    public void checkIfLoggedIn(){
+        mAuthListener = new FirebaseAuth.AuthStateListener(){
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if(user!=null){
+                    UserID = mAuth2.getCurrentUser().getUid();
+                    DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                    //check to see what user type they previously were
+                    UserDb.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()){
+                                //data originally added is kept in this format
+                                Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                                if(map.get("Type")!=null){
+                                    UserType = map.get("Type").toString();
+                                }}
+
+
+                            if(UserType.equals("Driver")){
+                                Intent intent = new Intent(MainActivity.this, DriverMain.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                            else if(UserType.equals("Passenger")){
+                                Intent intent = new Intent(MainActivity.this, PassengerActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+
+        };
     }
 
     @Override

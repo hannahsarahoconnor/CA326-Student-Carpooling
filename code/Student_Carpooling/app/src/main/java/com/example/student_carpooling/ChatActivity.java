@@ -44,29 +44,35 @@ public class ChatActivity extends AppCompatActivity {
 
     Intent intent;
 
-    ImageView otherProfilePic,delete;
+    ImageView otherProfilePic, delete;
 
     ImageButton btn_send;
     EditText text_send;
 
-    String CurrentUserID, OtherUserID,AdminID;
+    Boolean result = false;
+
+    String CurrentUserID, OtherUserID, AdminID;
     FirebaseAuth mAuth;
 
     TextView otherFullname;
+    DatabaseReference userUpdate;
 
-   // RecyclerView.Adapter
+    DatabaseReference AdminContact;
+    // RecyclerView.Adapter
     MessageAdapter messageAdapter;
     List<Message> messageList;
     RecyclerView messageRecyclerView;
     LinearLayoutManager msgLayoutManager;
-    String CurrentUsername,OtherUserKey,Type;
-   DatabaseReference msgDB, reference, ref;
+    String CurrentUsername, OtherUserKey, Type;
+    DatabaseReference msgDB, reference, ref;
+    ArrayList<String> chatters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        chatters = new ArrayList<>();
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUserID = mAuth.getCurrentUser().getUid();
@@ -75,16 +81,18 @@ public class ChatActivity extends AppCompatActivity {
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                    CurrentUsername = map.get("Username").toString();}
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("Username") != null) {
+                        CurrentUsername = map.get("Username").toString();
+                    }
 
-                     if(map.get("Type")!=null){
-                        Type = map.get("Type").toString();}
+                    if (map.get("Type") != null) {
+                        Type = map.get("Type").toString();
+                    }
 
-            }
+                }
             }
 
             @Override
@@ -92,8 +100,6 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
-
-
 
 
         ImageView back = findViewById(R.id.back);
@@ -106,7 +112,6 @@ public class ChatActivity extends AppCompatActivity {
                 finish();
             }
         });
-
 
 
         //set up Recycler View
@@ -134,17 +139,44 @@ public class ChatActivity extends AppCompatActivity {
         otherFullname.setText(StrOtherFullName);
         AdminID = "tFRougwMUphm8B95q7EAToUoYci1";
 
+
         //Other User id is showing the current User Id instead
 
-       // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
-       if(!(OtherProfilePicUrl.equals("defaultPic"))){
+        // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
+        if (!(OtherProfilePicUrl.equals("defaultPic"))) {
             Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
-       }
+        }
 
-       if(OtherUserID.equals(AdminID)){
-           String Message = "This is an automated message. Please send us your query and a member of our team get back to you shortly!";
-           SendNewMessage(Message,AdminID,CurrentUserID);
-       }
+
+
+        if (OtherUserID.equals(AdminID)) {
+            userUpdate = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+            userUpdate.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        if (map.get("AdminContact") != null) {
+
+                            if (Integer.parseInt(map.get("AdminContact").toString()) == 1) {
+                                //nothing
+                            } else {
+                                String Message = "This is an automated message. Please send us your query and a member of our team will get back to you shortly!";
+                                SendNewMessage(Message, CurrentUserID, AdminID);
+                                userUpdate.child("AdminContact").setValue(1);
+
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
 
 
         ref = FirebaseDatabase.getInstance().getReference("users").child(OtherUserID);
@@ -153,17 +185,16 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //get their notification key
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("NotificationKey")!=null){
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    if (map.get("NotificationKey") != null) {
                         OtherUserKey = map.get("NotificationKey").toString();
-                        Toast.makeText(ChatActivity.this,OtherUserKey,Toast.LENGTH_SHORT).show();
                     }
 
                 }
 
-                readMessage(CurrentUserID,OtherUserID);
+                readMessage(CurrentUserID, OtherUserID);
             }
 
             @Override
@@ -186,14 +217,13 @@ public class ChatActivity extends AppCompatActivity {
                         chats2.removeValue();
 
                         //get current user type
-                        if(Type.equals("Driver")) {
-                            Intent intent = new Intent(ChatActivity.this,DriverMessage.class);
+                        if (Type.equals("Driver")) {
+                            Intent intent = new Intent(ChatActivity.this, DriverMessage.class);
                             startActivity(intent);
                             finish();
                             dialog.dismiss();
-                        }
-                        else {
-                            Intent intent = new Intent(ChatActivity.this,PassengerMessage.class);
+                        } else {
+                            Intent intent = new Intent(ChatActivity.this, PassengerMessage.class);
                             startActivity(intent);
                             finish();
                             dialog.dismiss();
@@ -214,21 +244,17 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
-
-
-
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //get Message
                 String Message = text_send.getText().toString();
-                if(!Message.equals("")){
-                  SendNewMessage(Message,CurrentUserID,OtherUserID);
-                  //once sent, reset the EditText Field
+                if (!Message.equals("")) {
+                    SendNewMessage(Message, CurrentUserID, OtherUserID);
+                    //once sent, reset the EditText Field
                     text_send.setText("");
-                }
-                  else{
-                    Toast.makeText(ChatActivity.this,"Enter your message",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ChatActivity.this, "Enter your message", Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
 
@@ -236,8 +262,8 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
-
     }
+
 
     private void SendNewMessage(String msg, String id, final String otherid) {
 
@@ -262,12 +288,12 @@ public class ChatActivity extends AppCompatActivity {
 
         //send notification to that user
         String msgFormat = CurrentUsername + ": " + msg;
-        new SendNotification(msgFormat,"Student Carpooling",OtherUserKey);
+        new SendNotification(msgFormat, "Student Carpooling", OtherUserKey);
 
         msgDB.child("Chats").push().setValue(hashMap);
 
 
-           //for the active chats activity
+        //for the active chats activity
         final DatabaseReference ChatIDs = FirebaseDatabase.getInstance().getReference("ChatList")
                 .child(CurrentUserID).child(OtherUserID);
 
@@ -328,8 +354,4 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
 }
