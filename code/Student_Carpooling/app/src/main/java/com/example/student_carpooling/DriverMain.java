@@ -291,6 +291,7 @@ public class DriverMain extends AppCompatActivity
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 //not needed
             }
+
         });
 
     }
@@ -308,6 +309,9 @@ public class DriverMain extends AppCompatActivity
                         getTripCount(key, Username);
 
                     }
+                }
+                else{
+                    Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
                 }
             }
 
