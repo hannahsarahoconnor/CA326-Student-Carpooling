@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".FutureTripFragment"
     android:orientation="vertical"
-    android:id="@+id/linearLayout3">
+    android:id="@+id/linearLayout3"
+    android:background="@drawable/app_start">
 
 
 
