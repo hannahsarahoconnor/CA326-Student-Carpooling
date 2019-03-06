@@ -308,11 +308,7 @@ public class CreateRequestFragment extends Fragment {
     }
 
 
-    @Override
-    public void onAttach(Activity activity) {
-        myContext=(FragmentActivity) activity;
-        super.onAttach(activity);
-    }
+
 
 
     @Override

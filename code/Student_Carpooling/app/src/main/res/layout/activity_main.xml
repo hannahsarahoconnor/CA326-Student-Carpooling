@@ -3,78 +3,103 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
     android:background="@drawable/app_start"
     android:backgroundTintMode="src_in">
-
-    <TextView
-        app:fontFamily= "sans-serif-light"
-        android:textColor="#0A074A"
-        android:layout_marginTop="40dp"
-        android:textSize="40sp"
-        android:layout_marginStart="39dp"
-        android:textAlignment="center"
-        android:layout_height="wrap_content"
-        android:text="Student Carpooling"
-        android:layout_width="wrap_content" />
-
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_marginTop="30dp"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:id="@+id/main"
+        android:layout_width="400dp"
+        android:layout_height="500dp"
         android:layout_gravity="center"
-        android:src="@drawable/logo"
+        android:src="@drawable/logo_new_2"
+
         app:civ_border_color="@color/colorPrimaryDark"
 
-        android:contentDescription="@string/Description"/>
-
-    <Button
-        android:id="@+id/Register"
-        android:textColor="@color/quantum_white_100"
-        android:textSize="20sp"
-        android:background="@drawable/buttons"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:text="@string/Register"
-        android:textAllCaps="false"/>
-
-    <Button
-        android:id="@+id/Login"
-        android:textColor="@color/quantum_white_100"
-        android:textSize="20sp"
-        android:background="@drawable/buttons"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:text="@string/Login"
-        android:textAllCaps="false"/>
-
-
-    <Button
-        android:id="@+id/Reset"
-        android:background="@null"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp"
-        android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
-        android:text="@string/ForgotPassword" />
-
-
-    <ProgressBar
-        android:id="@+id/indeterminateBar"
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:contentDescription="@string/Description" />
+    <LinearLayout
+        android:id="@id/main2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:indeterminate="false"
-        android:visibility="invisible" />
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            app:fontFamily= "sans-serif-light"
+            android:textColor="#0A074A"
+            android:layout_marginTop="40dp"
+            android:textSize="40sp"
+            android:layout_marginStart="39dp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:text="Student Carpooling"
+            android:layout_width="wrap_content"
+            />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_marginTop="30dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_new_2"
+
+            app:civ_border_color="@color/colorPrimaryDark"
+
+            android:contentDescription="@string/Description"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/Register"
+                android:textColor="@color/quantum_white_100"
+                android:textSize="20sp"
+                android:background="@drawable/buttons"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="@string/Register"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:id="@+id/Login"
+                android:textColor="@color/quantum_white_100"
+                android:textSize="20sp"
+                android:background="@drawable/buttons"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:text="@string/Login"
+                android:textAllCaps="false"/>
+
+
+
+            <Button
+                android:id="@+id/Reset"
+                android:background="@null"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:textAllCaps="false"
+                android:textColor="@color/colorAccent"
+                android:text="@string/ForgotPassword" />
+            <ProgressBar
+                android:id="@+id/indeterminateBar"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:indeterminate="false"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

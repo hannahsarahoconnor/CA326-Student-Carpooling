@@ -4,17 +4,23 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
 
 import com.example.student_carpooling.passengerRecyclerView.Passenger;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,17 +41,34 @@ public class MainActivity extends AppCompatActivity {
 
     //dont think needed
 
+
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseAuth mAuth2;
     private String UserID, UserType;
 
     private Dialog LoginDialog;
+    private LinearLayout main2;
+    private LinearLayout main;
+
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+
+            main2.setVisibility(View.VISIBLE);
+            main.setVisibility(View.GONE);
+        }
+    };
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        main2 = (LinearLayout) findViewById(R.id.main2);
+        main = (LinearLayout)  findViewById(R.id.main);
+
+        handler.postDelayed(runnable, 2500);
 
         mAuth2 = FirebaseAuth.getInstance();
 
