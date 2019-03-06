@@ -6,170 +6,184 @@
     android:orientation="vertical"
     android:paddingTop="1.6dp"
     android:paddingBottom="15dp"
+
     >
 
     <View
-        android:layout_width="fill_parent"
+        android:layout_width="350dp"
         android:layout_height="2dp"
-        android:background="#c0c0c0"/>
+        android:background="#c0c0c0"
+        android:layout_gravity="center"/>
 
 
-                <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+    <LinearLayout
+        android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        >
 
 
 
-                    <ImageView
-                        android:id="@+id/trip"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat ="@drawable/ic_car"/>
+        <ImageView
+            android:id="@+id/trip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat ="@drawable/ic_car"/>
 
 
-                    <TextView
-                        android:id="@+id/Starting"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Starting "
-                        android:layout_marginTop="5dp"
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-                </LinearLayout>
-
-
-                    <LinearLayout android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        >
-
-                    <ImageView
-                        android:id="@+id/arrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat="@drawable/ic_arrow" />
-
-                    <TextView
-                        android:id="@+id/Destination"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Destination "
-                        android:layout_marginTop="5dp"
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/calendar"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat="@drawable/ic_date" />
-
-                    <TextView
-                        android:id="@+id/Date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Date"
-                        android:layout_marginTop="5dp"
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/clock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat="@drawable/ic_time" />
-
-                    <TextView
-                        android:id="@+id/Time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text=" Time"
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/chair"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat="@drawable/ic_seat" />
-
-                    <TextView
-                        android:id="@+id/SeatsCheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:text=" Seats: "
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                    <TextView
-                        android:id="@+id/Seats"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:textSize="20sp"
-                        android:text=" 0"
-                        android:textColor="@color/quantum_black_100"
-                        />
-
-                </LinearLayout>
-
-                <LinearLayout android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/bag"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        app:srcCompat="@drawable/ic_bag" />
-
-                    <TextView
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/LuggageCheck"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Luggage: "
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                    <TextView
-                        android:id="@+id/Luggage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Yes/No"
-                        android:layout_marginTop="6dp"
-                        android:textSize="20sp"
-                        android:textColor="@color/quantum_black_100"/>
-
-                </LinearLayout>
-
+        <TextView
+            android:id="@+id/Starting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Starting "
+            android:layout_marginTop="5dp"
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat="@drawable/ic_arrow" />
+
+        <TextView
+            android:id="@+id/Destination"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Destination "
+            android:layout_marginTop="5dp"
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+    </LinearLayout>
+
+    <LinearLayout  android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat="@drawable/ic_date" />
+
+        <TextView
+            android:id="@+id/Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Date"
+            android:layout_marginTop="5dp"
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+    </LinearLayout>
+
+    <LinearLayout  android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/clock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat="@drawable/ic_time" />
+
+        <TextView
+            android:id="@+id/Time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text=" Time"
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+    </LinearLayout>
+
+    <LinearLayout  android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/chair"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat="@drawable/ic_seat" />
+
+        <TextView
+            android:id="@+id/SeatsCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text=" Seats: "
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+        <TextView
+            android:id="@+id/Seats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="20sp"
+            android:text=" 0"
+            android:textColor="@color/quantum_black_100"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout  android:layout_width="350dp"
+        android:background="@color/quantum_white_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/bag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            app:srcCompat="@drawable/ic_bag" />
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/LuggageCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Luggage: "
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+        <TextView
+            android:id="@+id/Luggage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Yes/No"
+            android:layout_marginTop="6dp"
+            android:textSize="20sp"
+            android:textColor="@color/quantum_black_100"/>
+
+    </LinearLayout>
+
+</LinearLayout>
