@@ -41,10 +41,14 @@
 
 
         <TextView
+
+            android:textColor="@color/quantum_black_100"
+            android:id="@+id/todaydate"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:textAlignment="center"
             android:text="Todays Date is"
-            android:textSize="50dp"
+            android:textSize="20dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/app_start"/>
 

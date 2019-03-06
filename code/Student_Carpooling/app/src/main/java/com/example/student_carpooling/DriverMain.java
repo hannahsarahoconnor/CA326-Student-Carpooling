@@ -32,6 +32,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
 
+import org.joda.time.LocalDate;
+
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -52,7 +55,7 @@ public class DriverMain extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail,Welcome;
+    private TextView NUsername, Nemail,Welcome, TodayDate;
     private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
@@ -76,8 +79,14 @@ public class DriverMain extends AppCompatActivity
         UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
+        String rightNow = Calendar.getInstance().getCalendarType();
 
+        TodayDate = findViewById(R.id.todaydate);
         Welcome = findViewById(R.id.welcome);
+
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        TodayDate.setText(currentDate);
 
         OneSignal.startInit(this).init();
         //notify one signal that the user wishes to recieves nofications
@@ -310,13 +319,10 @@ public class DriverMain extends AppCompatActivity
 
                     }
                 }
-<<<<<<< HEAD
                 else{
                     Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                    return;
                 }
-=======
-                else{Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");}
->>>>>>> b362e9758b8d0342980e1c1ade4860e999d4df3f
             }
 
             @Override
@@ -376,7 +382,11 @@ public class DriverMain extends AppCompatActivity
 
                 }
                 if(count >0){
-                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
+                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");
+                }
+                else{
+                    Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                }
 
             }
 

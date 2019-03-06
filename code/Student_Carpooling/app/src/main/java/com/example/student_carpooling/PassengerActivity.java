@@ -32,6 +32,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 public class PassengerActivity extends AppCompatActivity
@@ -45,10 +51,15 @@ public class PassengerActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail;
+    private TextView NUsername, Nemail,Welcome,TodayDate;
     private String email,UserID;
     private DatabaseReference UserDb;
-    private String ProfilePicUrl;
+    private String ProfilePicUrl, Day,Time;
+
+    int count = 0;
+    Date tripdate;
+
+    String DBUsername;
 
     FirebaseUser CurrentUser;
 
@@ -68,6 +79,13 @@ public class PassengerActivity extends AppCompatActivity
 
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        TodayDate = findViewById(R.id.todaydate);
+        Welcome = findViewById(R.id.welcome);
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        TodayDate.setText(currentDate);
+
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
@@ -248,14 +266,18 @@ public class PassengerActivity extends AppCompatActivity
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
+                        DBUsername = map.get("Username").toString();
                         NUsername.setText(DBUsername);
+                        //getTripIds(DBUsername);
+                        getTrips(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
                         if(!ProfilePicUrl.equals("defaultPic")) {
                             Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
                     }
+
+
 
 
                 }
@@ -267,6 +289,108 @@ public class PassengerActivity extends AppCompatActivity
             }
         });
     }
+
+    private void getTrips(final String username){
+        DatabaseReference getDriverId = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips");
+        getDriverId.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot id : dataSnapshot.getChildren()){
+                        final String DriverId = id.getKey();
+                        DatabaseReference getTripId = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips").child(DriverId);
+                        getTripId.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot id : dataSnapshot.getChildren()) {
+                                    String TripId = id.getKey();
+                                    getTripIds(DriverId,TripId, username);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getTripIds(String DriverID, String TripID, final String Username){
+        DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID);
+        TripsDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+
+                    //check that none of them are null
+                    if (map.get("Date") != null) {
+                        Day = map.get("Date").toString();
+
+                    }
+                    if (map.get("Time") != null) {
+                        Time = map.get("Time").toString();
+                    }
+
+
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                    try {
+
+                        String dateStr = Day + " " + Time;
+                        Date Datee = format.parse(dateStr);
+                        long mili = Datee.getTime();
+                        tripdate = new Date(mili);
+                        //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    Date rightNow = Calendar.getInstance().getTime();
+
+
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(tripdate);
+                    cal2.setTime(rightNow);
+                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                    if(sameDay && tripdate.after(rightNow)){
+                        count++;
+                    }
+
+
+                }
+                if(count >0){
+                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");
+                }
+                else{
+                    Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+
 
     private void setupFirebaseListener(){
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
