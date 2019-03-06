@@ -307,6 +307,11 @@ public class DriverCreate extends AppCompatActivity
                 radioButton = findViewById(radioId);
                 final String luggageCheck = radioButton.getText().toString();
                 final String Tripnote = TripNote.getText().toString();
+                
+                
+            if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
+                    Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                }else{
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                 try {
 
@@ -364,7 +369,7 @@ public class DriverCreate extends AppCompatActivity
 
 
             }
-
+}
         });
 
 
