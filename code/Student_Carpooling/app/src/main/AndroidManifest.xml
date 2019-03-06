@@ -22,7 +22,8 @@
         <activity android:name=".DriverHelp"></activity>
         <activity android:name=".PassengerHelp" />
         <activity android:name=".TripComplete" />
-        <activity android:name=".PassengerTripItem" />
+        <activity android:name=".PassengerTripItem"
+            android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

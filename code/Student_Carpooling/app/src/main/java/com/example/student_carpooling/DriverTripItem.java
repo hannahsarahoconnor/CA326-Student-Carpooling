@@ -98,22 +98,19 @@ public class DriverTripItem extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_trip_item);
-        Toolbar toolbar = findViewById(R.id.toolbar2);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setTitle("Hi ");toolbar.setTitleTextColor(Color.WHITE);
-
 
         textView = findViewById(R.id.text);
         cancelledTV = findViewById(R.id.cancelled);
         PassengerText = findViewById(R.id.passengerText);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageView back = findViewById(R.id.back);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
-                Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
-                startActivity(intent);
+                finish();
             }
         });
 

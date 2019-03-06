@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
-
         <ImageView
             android:id="@+id/trip"
             android:layout_width="wrap_content"
@@ -31,6 +30,7 @@
             android:layout_height="wrap_content"
             android:text=" Starting "
             android:layout_marginTop="5dp"
+            android:fontFamily="@font/amiko"
             android:textSize="20sp"
             android:textColor="@color/quantum_black_100"/>
 
@@ -48,6 +48,7 @@
 
         <TextView
             android:id="@+id/Destination"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Destination "
@@ -68,6 +69,7 @@
 
         <TextView
             android:id="@+id/Date"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Date"
@@ -90,6 +92,7 @@
 
         <TextView
             android:id="@+id/Time"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

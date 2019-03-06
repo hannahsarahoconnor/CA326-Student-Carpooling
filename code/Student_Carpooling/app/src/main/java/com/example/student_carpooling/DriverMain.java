@@ -306,7 +306,7 @@ public class DriverMain extends AppCompatActivity
     }
     private void getTripIds(final String Username){
         DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-        TripIDs.addListenerForSingleValueEvent(new ValueEventListener() {
+        TripIDs.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -320,7 +320,7 @@ public class DriverMain extends AppCompatActivity
                     }
                 }
                 else{
-                    Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                    Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
                     return;
                 }
             }
@@ -382,10 +382,10 @@ public class DriverMain extends AppCompatActivity
 
                 }
                 if(count >0){
-                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");
+                    Welcome.setText("Hello " + Username + "!\n\n" + "You have " + count + " scheduled trips today");
                 }
                 else{
-                    Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
+                    Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
                 }
 
             }

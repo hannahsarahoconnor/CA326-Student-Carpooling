@@ -63,15 +63,13 @@ public class PassengerTripItem extends AppCompatActivity {
         setContentView(R.layout.activity_passenger_trip_item);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("");
-        toolbar.setTitleTextColor(Color.WHITE);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
                 finish();
             }
         });
@@ -177,10 +175,13 @@ public class PassengerTripItem extends AppCompatActivity {
 
                     if (Integer.parseInt(Cancel) == 0) {
 
-
+                    try {
                         if (!_PicUrl.equals("defaultPic")) {
                             Glide.with(PassengerTripItem.this).load(_PicUrl).into(DriverPic);
                         }
+                    }catch(Exception e){
+                        }
+
 
                         DriverUserName.setText(_driverUsername);
 

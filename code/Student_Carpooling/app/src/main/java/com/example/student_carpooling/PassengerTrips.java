@@ -254,6 +254,7 @@ public class PassengerTrips extends AppCompatActivity
                       DstLon = Float.parseFloat(map.get("DstLon").toString());
                     }
 
+                        //Toast.makeText(PassengerTrips.this, ""+profileImageUrl, Toast.LENGTH_SHORT).show();
 
                     PassengerTrip object = new PassengerTrip(NotificationKey,Fullname,profileImageUrl,DriverUsername,TripKey, DriverId, lat,lon,DstLat,DstLon,Starting, Destination,Time,Date);
                     trips.add(object);

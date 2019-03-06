@@ -33,6 +33,8 @@
         <fragment android:id="@+id/autocomplete_fragment"
             android:layout_width="match_parent"
             android:layout_height="30dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/amiko"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
             />
 
@@ -55,6 +57,8 @@
 
                 <fragment android:id="@+id/autocomplete_fragmentDST"
                     android:layout_width="match_parent"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/amiko"
                     android:layout_height="30dp"
                     android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
                     android:background="@null"
@@ -77,6 +81,7 @@
 
         <TextView
             android:id="@+id/DateInput"
+            android:fontFamily="@font/amiko"
             android:layout_width="150dp"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
@@ -94,6 +99,7 @@
 
         <TextView
             android:id="@+id/TimeInput"
+            android:fontFamily="@font/amiko"
             android:layout_marginTop="5dp"
             android:layout_width="160dp"
             android:layout_marginStart="20dp"
@@ -114,6 +120,7 @@
             android:layout_marginTop="2dp"
             android:layout_width="134dp"
             android:layout_height="50dp"
+            android:fontFamily="@font/amiko"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:text="Number Seats: "
@@ -123,6 +130,7 @@
         <Spinner
             android:id="@+id/seats_spinner"
             android:layout_width="100dp"
+            android:fontFamily="@font/amiko"
             android:layout_height="50dp"
             android:layout_marginLeft="60dp"
             android:layout_marginTop="5dp"/>
@@ -144,6 +152,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:fontFamily="@font/amiko"
             android:layout_marginLeft="20dp"
             android:text="Luggage Space: "
             android:textColor="@android:color/black"
@@ -151,6 +160,7 @@
 
         <RadioButton
             android:id="@+id/Yes"
+            android:fontFamily="@font/amiko"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="50dp"
@@ -160,6 +170,7 @@
             android:checked="true"/>
 
         <RadioButton
+            android:fontFamily="@font/amiko"
             android:id="@+id/No"
             android:layout_marginTop="5dp"
             android:layout_width="300dp"
@@ -177,6 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
+            android:fontFamily="@font/amiko"
             android:text="Note:"
             android:textColor="@android:color/black"
             android:textSize="20dp" />
@@ -189,6 +201,7 @@
 
             <EditText
                 android:id="@+id/Note"
+                android:fontFamily="@font/amiko"
                 android:hint="What time do you except to arrive there? Car Description?"
                 android:layout_width="350dp"
                 android:layout_height="100dp" />
@@ -198,6 +211,8 @@
 
         <Button
             android:id="@+id/CreateId"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

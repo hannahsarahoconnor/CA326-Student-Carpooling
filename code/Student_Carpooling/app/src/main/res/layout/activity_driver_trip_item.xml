@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".DriverTripItem"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/quantum_white_100"
         android:layout_above="@+id/relLayout1">
 
     <android.support.design.widget.AppBarLayout
@@ -16,38 +16,41 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar2"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-
-            >
-            <LinearLayout
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:textColor="@color/quantum_white_100"
-                    android:id="@+id/otherFullName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="5dp"
-                    android:text="Trip Information"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
+            android:background="@color/colorPrimary">
 
             <ImageView
-                android:id="@+id/deleteTrip"
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Trip Info"
+                android:textColor="@color/quantum_white_100"
+                android:textSize="20sp" />
+
+
+            <ImageView
+                android:id="@+id/delete"
                 android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="80dp"
+                android:layout_marginLeft="150dp"
+                android:layout_marginStart="150dp"
                 android:layout_marginBottom="10dp"
                 android:src="@drawable/ic_delete" />
+
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

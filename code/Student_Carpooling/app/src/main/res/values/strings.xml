@@ -61,8 +61,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_filtered_trips">Trip Results</string>
-    <string name="title_activity_driver_trip_item"> </string>
-    <string name="title_activity_passenger_trip_item">Trip Information</string>
+    <string name="title_activity_driver_trip_item">T </string>
+    <string name="title_activity_passenger_trip_item">T </string>
     <string name="title_activity_driver_message">Active Chats</string>
     <string name="title_activity_request_map">Map</string>
     <string name="title_activity_user_location">Map</string>

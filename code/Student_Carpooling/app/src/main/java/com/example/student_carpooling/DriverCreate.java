@@ -312,6 +312,7 @@ public class DriverCreate extends AppCompatActivity
                     Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }else{
 
+
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                 try {
 

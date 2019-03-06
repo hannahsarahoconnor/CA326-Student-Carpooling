@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FilteredTrips"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/quantum_white_100"
     android:layout_above="@+id/relLayout1">
 
     <android.support.design.widget.AppBarLayout
@@ -29,10 +29,14 @@
     <TextView
         android:layout_marginTop="180dp"
         android:id="@+id/Text"
-        android:text="There are no matching Trips!"
+        android:fontFamily="@font/amiko"
+        android:text="There are no matching Trips"
         android:layout_width="wrap_content"
-        android:textSize="30dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
         android:visibility="gone"
+        android:gravity="center"
         android:layout_centerInParent="true"
         android:layout_height="wrap_content"
         android:layout_below="@+id/app_bar_chat" />
@@ -42,9 +46,11 @@
         android:layout_marginTop="20dp"
         android:id="@+id/Text2"
         android:textAlignment="center"
+        android:fontFamily="@font/amiko"
         android:text="If you wish to create a request,\nclick the button below"
         android:layout_width="wrap_content"
-        android:textSize="30sp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_centerInParent="true"
         android:visibility="gone"
         android:layout_height="wrap_content"
@@ -54,6 +60,10 @@
     <Button
         android:id="@+id/Request"
         android:visibility="gone"
+        android:fontFamily="@font/amiko"
+        android:textStyle="bold"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/quantum_white_100"
         android:layout_centerInParent="true"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/Text2"

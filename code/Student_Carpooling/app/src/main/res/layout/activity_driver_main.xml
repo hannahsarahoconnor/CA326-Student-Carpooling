@@ -17,40 +17,41 @@
 
         <TextView
             android:id="@+id/welcome"
-            android:layout_marginTop="50dp"
             android:layout_width="350dp"
-            android:layout_centerHorizontal="true"
-            android:layout_height="170dp"
-            android:padding="20dp"
-            android:textColor="@color/quantum_black_100"
-            android:background="@drawable/welcome"
-            android:text="Welcome user! \n you have x trips today"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            android:layout_gravity="center"/>
-
-        <ImageView
-            android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/welcome"
+            android:padding="20dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/amiko"
+            android:text=" "
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="25sp" />
+
+        <ImageView
+            android:layout_width="900dp"
+            android:layout_height="900dp"
             android:layout_below="@+id/welcome"
             android:layout_gravity="center"
-            android:src="@drawable/logo_new_2"
-
-            android:contentDescription="@string/Description" />
+            android:contentDescription="@string/Description"
+            android:src="@drawable/road" />
 
 
         <TextView
 
-            android:textColor="@color/quantum_black_100"
             android:id="@+id/todaydate"
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:textAlignment="center"
-            android:text="Todays Date is"
-            android:textSize="20dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/app_start"/>
+            android:background="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"
+            android:text="Todays Date is"
+            android:textAlignment="center"
+            android:textColor="@color/quantum_white_100"
+            android:textSize="30dp" />
 
     </RelativeLayout>
 
