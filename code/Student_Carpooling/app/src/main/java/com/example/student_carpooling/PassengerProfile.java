@@ -319,21 +319,21 @@ public class PassengerProfile extends AppCompatActivity
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Name")!=null){
                         DBName = map.get("Name").toString();
-                        Name.setText(DBName);
+                        //Name.setText(DBName);
 
                     }
                     if(map.get("University")!=null){
                         DBUni = map.get("University").toString();
-                        Uni.setText(DBUni);
+                        //Uni.setText(DBUni);
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        TripCount.setText(completed + "completed carpools");
+                        //TripCount.setText(completed + "completed carpools");
                     }
                     if(map.get("Username")!=null){
                         DBUsername = map.get("Username").toString();
-                        Username.setText(DBUsername);
-                        NUsername.setText(DBUsername);
+                       // Username.setText(DBUsername);
+                       // NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
@@ -358,13 +358,13 @@ public class PassengerProfile extends AppCompatActivity
                     //calculate average and set bar
                     if(ratingTotal != 0){
                         ratingAvg  = ratingSum/ratingTotal;
-                        ratingBar.setRating(ratingAvg);
-                        ratingText.setText(Math.round(ratingTotal) + " total ratings");
-                        ratingText.setVisibility(View.VISIBLE);
+                       // ratingBar.setRating(ratingAvg);
+                       // ratingText.setText(Math.round(ratingTotal) + " total ratings");
+                        //ratingText.setVisibility(View.VISIBLE);
                     }
                     else{
                         //set the text to visible
-                        ratingText.setVisibility(View.VISIBLE);
+                        //ratingText.setVisibility(View.VISIBLE);
                     }
 
 

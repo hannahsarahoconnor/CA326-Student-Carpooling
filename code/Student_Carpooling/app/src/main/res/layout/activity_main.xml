@@ -13,9 +13,7 @@
         android:layout_height="500dp"
         android:layout_gravity="center"
         android:src="@drawable/logo_new_2"
-
         app:civ_border_color="@color/colorPrimaryDark"
-
         android:contentDescription="@string/Description" />
     <LinearLayout
         android:id="@id/main2"

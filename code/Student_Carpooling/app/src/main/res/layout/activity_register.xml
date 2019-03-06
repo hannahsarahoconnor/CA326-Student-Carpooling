@@ -27,15 +27,16 @@
                 android:src="@drawable/ic_back" />
 
             <TextView
-                android:text="Registration"
-                android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:textColor="@color/quantum_white_100"
                 android:id="@+id/text"
-                android:textSize="30sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginStart="60dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Registration"
+                android:textColor="@color/quantum_white_100"
+                android:textSize="30sp" />
 
 
 
@@ -43,20 +44,18 @@
     </android.support.design.widget.AppBarLayout>
 
 
-
-
     <EditText
         android:id="@+id/NameInput"
         android:layout_width="350dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
-        android:inputType="text"
-        android:hint="@string/Name"
         android:autofillHints="name"
-        tools:targetApi="o"/>
+        android:hint="@string/Name"
+        android:inputType="text"
+        tools:targetApi="o" />
 
     <EditText
     android:id="@+id/SurnameInput"

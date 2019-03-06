@@ -42,6 +42,9 @@
         <meta-data
             android:name="com.onesignal.BadgeCount"
             android:value="ENABLE" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity
             android:name=".StartTrip"

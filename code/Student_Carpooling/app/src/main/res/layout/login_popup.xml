@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:textColor="@color/quantum_black_100"
+        android:textColor="@color/quantum_white_100"
         android:text="X"
         android:textAlignment="textEnd"
         android:layout_marginRight="5dp"
@@ -29,10 +29,11 @@
     <EditText
         android:id="@+id/EmailInput"
         android:layout_width="220dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:hint="@string/Email"
+        android:fontFamily="@font/amiko"
         android:inputType="textEmailAddress"
         android:autofillHints="email"
         android:background="#33B13737"
@@ -42,9 +43,11 @@
     <EditText
         android:id="@+id/PasswordInput"
         android:layout_width="220dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_gravity="center"
         android:hint="@string/Password"
+        android:fontFamily="@font/amiko"
+        android:layout_marginTop="15dp"
         android:inputType="textPassword"
         android:autofillHints="email"
         android:background="#33B13737"
@@ -61,11 +64,12 @@
 
 
     <RadioButton
+        android:fontFamily="@font/amiko"
         android:id="@+id/Driver"
-        android:layout_width="71dp"
+        android:layout_width="81dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="2dp"
         android:checked="true"
         android:text="Driver" />
@@ -74,7 +78,7 @@
         android:id="@+id/Passenger"
         android:layout_width="wrap_content"
         android:layout_marginLeft="5dp"
-
+        android:fontFamily="@font/amiko"
         android:layout_marginTop="2dp"
         android:layout_height="wrap_content"
         android:text="Passenger" />
@@ -83,6 +87,7 @@
 
 
 <Button
+    android:textStyle="bold"
         android:id="@+id/Login"
     android:layout_width="200dp"
     android:layout_height="wrap_content"
@@ -90,6 +95,7 @@
     android:layout_marginTop="15dp"
     android:textColor="@color/colorPrimary"
     android:text="@string/Login"
+    android:fontFamily="@font/amiko"
     android:textSize="20sp"
     android:background="@color/quantum_white_100"
     android:textAllCaps="false"/>

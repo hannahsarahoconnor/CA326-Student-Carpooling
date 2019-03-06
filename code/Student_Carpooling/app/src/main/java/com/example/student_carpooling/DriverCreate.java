@@ -132,7 +132,7 @@ public class DriverCreate extends AppCompatActivity
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        UserID = mAuth.getCurrentUser().getUid();
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 

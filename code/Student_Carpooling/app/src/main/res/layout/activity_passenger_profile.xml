@@ -8,119 +8,160 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-
-        <TextView
-            android:id="@+id/Type"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="Passenger"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center"
-            />
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:src="@drawable/logo"
-            android:id="@+id/ProfilePic"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center"
-            app:civ_border_width="2dp"
-            app:civ_border_color="#FF000000"
-            />
-
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:text="Confirm"
-            android:layout_marginTop="10dp"
-            android:id="@+id/ConfirmPic"
-            />
-
-        <TextView
-            android:id="@+id/Username"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="@string/Username"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            />
-
-
-        <TextView
-            android:id="@+id/Name"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="@string/Name"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            />
-
-        <TextView
-            android:id="@+id/College"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="@string/University"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            />
-
-        <RatingBar
-            android:id="@+id/rating"
-            android:numStars="5"
-            android:stepSize="0.1"
-            android:clickable="false"
-            android:layout_width="240dp"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/ratingText"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="You dont have any ratings yet"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            android:visibility="invisible"
-            />
-
-        <TextView
-            android:id="@+id/tripcount"
-            android:layout_width="200dp"
-            android:textAlignment="center"
-            android:layout_height="wrap_content"
-            android:text="0 carpools"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"
-            />
-
-    </LinearLayout>
-
-
-    <include
-        layout="@layout/app_bar_passenger"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PassengerProfile"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="500dp">
+        <LinearLayout
+            android:background="@drawable/app_start"
+            android:layout_width="match_parent"
+            android:layout_height="650dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Driver"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:textSize="21sp"/>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ProfilePic"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@color/quantum_white_100"
+                android:layout_marginTop="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/logo"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hannah O'Connor"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:textSize="21sp"/>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_passenger"
-        app:menu="@menu/activity_passenger2_drawer" />
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="username"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+            <RatingBar
+                android:id="@+id/rating"
+                android:numStars="5"
+                android:stepSize="0.1"
+                android:clickable="false"
+                android:layout_width="240dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
 
-</android.support.v4.widget.DrawerLayout>
+
+        </LinearLayout>
+        <android.support.v7.widget.CardView
+            android:layout_width="400dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="350dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ratings"
+                        android:textSize="20sp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:paddingTop="10dp"
+                        android:textColor="@color/quantum_black_100"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trips Completed"
+                        android:textSize="20sp"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:paddingTop="10dp"
+                        android:textColor="@color/quantum_black_100"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/ConfirmPic"
+        android:textColor="#fff"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="35dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirm"/>
+    <Button
+        android:id="@+id/SwitchMode"
+        android:textColor="#fff"
+        android:background="@color/colorAccent"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Switch User Mode"/>
+</LinearLayout>
+<include
+layout="@layout/app_bar_passenger"
+android:layout_width="match_parent"
+android:layout_height="match_parent" />
+
+<android.support.design.widget.NavigationView
+android:id="@+id/nav_view"
+android:layout_width="wrap_content"
+android:layout_height="match_parent"
+android:layout_gravity="start"
+android:fitsSystemWindows="true"
+app:headerLayout="@layout/nav_header_passenger"
+app:menu="@menu/activity_passenger2_drawer" />
+
+    </android.support.v4.widget.DrawerLayout>
