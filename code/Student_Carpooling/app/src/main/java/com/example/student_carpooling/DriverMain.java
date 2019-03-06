@@ -309,6 +309,7 @@ public class DriverMain extends AppCompatActivity
 
                     }
                 }
+                else{Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");}
             }
 
             @Override
@@ -367,10 +368,8 @@ public class DriverMain extends AppCompatActivity
 
                 }
                 if(count >0){
-                Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
-                else{
-                   Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
-                }
+                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
+
             }
 
             @Override
