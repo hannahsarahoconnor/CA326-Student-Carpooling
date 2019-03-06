@@ -272,6 +272,8 @@ public class DriverMain extends AppCompatActivity
                         DBUsername = map.get("Username").toString();
                         NUsername.setText(DBUsername);
                         //Welcome.setText("Hello " + DBUsername);
+                        getTripIds(DBUsername);
+
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
@@ -282,7 +284,6 @@ public class DriverMain extends AppCompatActivity
 
 
                 }
-               getTripIds(DBUsername);
 
             }
 
@@ -303,6 +304,7 @@ public class DriverMain extends AppCompatActivity
                     for(DataSnapshot id : dataSnapshot.getChildren()){
                         //then get the info under that unique ID
                         String key = id.getKey();
+                        Toast.makeText(DriverMain.this, ""+key, Toast.LENGTH_SHORT).show();
                         getTripCount(key, Username);
 
                     }

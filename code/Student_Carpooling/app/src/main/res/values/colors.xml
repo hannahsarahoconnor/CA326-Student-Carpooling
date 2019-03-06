@@ -7,4 +7,5 @@
     <color name="gradStop">#32DEFE</color>
     <color name="gradCentre">#B9F3FE</color>
     <color name="transparent">#77B9F3FE</color>
+    <color name="splash">#D5953A</color>
 </resources>
