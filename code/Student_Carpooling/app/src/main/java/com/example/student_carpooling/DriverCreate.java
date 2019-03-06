@@ -307,6 +307,11 @@ public class DriverCreate extends AppCompatActivity
                 radioButton = findViewById(radioId);
                 final String luggageCheck = radioButton.getText().toString();
                 final String Tripnote = TripNote.getText().toString();
+
+                if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
+                    Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                }else{
+
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                 try {
 
@@ -323,9 +328,6 @@ public class DriverCreate extends AppCompatActivity
                     Toast.makeText(DriverCreate.this, "past date", Toast.LENGTH_SHORT).show();
                 }
 
-                if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
-                    Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-                }
                 else{
                     Date_TimeCheck(startingDate,startingTime);
 
@@ -352,8 +354,8 @@ public class DriverCreate extends AppCompatActivity
                         ref.push().setValue(TripInfo);
                         Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
 
-                        startActivity(new Intent(DriverCreate.this, DriverTrips.class));
-                        finish();
+                       startActivity(new Intent(DriverCreate.this, DriverMain.class));
+                       finish();
 
                     }
                     //   DateInput.setText("");
@@ -363,7 +365,7 @@ public class DriverCreate extends AppCompatActivity
                 }
 
 
-            }
+            }}
 
         });
 
