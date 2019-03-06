@@ -22,6 +22,7 @@
             android:layout_centerHorizontal="true"
             android:layout_height="170dp"
             android:padding="20dp"
+            android:textColor="@color/quantum_black_100"
             android:background="@drawable/welcome"
             android:text="Welcome user! \n you have x trips today"
             android:textSize="20sp"

@@ -310,9 +310,13 @@ public class DriverMain extends AppCompatActivity
 
                     }
                 }
+<<<<<<< HEAD
                 else{
                     Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
                 }
+=======
+                else{Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");}
+>>>>>>> b362e9758b8d0342980e1c1ade4860e999d4df3f
             }
 
             @Override
@@ -372,10 +376,8 @@ public class DriverMain extends AppCompatActivity
 
                 }
                 if(count >0){
-                Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
-                else{
-                   Welcome.setText("Hello " + Username + "!\n" + "You have no scheduled trips today");
-                }
+                    Welcome.setText("Hello " + Username + "!\n" + "You have " + count + " scheduled trips today");}
+
             }
 
             @Override

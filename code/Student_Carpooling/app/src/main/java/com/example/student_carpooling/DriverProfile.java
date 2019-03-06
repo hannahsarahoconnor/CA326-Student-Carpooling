@@ -56,7 +56,7 @@ public class DriverProfile extends AppCompatActivity
     private FirebaseAuth mAuth;
     private ImageView profilePic;
     private DatabaseReference UserDb;
-    private String DBName, DBUsername, DBUni,UserID;
+    private String DBName, DBSurname, DBUsername, DBUni,UserID;
     private TextView NUsername, Nemail, ratingText,TripCount;
 
     private RatingBar ratingBar;
@@ -288,7 +288,12 @@ public class DriverProfile extends AppCompatActivity
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                     if (map.get("Name") != null) {
                         DBName = map.get("Name").toString();
-                        Name.setText(DBName);
+
+
+                    }
+                    if (map.get("Surname") != null) {
+                        DBSurname = map.get("Surname").toString();
+                        Name.setText(DBName + " "+ DBSurname);
 
                     }
                     if (map.get("University") != null) {
@@ -297,11 +302,11 @@ public class DriverProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        TripCount.setText(completed + "completed carpools");
+                        TripCount.setText(completed + " completed carpools");
                     }
                     if (map.get("Username") != null) {
                         DBUsername = map.get("Username").toString();
-                        Username.setText(DBUsername);
+                        Username.setText("@" + DBUsername);
                         NUsername.setText(DBUsername);
                     }
                     if (map.get("profileImageUrl") != null) {
@@ -398,6 +403,7 @@ public class DriverProfile extends AppCompatActivity
 
                 ResultUri = imageUri;
                 profilePic.setImageURI(ResultUri);
+                Confirm.setVisibility(View.VISIBLE);
             }
         }
 
