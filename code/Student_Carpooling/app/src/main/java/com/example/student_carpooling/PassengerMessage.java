@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -423,40 +425,7 @@ public class PassengerMessage extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(PassengerMessage.this);
-                dialog.setTitle("Are you sure you want to delete your account?");
-                dialog.setMessage("By Doing this.....");
-                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    //is deleted
-                                    Toast.makeText(PassengerMessage.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
-                                    UserDb.removeValue();
-                                    Intent intent = new Intent(PassengerMessage.this,MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(PassengerMessage.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
+                DeleteAccount();
                 break;
 
             case R.id.help:
@@ -467,35 +436,84 @@ public class PassengerMessage extends AppCompatActivity
                 break;
 
             case R.id.contact:
-                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerMessage.this);
-                dialog1.setTitle("Contact Admins");
-                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
-                        intent1.putExtra("Username","StudentCarpooling");
-                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                        intent1.putExtra("Fullname","Admins");
-                        intent1.putExtra("ProfilePicURL","defaultPic");
-                        startActivity(intent1);
-                    }
-                });
-
-                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog1 = dialog1.create();
-                alertDialog1.show();
+                ContactAdmins();
                 break;
 
         }
         return super.onOptionsItemSelected(item);
     }
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerMessage.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Title.setText("Delete Account");
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(PassengerMessage.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            UserDb.removeValue();
+                            Intent intent = new Intent(PassengerMessage.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(PassengerMessage.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void ContactAdmins(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerMessage.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

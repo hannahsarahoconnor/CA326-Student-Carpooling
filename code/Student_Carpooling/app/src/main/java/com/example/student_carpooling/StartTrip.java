@@ -16,9 +16,11 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -205,6 +207,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                 }
                 else{
                     //AlertDialog -- you have no yet reached your destination, are you sure you want to end this trip??
+                   showDialog();
                     AlertDialog.Builder builder = new AlertDialog.Builder(StartTrip.this);
                     builder.setTitle("Are you sure you want to end this trip?").setMessage("You dont seem to have reached your destination yet, are you sure you wish to continue?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -254,6 +257,52 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         });
 
     }
+
+    private void showDialog() {
+       final AlertDialog dialogBuilder = new AlertDialog.Builder(StartTrip.this).create();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog, null);
+                TextView Text = dialogView.findViewById(R.id.Text);
+                Text.setText("You dont seem to have reached your destination yet. Are you sure you wish to end this trip? ");
+                Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+                Submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatabaseReference completed = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID);
+                        completed.child("Completed").setValue(1);
+                        Intent intent = new Intent(StartTrip.this,TripComplete.class);
+                        intent.putExtra("TripID",TripID);
+                        intent.putExtra("DriverID",CurrentUserID);
+                        intent.putExtra("DriverUsername",DriverUserName);
+                        intent.putExtra("driverUrl",PicUrl);
+                        intent.putExtra("Cancelled","0");
+
+                        final DatabaseReference completedCount = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+                        completedCount.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        completedCount.child("CompletedTrips").setValue(count+1);
+                        startActivity(intent);
+                        finish();
+                        dialogBuilder.dismiss();
+                    }
+                });
+
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.show();
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;

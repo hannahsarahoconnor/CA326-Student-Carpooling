@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +23,10 @@ import com.example.student_carpooling.passengerRecyclerView.Passenger;
 import com.example.student_carpooling.passengerRecyclerView.PassengerAdapter;
 import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTrip;
 import com.example.student_carpooling.usersRecyclerView.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +54,8 @@ public class PassengerTripItem extends AppCompatActivity {
     ImageView DriverPic, MessageDriver, DriverProfile;
     Date rightNow,tripdate,expiredTripdate;
     Button Leave,Track;
+    FirebaseUser CurrentUser;
+    private DatabaseReference UserDb;
 
     private LinearLayoutManager passengerLayoutManager;
 
@@ -82,8 +90,11 @@ public class PassengerTripItem extends AppCompatActivity {
         });
 
         mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
         UserId = mAuth.getCurrentUser().getUid();
 
+
+        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserId);
 
         passCount = findViewById(R.id.text);
         recyclerView = findViewById(R.id.passengerRecycler);
@@ -196,6 +207,8 @@ public class PassengerTripItem extends AppCompatActivity {
                         CancelText.setText("This trip is completed");
                         CancelText.setVisibility(View.VISIBLE);
                         CancelButton.setVisibility(View.GONE);
+                        delete.setVisibility(View.VISIBLE);
+                        showDialog();
                         return;
                     }
 
@@ -208,34 +221,11 @@ public class PassengerTripItem extends AppCompatActivity {
                         if (Integer.parseInt(Completed) == 1 || Integer.parseInt(Cancel) == 1) {
                             delete.setVisibility(View.VISIBLE);
 
-                            delete.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(PassengerTripItem.this);
-                                    builder.setTitle("Are you sure you want to delete this trip?").setMessage("Once deleted, you will no longer see this trip information, are you sure?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                                            //dont wanna delete it completed as then the passenger cant see, add value -> deleted, so that it wont be show in their page
-                                            DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("users").child(UserId).child("Trips").child(_driverid).child(_tripid);
-                                            trips.removeValue();
-                                            Intent intent = new Intent(PassengerTripItem.this, PassengerTrips.class);
-                                            startActivity(intent);
-                                            finish();
-                                            dialog.dismiss();
+                           showDialog();
 
-                                        }
-                                    })
-                                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                                                    dialog.cancel();
 
-                                                }
-                                            });
-                                    final AlertDialog alert = builder.create();
-                                    alert.show();
-                                }
-                            });
+
+
                         }
 
 
@@ -349,6 +339,35 @@ public class PassengerTripItem extends AppCompatActivity {
             }
         });
 
+    }
+    private void showDialog() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerTripItem.this).create();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog, null);
+                TextView Text = dialogView.findViewById(R.id.Text);
+                Text.setText("By deleting this trip, you will no longer be able to view it's information. Are you sure you wish to continue? ");
+                Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+                Submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("users").child(UserId).child("Trips").child(_driverid).child(_tripid);
+                        trips.removeValue();
+                        Intent intent = new Intent(PassengerTripItem.this, PassengerTrips.class);
+                        startActivity(intent);
+                        finish();
+                        dialogBuilder.dismiss();
+                    }
+                });
+
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.show();
+            }
+        });
     }
 
     private void getOtherPassengers(final String DriverID,final String TripId){

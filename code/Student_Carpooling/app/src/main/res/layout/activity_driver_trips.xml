@@ -63,7 +63,9 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_driver_main"
         app:menu="@menu/activity_driver_main_drawer"
-        android:theme="@style/NavigationView"/>
+        android:theme="@style/NavigationView"
+        app:itemTextColor="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimary"/>
 
 
 </android.support.v4.widget.DrawerLayout>

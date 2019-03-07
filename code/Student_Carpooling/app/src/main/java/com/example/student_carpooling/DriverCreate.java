@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -526,35 +527,83 @@ public class DriverCreate extends AppCompatActivity
                 break;
 
             case R.id.contact:
-                AlertDialog.Builder dialog1 = new AlertDialog.Builder(DriverCreate.this);
-                dialog1.setTitle("Contact Admins");
-                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent1 = new Intent(DriverCreate.this,ChatActivity.class);
-                        intent1.putExtra("Username","StudentCarpooling");
-                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                        intent1.putExtra("Fullname","Admins");
-                        intent1.putExtra("ProfilePicURL","defaultPic");
-                        startActivity(intent1);
-                    }
-                });
-
-                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog1 = dialog1.create();
-                alertDialog1.show();
+                ContactAdmins();
                 break;
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Title.setText("Delete Account");
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(DriverCreate.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            UserDb.removeValue();
+                            Intent intent = new Intent(DriverCreate.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(DriverCreate.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void ContactAdmins(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(DriverCreate.this,ChatActivity.class);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

@@ -150,7 +150,7 @@ public class UserProfile extends AppCompatActivity {
                     }
                     if(map.get("Username")!=null){
                         username = map.get("Username").toString();
-                        Username.setText(username);
+                        Username.setText("@"+username);
                     }
                     if(map.get("profileImageUrl")!=null){
                         picurl = map.get("profileImageUrl").toString();

@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -218,6 +219,12 @@ public class DriverTripItem extends AppCompatActivity {
                         cancelledTV.setVisibility(View.VISIBLE);
                         cancelledTV.setText("This trip has been completed");
                         delete.setVisibility(View.VISIBLE);
+                        delete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showDialog();
+                            }
+                        });
                     }
                 }
 
@@ -269,6 +276,12 @@ public class DriverTripItem extends AppCompatActivity {
                             cancelledTV.setVisibility(View.VISIBLE);
                             cancelledTV.setText("This trip has expired");
                             delete.setVisibility(View.VISIBLE);
+                            delete.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    showDialog();
+                                }
+                            });
 
                         }
                     }
@@ -323,40 +336,7 @@ public class DriverTripItem extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //replace its content with cancelled --> true
-                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
-                dialog.setTitle("Are you sure you want to delete this trip?");
-                dialog.setMessage("Please message your passengers informing them why you wish to cancel as all participating passengers will be notified of this cancellation and will be able to review your account.Also, you will no longer have access to this trips' passengers");
-                dialog.setPositiveButton("Cancel Trip", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
-                        //TripDB.removeValue();
-                        //DatabaseReference NewDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
-                        TripDB.child("Cancelled").setValue(1);
-                        Toast.makeText(DriverTripItem.this, "This trip has been cancelled", Toast.LENGTH_LONG).show();
-                        //send notification to passengers of the cancellation
-                        for(String key : PassengerNotKey){
-                            new SendNotification(_username+" has cancelled your trip, click on the trip details to leave a review", "Student Carpooling",key);
-                        }
-                        Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
-                        startActivity(intent);
-
-                    }
-
-
-                });
-
-                dialog.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
-
+                CancelDialog();
             }
         });
 
@@ -430,30 +410,7 @@ public class DriverTripItem extends AppCompatActivity {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(DriverTripItem.this);
-                builder.setTitle("Are you sure you want to delete this trip?").setMessage("You will no longer be able to see the details of this trip,are you sure?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                        //dont wanna delete it completed as then the passenger cant see, add value -> deleted, so that it wont be show in their page
-                        DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUser.getUid()).child(TripID);
-                        trips.child("Deleted").setValue(1);
-
-                        Intent intent = new Intent(DriverTripItem.this,DriverTrips.class);
-                        startActivity(intent);
-                        finish();
-                        dialog.dismiss();
-
-                    }
-                })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                                dialog.cancel();
-
-                            }
-                        });
-                final AlertDialog alert = builder.create();
-                alert.show();
+                showDialog();
             }
         });
 
@@ -553,6 +510,39 @@ public class DriverTripItem extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void CancelDialog(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverTripItem.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        Text.setText("Please message your passengers informing them why you wish to cancel as all participating passengers will be notified of this cancellation and will be able to review your account.Also, you will no longer have access to this trips' passengers ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatabaseReference TripDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                //TripDB.removeValue();
+                //DatabaseReference NewDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                TripDB.child("Cancelled").setValue(1);
+                Toast.makeText(DriverTripItem.this, "This trip has been cancelled", Toast.LENGTH_LONG).show();
+                //send notification to passengers of the cancellation
+                for(String key : PassengerNotKey){
+                    new SendNotification(_username+" has cancelled your trip, click on the trip details to leave a review", "Student Carpooling",key);
+                }
+                Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
+                startActivity(intent);
+                finish();
+                dialogBuilder.dismiss();
+
+    }
+});
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+
+    }
+
 
 
     private void getPassengers() {
@@ -593,6 +583,36 @@ public class DriverTripItem extends AppCompatActivity {
         }
 
 
+    }
+    private void showDialog() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverTripItem.this).create();
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog, null);
+                TextView Text = dialogView.findViewById(R.id.Text);
+                Text.setText("By deleting this trip, you will no longer be able to view it's information. Are you sure you wish to continue? ");
+                Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+                Submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUser.getUid()).child(TripID);
+                        trips.child("Deleted").setValue(1);
+
+                        Intent intent = new Intent(DriverTripItem.this,DriverTrips.class);
+                        startActivity(intent);
+                        finish();
+                        dialogBuilder.dismiss();
+                    }
+                });
+
+                dialogBuilder.setView(dialogView);
+                dialogBuilder.show();
+            }
+        });
     }
 
 
@@ -711,45 +731,51 @@ public class DriverTripItem extends AppCompatActivity {
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
-                dialog.setTitle("Are you sure you want to delete your account?");
-                dialog.setMessage("By Doing this.....");
-                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    //is deleted
-                                    Toast.makeText(DriverTripItem.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
-                                    UserDb.removeValue();
-                                    Intent intent = new Intent(DriverTripItem.this,MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(DriverTripItem.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
+                DeleteAccount();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverTripItem.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(DriverTripItem.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            UserDb.removeValue();
+                            Intent intent = new Intent(DriverTripItem.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(DriverTripItem.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+
 
     private void HideDetails(){
         //once this trip is completed, hide the buttons -- cancel start and view requests...

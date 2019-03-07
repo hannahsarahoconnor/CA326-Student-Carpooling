@@ -28,10 +28,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="DRIVER"
-                    android:fontFamily="@font/amiko"
-                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/bowlby_one_sc"
+                    android:textColor="@color/quantum_white_100"
                     android:textStyle="bold"
-                    android:textSize="21sp"/>
+                    android:textSize="26sp"/>
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/ProfilePic"
                     app:civ_border_width="2dp"
@@ -132,7 +132,6 @@
                             android:layout_weight="1"
                             android:layout_height="match_parent">
                             <TextView
-                                android:id="@+id/CompletedNo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textStyle="bold"
@@ -142,6 +141,7 @@
                                 android:textColor="@color/quantum_white_100"
                                 />
                             <TextView
+                                android:id="@+id/CompletedNo"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
@@ -196,7 +196,9 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_driver_main"
         app:menu="@menu/activity_driver_main_drawer"
-        android:theme="@style/NavigationView"/>
+        android:theme="@style/NavigationView"
+        app:itemTextColor="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimary"/>
 
 
 </android.support.v4.widget.DrawerLayout>

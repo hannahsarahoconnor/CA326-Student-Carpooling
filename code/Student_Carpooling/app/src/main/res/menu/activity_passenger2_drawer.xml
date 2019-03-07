@@ -7,7 +7,7 @@
         <item
             android:id="@+id/pass_message"
             android:icon="@drawable/ic_message"
-            android:title="Message" />
+            android:title="Messages" />
         <item
             android:id="@+id/pass_profile"
             android:icon="@drawable/ic_profile"
@@ -27,7 +27,7 @@
             <item
                 android:id="@+id/create_request"
                 android:icon="@drawable/ic_create_trip"
-                android:title="Create Request" />
+                android:title="Trip Requests" />
             <item
                 android:id="@+id/pass_trips"
                 android:icon="@drawable/ic_my_trips"

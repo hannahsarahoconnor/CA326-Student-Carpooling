@@ -10,7 +10,10 @@
     android:layout_height="wrap_content"
     android:id="@+id/back"
     android:text="Back"
-    android:background="@color/quantum_googred"
+    android:textStyle="bold"
+    android:fontFamily="@font/amiko"
+    android:background="@color/colorPrimaryDark"
+    android:textColor="@color/quantum_white_100"
     xmlns:android="http://schemas.android.com/apk/res/android" />
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"

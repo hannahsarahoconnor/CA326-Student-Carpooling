@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:background="#E9BB63">
 
     <TextView
         android:id="@+id/textView"
@@ -14,11 +15,14 @@
         android:layout_marginTop="8dp"
         android:padding="10dp"
         android:textSize="25sp"
-        android:text="Report User" />
+        android:text="Report User"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"/>
 
     <EditText
-        android:background="@color/colorPrimaryDark"
+        android:background="#33B13737"
         android:id="@+id/reason"
+        android:fontFamily="@font/amiko"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_marginEnd="8dp"
@@ -33,6 +37,10 @@
         android:gravity="center"
         android:id="@+id/Submit"
         android:layout_width="100dp"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/quantum_white_100"
+        android:fontFamily="@font/amiko"
+        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -42,6 +50,10 @@
 
     <Button
         android:id="@+id/Cancel"
+        android:background="#B10C0C"
+        android:textColor="@color/quantum_white_100"
+        android:fontFamily="@font/amiko"
+        android:textStyle="bold"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

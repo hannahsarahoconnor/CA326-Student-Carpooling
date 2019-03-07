@@ -163,8 +163,8 @@
             android:fontFamily="@font/amiko"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginStart="50dp"
+            android:layout_marginLeft="31dp"
+            android:layout_marginStart="31dp"
             android:layout_marginTop="5dp"
             android:text="Yes"
             android:checked="true"/>
@@ -238,6 +238,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_driver_main"
-        app:menu="@menu/activity_driver_main_drawer" />
+        app:menu="@menu/activity_driver_main_drawer"
+        app:itemTextColor="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimary"/>
 
 </android.support.v4.widget.DrawerLayout>

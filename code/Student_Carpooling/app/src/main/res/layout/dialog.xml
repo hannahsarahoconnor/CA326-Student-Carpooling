@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#B10C0C"
+        >
+
+        <ImageView
+            android:id="@+id/warn"
+            android:visibility="visible"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_warning_black_24dp" />
+
+        <ImageView
+            android:id="@+id/admin"
+            android:visibility="gone"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/ic_admin"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="WARNING"
+            android:id="@+id/Title"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
+            android:textSize="26sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/Text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Enter Text Here"
+            android:fontFamily="@font/amiko"
+            android:textAlignment="center"
+            android:textSize="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+
+        <Button
+            android:id="@+id/Submit"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:text="Yes"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
+            android:layout_width="200dp"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/quantum_white_100" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
