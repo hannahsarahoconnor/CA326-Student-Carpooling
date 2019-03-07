@@ -24,6 +24,8 @@
             android:src="@drawable/logo"
             android:id="@+id/ProfilePic"
             android:layout_marginTop="10dp"
+            app:civ_border_color="@color/colorPrimaryDark"
+            app:civ_border_width="1dp"
 
             />
 
@@ -44,6 +46,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
+                android:fontFamily="@font/amiko"
+                android:textColor="@color/colorPrimaryDark"
                 />
 
             <LinearLayout android:layout_width="fill_parent"
@@ -59,6 +63,8 @@
                     android:textStyle="bold"
                     android:layout_marginStart="10dp"
                     android:layout_marginLeft="10dp"
+                    android:fontFamily="@font/amiko"
+                    android:textColor="@color/colorPrimaryDark"
                     />
 
                 <TextView
@@ -68,6 +74,8 @@
                     android:id="@+id/Dusername"
                     android:text="Username"
                     android:textStyle="bold"
+                    android:fontFamily="@font/amiko"
+                    android:textColor="@color/colorPrimaryDark"
 
                     />
 
@@ -123,7 +131,8 @@
             android:text=" Origin: "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/colorAccent"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
 
         <TextView
@@ -133,7 +142,8 @@
             android:text=" Starting "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -162,7 +172,8 @@
             android:text=" Destination: "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             />
 
 
@@ -174,7 +185,8 @@
             android:text=" Destination "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
 
     </LinearLayout>
@@ -201,7 +213,8 @@
             android:text=" Date"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <ImageView
             android:id="@+id/clock"
@@ -219,7 +232,8 @@
             android:layout_marginTop="5dp"
             android:text=" Time"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -248,7 +262,8 @@
             android:layout_marginTop="5dp"
             android:text=" Luggage: "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:visibility="visible"
@@ -258,7 +273,8 @@
             android:layout_marginTop="5dp"
             android:textSize="20sp"
             android:text=" Yes"
-            android:textColor="@color/quantum_black_100"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             />
     </LinearLayout>
 
@@ -284,7 +300,8 @@
             android:text=" Note: "
             android:maxLines="2"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -303,7 +320,8 @@
             android:layout_height="wrap_content"
             android:text=" Note Here "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -317,7 +335,7 @@
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/quantum_black_100"/>
+            android:background="@color/colorPrimaryDark"/>
 
 
     </LinearLayout>

@@ -28,9 +28,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class PassengerTripItem extends AppCompatActivity {
 
@@ -40,7 +46,7 @@ public class PassengerTripItem extends AppCompatActivity {
 
     TextView Starting, Destination, Date, Time, DriverUserName, DriverText, PassengerText, CancelText;
     ImageView DriverPic, MessageDriver, DriverProfile;
-
+    Date rightNow,tripdate,expiredTripdate;
     Button Leave,Track;
 
     private LinearLayoutManager passengerLayoutManager;
@@ -50,6 +56,7 @@ public class PassengerTripItem extends AppCompatActivity {
 
     private String Cancelled,Completed,_tripid, _driverid,_driverUsername,UserId, Name,NotificationKey, Surname, Fullname, PicUrL, NotficationKey, Username;
 
+    private TextView passCount;
     private Button CancelButton;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter passengerAdapter;
@@ -78,6 +85,7 @@ public class PassengerTripItem extends AppCompatActivity {
         UserId = mAuth.getCurrentUser().getUid();
 
 
+        passCount = findViewById(R.id.text);
         recyclerView = findViewById(R.id.passengerRecycler);
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setHasFixedSize(true);
@@ -89,12 +97,13 @@ public class PassengerTripItem extends AppCompatActivity {
         delete = findViewById(R.id.delete);
         Leave = findViewById(R.id.Leave);
         Track = findViewById(R.id.Track);
+        rightNow = Calendar.getInstance().getTime();
 
         intent = getIntent();
         String _starting = intent.getStringExtra("Starting");
         String _destination = intent.getStringExtra("Destination");
-        String _date = intent.getStringExtra("Date");
-        String _time = intent.getStringExtra("Time");
+        final String _date = intent.getStringExtra("Date");
+        final String _time = intent.getStringExtra("Time");
         _tripid = intent.getStringExtra("TripID");
         _driverid = intent.getStringExtra("DriverID");
         _driverUsername = intent.getStringExtra("DriverUsername");
@@ -134,14 +143,47 @@ public class PassengerTripItem extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
                 if (map.get("Completed") != null) {
-                    Completed = map.get("Completed").toString();
+                    String Completed = map.get("Completed").toString();
 
 
-                if (map.get("Cancelled") != null) {
-                    String Cancel = map.get("Cancelled").toString();
+                if(map.get("Started") != null) {
 
+                    String Started = map.get("Started").toString();
+                    if(Integer.parseInt(Started) == 0){
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
+                            //Split the original time and add 5 hours
+                            StringTokenizer tokens = new StringTokenizer(_time, ":");
+                            int hours = Integer.parseInt(tokens.nextToken()) + 5;
+                            String mins = tokens.nextToken();
+                            String ExpiredTime = Integer.toString(hours) + ":" + mins;
+                            String ExpiredDateStr = _date + " " + ExpiredTime;
+                            java.util.Date ExpiredDate = format.parse(ExpiredDateStr);
+                            long mili2 = ExpiredDate.getTime();
+                            expiredTripdate = new Date(mili2);
 
-                    if (Integer.parseInt(Cancel) == 1) {
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(rightNow.after(expiredTripdate)){
+                            recyclerView.setVisibility(View.GONE);
+                            DriverProfile.setVisibility(View.GONE);
+                            Track.setVisibility(View.GONE);
+                            MessageDriver.setVisibility(View.GONE);
+                            DriverUserName.setVisibility(View.GONE);
+                            DriverPic.setVisibility(View.GONE);
+                            PassengerText.setVisibility(View.GONE);
+                            DriverText.setVisibility(View.GONE);
+                            Leave.setVisibility(View.GONE);
+
+                            CancelText.setVisibility(View.VISIBLE);
+                            CancelButton.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    if(Integer.parseInt(Started) == 1 && Integer.parseInt(Completed) == 1){
+                        Toast.makeText(PassengerTripItem.this, "Success", Toast.LENGTH_SHORT).show();
                         recyclerView.setVisibility(View.GONE);
                         DriverProfile.setVisibility(View.GONE);
                         Track.setVisibility(View.GONE);
@@ -151,90 +193,17 @@ public class PassengerTripItem extends AppCompatActivity {
                         PassengerText.setVisibility(View.GONE);
                         DriverText.setVisibility(View.GONE);
                         Leave.setVisibility(View.GONE);
-
+                        CancelText.setText("This trip is completed");
                         CancelText.setVisibility(View.VISIBLE);
-                        CancelButton.setVisibility(View.VISIBLE);
-
-                        CancelButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(PassengerTripItem.this,TripComplete.class);
-                                intent.putExtra("TripID",_tripid);
-                                intent.putExtra("DriverID",_driverid);
-                                intent.putExtra("DriverUsername",_driverName);
-                                intent.putExtra("driverUrl",_PicUrl);
-                                intent.putExtra("Cancelled","1");
-                                startActivity(intent);
-                                finish();
-
-                            }
-                        });
-
+                        CancelButton.setVisibility(View.GONE);
+                        return;
                     }
 
 
-                    if (Integer.parseInt(Cancel) == 0) {
-
-                    try {
-                        if (!_PicUrl.equals("defaultPic")) {
-                            Glide.with(PassengerTripItem.this).load(_PicUrl).into(DriverPic);
-                        }
-                    }catch(Exception e){
-                        }
 
 
-                        DriverUserName.setText(_driverUsername);
-
-                        MessageDriver.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(PassengerTripItem.this, ChatActivity.class);
-                                intent.putExtra("Username", _driverUsername);
-                                intent.putExtra("ID", _driverid);
-                                intent.putExtra("Fullname", _driverName);
-                                intent.putExtra("ProfilePicURL", _PicUrl);
-                                Toast.makeText(PassengerTripItem.this, "Starting Chat with " + _driverUsername, Toast.LENGTH_SHORT).show();
-                                startActivity(intent);
-                            }
-                        });
-
-                        DriverProfile.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(PassengerTripItem.this, UserProfile.class);
-                                startActivity(intent);
-
-                            }
-                        });
-
-                        Track.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(PassengerTripItem.this, PassengerMap.class);
-                                intent.putExtra("TripID", _tripid);
-                                intent.putExtra("DriverID", _driverid);
-                                intent.putExtra("DstLat", dstlat);
-                                intent.putExtra("DstLon", dstlon);
-                                intent.putExtra("Lat", Lat);
-                                intent.putExtra("Lon", Lon);
-                                intent.putExtra("PicUrl", _PicUrl);
-                                intent.putExtra("NotificationKey", NotificationKey);
-                                intent.putExtra("Username", _driverUsername);
-                                startActivity(intent);
-                            }
-                        });
-
-                        Leave.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
-
-                        //set up recycler view of other passengers in the trip
-                        getOtherPassengers(_driverid, _tripid);
-
-                    }
+                    if (map.get("Cancelled") != null) {
+                        String Cancel = map.get("Cancelled").toString();
 
                         if (Integer.parseInt(Completed) == 1 || Integer.parseInt(Cancel) == 1) {
                             delete.setVisibility(View.VISIBLE);
@@ -249,7 +218,7 @@ public class PassengerTripItem extends AppCompatActivity {
                                             //dont wanna delete it completed as then the passenger cant see, add value -> deleted, so that it wont be show in their page
                                             DatabaseReference trips = FirebaseDatabase.getInstance().getReference().child("users").child(UserId).child("Trips").child(_driverid).child(_tripid);
                                             trips.removeValue();
-                                            Intent intent = new Intent(PassengerTripItem.this,PassengerTrips.class);
+                                            Intent intent = new Intent(PassengerTripItem.this, PassengerTrips.class);
                                             startActivity(intent);
                                             finish();
                                             dialog.dismiss();
@@ -270,9 +239,104 @@ public class PassengerTripItem extends AppCompatActivity {
                         }
 
 
+                        if (Integer.parseInt(Cancel) == 1) {
+                            recyclerView.setVisibility(View.GONE);
+                            DriverProfile.setVisibility(View.GONE);
+                            Track.setVisibility(View.GONE);
+                            MessageDriver.setVisibility(View.GONE);
+                            DriverUserName.setVisibility(View.GONE);
+                            DriverPic.setVisibility(View.GONE);
+                            PassengerText.setVisibility(View.GONE);
+                            DriverText.setVisibility(View.GONE);
+                            Leave.setVisibility(View.GONE);
+
+                            CancelText.setVisibility(View.VISIBLE);
+                            CancelButton.setVisibility(View.VISIBLE);
+
+                            CancelButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(PassengerTripItem.this, TripComplete.class);
+                                    intent.putExtra("TripID", _tripid);
+                                    intent.putExtra("DriverID", _driverid);
+                                    intent.putExtra("DriverUsername", _driverName);
+                                    intent.putExtra("driverUrl", _PicUrl);
+                                    intent.putExtra("Cancelled", "1");
+                                    startActivity(intent);
+                                    finish();
+
+                                }
+                            });
+
+                        }
+
+
+                        if (Integer.parseInt(Cancel) == 0) {
+
+                            try {
+                                if (!_PicUrl.equals("defaultPic")) {
+                                    Glide.with(PassengerTripItem.this).load(_PicUrl).into(DriverPic);
+                                }
+                            } catch (Exception e) {
+                            }
+
+
+                            DriverUserName.setText(_driverUsername);
+
+                            MessageDriver.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(PassengerTripItem.this, ChatActivity.class);
+                                    intent.putExtra("Username", _driverUsername);
+                                    intent.putExtra("ID", _driverid);
+                                    intent.putExtra("Fullname", _driverName);
+                                    intent.putExtra("ProfilePicURL", _PicUrl);
+                                    Toast.makeText(PassengerTripItem.this, "Starting Chat with " + _driverUsername, Toast.LENGTH_SHORT).show();
+                                    startActivity(intent);
+                                }
+                            });
+
+                            DriverProfile.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(PassengerTripItem.this, UserProfile.class);
+                                    startActivity(intent);
+
+                                }
+                            });
+
+                            Track.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(PassengerTripItem.this, PassengerMap.class);
+                                    intent.putExtra("TripID", _tripid);
+                                    intent.putExtra("DriverID", _driverid);
+                                    intent.putExtra("DstLat", dstlat);
+                                    intent.putExtra("DstLon", dstlon);
+                                    intent.putExtra("Lat", Lat);
+                                    intent.putExtra("Lon", Lon);
+                                    intent.putExtra("PicUrl", _PicUrl);
+                                    intent.putExtra("NotificationKey", NotificationKey);
+                                    intent.putExtra("Username", _driverUsername);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            Leave.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            });
+
+                            //set up recycler view of other passengers in the trip
+                            getOtherPassengers(_driverid, _tripid);
+
+                        }
 
 
                     }
+                }
                 }
 
                 }
@@ -297,11 +361,16 @@ public class PassengerTripItem extends AppCompatActivity {
                     for(DataSnapshot id : dataSnapshot.getChildren()){
                         String PassKey = id.getKey();
                         if(!PassKey.equals(UserId)){
-                         // Toast.makeText(PassengerTripItem.this, ""+PassKey, Toast.LENGTH_SHORT).show();
+                         Toast.makeText(PassengerTripItem.this, "h"+PassKey, Toast.LENGTH_SHORT).show();
                           getPassengerInfo(DriverID,TripId,PassKey);
                         }
 
                     }
+                }
+                else{
+                    Toast.makeText(PassengerTripItem.this, "no pass", Toast.LENGTH_SHORT).show();
+                    passCount.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
                 }
             }
 

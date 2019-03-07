@@ -16,6 +16,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="50dp"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/colorPrimaryDark"
             android:layout_height="50dp"
             android:src="@drawable/logo"
             android:id="@+id/ProfilePic"
@@ -39,6 +41,8 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
+                android:fontFamily="@font/amiko"
+                android:textColor="@color/colorPrimaryDark"
                 />
 
             <LinearLayout android:layout_width="fill_parent"
@@ -47,6 +51,8 @@
                 >
 
                 <TextView
+                    android:fontFamily="@font/amiko"
+                    android:textColor="@color/colorPrimaryDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
@@ -57,6 +63,8 @@
                     />
 
                 <TextView
+                    android:fontFamily="@font/amiko"
+                    android:textColor="@color/colorPrimaryDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="15sp"
@@ -91,13 +99,14 @@
 
 
         <TextView
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             android:id="@+id/Startingtxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Origin: "
             android:layout_marginTop="5dp"
-            android:textSize="20sp"
-            android:textColor="@color/colorAccent"/>
+            android:textSize="20sp" />
 
 
         <TextView
@@ -107,7 +116,8 @@
             android:text=" Starting "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -134,7 +144,8 @@
             android:text=" Destination: "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             />
 
 
@@ -146,7 +157,8 @@
             android:text=" Destination "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
 
     </LinearLayout>
@@ -169,9 +181,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Date"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            />
 
         <ImageView
             android:id="@+id/clock"
@@ -189,7 +203,8 @@
             android:layout_marginTop="5dp"
             android:text=" Time"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -216,7 +231,7 @@
             android:layout_marginTop="5dp"
             android:text=" Seats: "
             android:textSize="20sp"
-            android:textColor="@color/quantum_white_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:visibility="visible"
