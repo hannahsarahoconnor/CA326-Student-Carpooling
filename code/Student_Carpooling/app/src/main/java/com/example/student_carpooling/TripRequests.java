@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,18 +57,16 @@ public class TripRequests extends AppCompatActivity {
         setContentView(R.layout.activity_requests);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Requests");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
-               finish();
+                finish();
             }
         });
-
         textView1 = findViewById(R.id.Text);
         textView2 = findViewById(R.id.Text2);
         findRequest = findViewById(R.id.Request);

@@ -13,30 +13,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PassengerProfile"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/quantum_white_100"
     android:orientation="vertical">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="500dp">
+        android:layout_height="match_parent">
         <LinearLayout
             android:background="@drawable/app_start"
             android:layout_width="match_parent"
             android:layout_height="650dp"
             android:orientation="vertical">
             <TextView
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="60dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Driver"
+                android:text="Passenger"
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="21sp"/>
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ProfilePic"
                 app:civ_border_width="2dp"
+                android:layout_marginTop="10dp"
                 app:civ_border_color="@color/quantum_white_100"
-                android:layout_marginTop="45dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
@@ -60,6 +60,16 @@
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="15sp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DCU"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:textSize="21sp"/>
+
             <RatingBar
                 android:id="@+id/rating"
                 android:numStars="5"
@@ -69,17 +79,17 @@
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />
 
-
-        </LinearLayout>
         <android.support.v7.widget.CardView
             android:layout_width="400dp"
             android:layout_height="120dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="350dp">
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
+                android:background="@color/colorPrimaryDark"
                 android:weightSum="2">
                 <LinearLayout
                     android:gravity="center"
@@ -91,16 +101,19 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ratings"
+                        android:fontFamily="@font/amiko"
                         android:textSize="20sp"
+                        android:textColor="@color/quantum_white_100"
                         />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
-                        android:textSize="20sp"
                         android:paddingTop="10dp"
-                        android:textColor="@color/quantum_black_100"/>
+                        android:fontFamily="@font/amiko"
+                        android:textSize="20sp"
+                        android:textColor="@color/quantum_white_100"/>
 
                 </LinearLayout>
                 <LinearLayout
@@ -113,42 +126,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Trips Completed"
+                        android:fontFamily="@font/amiko"
                         android:textSize="20sp"
+                        android:textColor="@color/quantum_white_100"
                         />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textStyle="bold"
+                        android:fontFamily="@font/amiko"
                         android:textSize="20sp"
-                        android:paddingTop="10dp"
-                        android:textColor="@color/quantum_black_100"/>
-
+                        android:textColor="@color/quantum_white_100"
+                        android:textStyle="bold"
+                        android:paddingTop="10dp" />
                 </LinearLayout>
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
+            <Button
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HI"/>
+        </LinearLayout>
 
     </RelativeLayout>
-
-    <Button
-        android:id="@+id/ConfirmPic"
-        android:textColor="#fff"
-        android:background="@color/colorAccent"
-        android:layout_marginTop="35dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Confirm"/>
-    <Button
-        android:id="@+id/SwitchMode"
-        android:textColor="#fff"
-        android:background="@color/colorAccent"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Switch User Mode"/>
 </LinearLayout>
 <include
 layout="@layout/app_bar_passenger"

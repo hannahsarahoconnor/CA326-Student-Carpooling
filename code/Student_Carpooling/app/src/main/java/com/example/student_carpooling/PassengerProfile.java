@@ -126,12 +126,12 @@ public class PassengerProfile extends AppCompatActivity
             }
         });
 
-        Confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveUserDB();
-            }
-        });
+       // Confirm.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        saveUserDB();
+        //    }
+       // });
     }
 
     @Override

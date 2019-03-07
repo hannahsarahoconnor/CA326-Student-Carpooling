@@ -63,7 +63,8 @@
             android:theme="@style/AppTheme.NoActionBar.NoActionBar" />
         <activity android:name=".UserProfile"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".TripRequests" />
+        <activity android:name=".TripRequests"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RequestMapActivity"
             android:label="@string/title_activity_request_map" />

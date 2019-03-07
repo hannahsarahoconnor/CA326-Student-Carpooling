@@ -123,7 +123,7 @@
             android:fontFamily="@font/amiko"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:text="Number Seats: "
+            android:text="Seats: "
             android:textColor="@android:color/black"
             android:textSize="20dp" />
 

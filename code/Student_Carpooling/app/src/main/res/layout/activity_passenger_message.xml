@@ -21,6 +21,7 @@
             android:id="@+id/searchBar"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:fontFamily="@font/amiko"
             android:textColor="@color/quantum_white_100"
             android:textColorHint="@color/quantum_white_100"
             android:background="@color/colorPrimary"

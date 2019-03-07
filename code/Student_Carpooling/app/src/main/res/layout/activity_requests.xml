@@ -10,38 +10,72 @@
     android:layout_above="@+id/relLayout1">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_chat"
+        android:id="@+id/app_bar_trip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/toolbar"
             android:background="@color/colorPrimary">
+
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="60dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Requests"
+                android:textColor="@color/quantum_white_100"
+                android:textSize="20sp" />
+
+
+            <ImageView
+                android:id="@+id/delete"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="150dp"
+                android:layout_marginStart="150dp"
+                android:layout_marginBottom="10dp"
+                android:src="@drawable/ic_delete" />
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-
     <TextView
         android:layout_marginTop="180dp"
         android:id="@+id/Text"
-        android:text="You have no Requests for this trip!"
+        android:fontFamily="@font/amiko"
+        android:text="There are no requests for this trip"
         android:layout_width="wrap_content"
-        android:textSize="30dp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
         android:visibility="gone"
+        android:gravity="center"
         android:layout_centerInParent="true"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/app_bar_chat" />
-
+        android:layout_below="@+id/app_bar_trip" />
 
     <TextView
         android:layout_marginTop="20dp"
         android:id="@+id/Text2"
         android:textAlignment="center"
-        android:text="If you wish,\nclick the button below and search the requests made by other users who you may wish to join your trip"
+        android:fontFamily="@font/amiko"
+        android:text="If you wish,\nclick the button below and search the requests made by passengers who can to join your trip"
         android:layout_width="wrap_content"
-        android:textSize="30sp"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_centerInParent="true"
         android:visibility="gone"
         android:layout_height="wrap_content"
@@ -51,12 +85,16 @@
     <Button
         android:id="@+id/Request"
         android:visibility="gone"
+        android:fontFamily="@font/amiko"
+        android:textStyle="bold"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/quantum_white_100"
         android:layout_centerInParent="true"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/Text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search Request Forms" />
+        android:text="Find Requests" />
 
 
     <android.support.v7.widget.RecyclerView
