@@ -8,7 +8,7 @@
 # **Table of contents**
 
 
- **1. User Manual **  
+# **1. User Manual**
       
  - [1.1 Installation](#11-installation)
     
@@ -43,7 +43,7 @@
  - [1.16 Rating Users](#116-rating-users)
  
 
- **2. Driver Manual**
+ # **2. Driver Manual**
 
  - [2.1 Create Trips](#21-create-trips)
 
@@ -67,7 +67,7 @@
  
  - [2.11 Search for Requested Trips](#23-search-for-requested-trips)
  
- **3. Passenger Manual**
+ # **3. Passenger Manual**
 
  - [3.1 Find Trips](#31-find-trips)
 
@@ -75,7 +75,7 @@
 
  - [3.3 Requesting a Seat](#33-requesting-a-seat)
  
-  -[3.4 Leaving a Trip](#34-leaving-a-trip)
+ - [3.4 Leaving a Trip](#34-leaving-a-trip)
 
  - [3.5 Deleting Trip History](#36-deleting-trip-history)
 
