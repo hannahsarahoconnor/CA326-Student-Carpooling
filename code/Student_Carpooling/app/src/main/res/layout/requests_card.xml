@@ -24,6 +24,8 @@
             android:id="@+id/UserProfilePic"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            app:civ_border_color="@color/colorPrimaryDark"
+            app:civ_border_width="1dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/logo" />
 
@@ -31,12 +33,13 @@
             android:id="@+id/UserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Username"
+            android:text="cat"
             android:layout_marginTop="10dp"
             android:maxLines="1"
             android:layout_marginLeft="10dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
         <ImageView
             android:layout_marginLeft="70dp"

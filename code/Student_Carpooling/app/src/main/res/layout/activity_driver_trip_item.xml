@@ -68,6 +68,7 @@
             android:text="Trip Details"
             android:textStyle="bold"
             android:textSize="20sp"
+            android:fontFamily="@font/amiko"
             android:textColor="@color/quantum_googred700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,12 +79,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Starting "
+            android:fontFamily="@font/amiko"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
             android:textColor="@color/quantum_black_100"/>
 
         <TextView
             android:id="@+id/Destination"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Destination "
@@ -105,6 +108,7 @@
 
         <TextView
             android:id="@+id/Date"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" 01/01/2001"
@@ -127,6 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text=" Time"
+            android:fontFamily="@font/amiko"
             android:textSize="20sp"
             android:textColor="@color/quantum_black_100"/>
 
@@ -159,6 +164,7 @@
 
     <TextView
         android:text="Passengers"
+        android:fontFamily="@font/amiko"
         android:id="@+id/passengerText"
         android:visibility="visible"
         android:textSize="20sp"
@@ -177,7 +183,8 @@
          />
 
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/Text"
+            android:fontFamily="@font/amiko"
             android:text="This trip has no passengers"
             android:textSize="20sp"
             android:layout_marginLeft="15dp"
@@ -190,6 +197,7 @@
 
 
         <TextView
+            android:fontFamily="@font/amiko"
             android:id="@+id/cancelled"
             android:text="This trip has been cancelled"
             android:textSize="20sp"
@@ -222,8 +230,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="View Requests"
+            android:textStyle="bold"
+            android:fontFamily="@font/amiko"
             android:textColor="@color/quantum_white_100"
-            android:background="@android:color/holo_blue_dark"
+            android:background="#0A0A64"
             android:layout_gravity="center"/>
 
         <LinearLayout
@@ -233,11 +243,13 @@
         <Button
             android:visibility="visible"
             android:id="@+id/Start"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
             android:layout_marginTop="10dp"
             android:layout_width="210dp"
             android:layout_height="wrap_content"
             android:textColor="@color/quantum_white_100"
-            android:background="@android:color/holo_green_light"
+            android:background="#E9BB63"
             android:text="Start"
             android:layout_gravity="center"/>
 
@@ -248,8 +260,10 @@
             android:layout_width="210dp"
             android:layout_height="wrap_content"
             android:text="Cancel"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
             android:textColor="@color/quantum_white_100"
-            android:background="@color/quantum_googred700"
+            android:background="#B10C0C"
             android:layout_gravity="center"/>
     </LinearLayout>
     </LinearLayout>

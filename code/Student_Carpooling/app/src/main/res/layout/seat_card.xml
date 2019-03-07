@@ -21,7 +21,8 @@ android:layout_height="wrap_content"
 android:layout_marginTop="7dp"
 android:text=" Seats: "
 android:textSize="20sp"
-android:textColor="@color/quantum_black_100"/>
+    android:textColor="@color/colorPrimaryDark"
+    android:fontFamily="@font/amiko"/>
 
 
     <TextView
@@ -33,6 +34,7 @@ android:textColor="@color/quantum_black_100"/>
         android:layout_marginStart="5dp"
         android:text="0"
         android:textSize="20sp"
-        android:textColor="@color/quantum_black_100"/>
+        android:textColor="@color/colorPrimaryDark"
+        android:fontFamily="@font/amiko"/>
 
 </LinearLayout>

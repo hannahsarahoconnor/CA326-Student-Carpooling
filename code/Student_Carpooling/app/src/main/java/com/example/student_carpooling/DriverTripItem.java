@@ -61,7 +61,7 @@ public class DriverTripItem extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView textView, cancelledTV,PassengerText;
+    private TextView textView, cancelledTV,PassengerText,PassengerCount;
     private String email,UserID;
     private ImageView delete;
     private DatabaseReference UserDb, StartedDb;
@@ -99,9 +99,10 @@ public class DriverTripItem extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_trip_item);
 
-        textView = findViewById(R.id.text);
+       // textView = findViewById(R.id.text);
         cancelledTV = findViewById(R.id.cancelled);
         PassengerText = findViewById(R.id.passengerText);
+        PassengerCount = findViewById(R.id.Text);
         Toolbar toolbar = findViewById(R.id.toolbar);
         ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
@@ -167,11 +168,11 @@ public class DriverTripItem extends AppCompatActivity {
         request = findViewById(R.id.Requests);
         start = findViewById(R.id.Start);
 
-<<<<<<< HEAD
+
         delete = findViewById(R.id.delete);
-=======
+
         //delete = findViewById(R.id.deleteTrip);
->>>>>>> 35e3ba15f63fa29265072f2a537475bcf8abea71
+
         intent = getIntent();
 
         final String _starting = intent.getStringExtra("Starting");
@@ -568,7 +569,14 @@ public class DriverTripItem extends AppCompatActivity {
                             //create an array list of passengers notification keys to send message when driver cancels or starts the trip
 
 
-                        }}}
+                        }
+                    }
+                    else{
+                        Toast.makeText(DriverTripItem.this, "no pass", Toast.LENGTH_SHORT).show();
+                        PassengerCount.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -580,7 +588,7 @@ public class DriverTripItem extends AppCompatActivity {
         }catch (Exception e){
             //if data doesnt exist - empty recycler view -> no passengers yet
             recyclerView.setVisibility(View.GONE);
-            textView.setVisibility(View.VISIBLE);
+            PassengerCount.setVisibility(View.VISIBLE);
         }
 
 
@@ -660,6 +668,7 @@ public class DriverTripItem extends AppCompatActivity {
 
                     if(passengerCount ==0 ){
 
+                        PassengerCount.setVisibility(View.VISIBLE);
                     }
 
 
@@ -667,6 +676,7 @@ public class DriverTripItem extends AppCompatActivity {
 
 
                 }
+                //Passengers.setVisibility(View.VISIBLE);
             }
 
             @Override

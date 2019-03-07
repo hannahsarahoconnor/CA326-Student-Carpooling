@@ -36,12 +36,14 @@
 
         <TextView
             android:id="@+id/Starting"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Starting "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            />
     </LinearLayout>
 
 
@@ -67,7 +69,8 @@
             android:text=" Destination "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
     </LinearLayout>
 
@@ -91,7 +94,8 @@
             android:text=" Date"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
     </LinearLayout>
 
@@ -114,8 +118,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text=" Time"
-            android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"
+            android:textSize="20sp" />
 
     </LinearLayout>
 
@@ -139,7 +144,8 @@
             android:layout_marginTop="5dp"
             android:text=" Seats: "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
         <TextView
             android:id="@+id/Seats"
@@ -148,7 +154,8 @@
             android:layout_marginTop="5dp"
             android:textSize="20sp"
             android:text=" 0"
-            android:textColor="@color/quantum_black_100"
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"
             />
 
     </LinearLayout>
@@ -173,7 +180,8 @@
             android:layout_height="wrap_content"
             android:text=" Luggage: "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
         <TextView
             android:id="@+id/Luggage"
@@ -182,7 +190,8 @@
             android:text=" Yes/No"
             android:layout_marginTop="6dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:fontFamily="@font/amiko"/>
 
     </LinearLayout>
 

@@ -44,19 +44,22 @@
             android:text="@string/Username"
             android:layout_marginTop="15dp"
             android:maxLines="1"
+            android:fontFamily="@font/amiko"
+            android:textStyle="bold"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
 
         <TextView
             android:id="@+id/Message"
             android:maxLines="1"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Message.."
             android:textStyle="italic"
             android:textSize="15sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
         </LinearLayout>
 

@@ -55,6 +55,7 @@ public class PassengerActivity extends AppCompatActivity
     private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl, Day,Time;
+    private FirebaseUser firebaseUser;
 
     int count = 0;
     Date tripdate;
@@ -89,7 +90,11 @@ public class PassengerActivity extends AppCompatActivity
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
+       firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            UserID = firebaseUser.getUid();
+        }
+
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
