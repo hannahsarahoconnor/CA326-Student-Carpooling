@@ -7,122 +7,181 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@drawable/app_start">
-
-        <LinearLayout
-            android:background="@color/colorPrimaryDark"
-            android:layout_marginTop="500dp"
-            android:layout_width="350dp"
-            android:layout_height="560dp"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:padding="20dp"
-            android:paddingTop="50dp"
-            android:paddingBottom="45dp">
-
+        tools:context=".DriverProfile"
+        android:background="@color/quantum_white_100"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <LinearLayout
-                android:layout_width="350dp"
-                android:layout_height="wrap_content"
-                android:background="@color/colorPrimaryDark">
+                android:background="@drawable/app_start"
+                android:layout_width="match_parent"
+                android:layout_height="670dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_marginTop="60dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DRIVER"
+                    android:fontFamily="@font/amiko"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textStyle="bold"
+                    android:textSize="21sp"/>
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ProfilePic"
+                    app:civ_border_width="2dp"
+                    android:layout_marginTop="10dp"
+                    app:civ_border_color="@color/quantum_white_100"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:src="@drawable/logo"/>
+                <TextView
+                    android:id="@+id/Name"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hannah O'Connor"
+                    android:fontFamily="@font/amiko"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:textSize="21sp"/>
 
-            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/ProfilePic"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="100dp"
-                android:layout_marginTop="30dp"
-                android:src="@drawable/logo"
-                app:civ_border_color="#FF000000"
-                app:civ_border_width="2dp" />
+                <TextView
+                    android:id="@+id/Username"
+                    android:fontFamily="@font/amiko"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="username"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:textSize="15sp"/>
+                <TextView
+                    android:id="@+id/College"
+                    android:fontFamily="@font/amiko"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DCU"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:textSize="21sp"/>
 
+                <RatingBar
+                    android:id="@+id/rating"
+                    android:numStars="5"
+                    android:isIndicator="true"
+                    android:stepSize="0.1"
+                    android:clickable="false"
+                    android:layout_width="240dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content" />
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="400dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="10dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@color/colorPrimaryDark"
+                        android:weightSum="2">
+                        <LinearLayout
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="match_parent">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ratings"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/amiko"
+                                android:textSize="20sp"
+                                android:textColor="@color/quantum_white_100"
+                                />
+                            <TextView
+                                android:id="@+id/RatingNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textStyle="bold"
+                                android:paddingTop="10dp"
+                                android:fontFamily="@font/amiko"
+                                android:textSize="20sp"
+                                android:textColor="@color/quantum_white_100"/>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="match_parent">
+                            <TextView
+                                android:id="@+id/CompletedNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textStyle="bold"
+                                android:text="Trips Completed"
+                                android:fontFamily="@font/amiko"
+                                android:textSize="20sp"
+                                android:textColor="@color/quantum_white_100"
+                                />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:fontFamily="@font/amiko"
+                                android:textSize="20sp"
+                                android:textColor="@color/quantum_white_100"
+                                android:textStyle="bold"
+                                android:paddingTop="10dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+                <Button
+                    android:id="@+id/ConfirmPic"
+                    android:visibility="invisible"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:fontFamily="@font/bowlby_one_sc"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/quantum_white_100"
+                    android:text="Save New Pic"/>
+
+
+                <Button
+                    android:id="@+id/SwitchMode"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:fontFamily="@font/bowlby_one_sc"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/quantum_white_100"
+                    android:text="Switch User Mode"/>
             </LinearLayout>
 
-
-            <TextView
-                android:id="@+id/Type"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/Driver"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/Name"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/Name"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/Username"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/Username"
-                android:textAlignment="center" />
-
-
-
-            <TextView
-                android:id="@+id/College"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/colorPrimary"
-                android:text="@string/University"
-                android:textAlignment="center" />
-
-            <RatingBar
-                android:id="@+id/rating"
-                android:layout_width="240dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:clickable="false"
-                android:numStars="5"
-                android:stepSize="0.1" />
-
-            <TextView
-                android:id="@+id/tripcount"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:text="0 carpools"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/ratingText"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:text="You dont have any ratings yet"
-                android:textAlignment="center"
-                android:visibility="invisible" />
-            <Button
-                android:visibility="invisible"
-                android:id="@+id/ConfirmPic"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Confirm" />
-
-
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
     <include
         layout="@layout/app_bar_driver_main"
@@ -136,7 +195,8 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_driver_main"
-        app:menu="@menu/activity_driver_main_drawer" />
+        app:menu="@menu/activity_driver_main_drawer"
+        android:theme="@style/NavigationView"/>
 
 
 </android.support.v4.widget.DrawerLayout>

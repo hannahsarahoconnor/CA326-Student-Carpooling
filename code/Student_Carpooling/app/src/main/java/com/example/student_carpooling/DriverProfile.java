@@ -57,13 +57,13 @@ public class DriverProfile extends AppCompatActivity
     private ImageView profilePic;
     private DatabaseReference UserDb;
     private String DBName, DBSurname, DBUsername, DBUni,UserID;
-    private TextView NUsername, Nemail, ratingText,TripCount;
+    private TextView NUsername, Nemail, ratingText,Ratings,Completed;
 
     private RatingBar ratingBar;
 
     private Uri ResultUri;
     private String ProfilePicUrl;
-    private Button Confirm;
+    private Button Confirm,Switch;
     private ImageView navProfile;
     FirebaseUser CurrentUser;
 
@@ -77,17 +77,16 @@ public class DriverProfile extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        TripCount = findViewById(R.id.tripcount);
+
+        Ratings = findViewById(R.id.RatingNo);
+        Completed = findViewById(R.id.CompletedNo);
         ratingBar = findViewById(R.id.rating);
-        ratingText = findViewById(R.id.ratingText);
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
         Confirm = findViewById(R.id.ConfirmPic);
         profilePic = findViewById(R.id.ProfilePic);
-
-
-
+        Switch = findViewById(R.id.SwitchMode);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -128,6 +127,14 @@ public class DriverProfile extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 saveUserDB();
+            }
+        });
+
+        Switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserDb.child("Type").setValue("Passenger");
+                startActivity(new Intent(DriverProfile.this,PassengerActivity.class));
             }
         });
     }
@@ -302,7 +309,8 @@ public class DriverProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        TripCount.setText(completed + " completed carpools");
+                        Completed.setText(completed);
+                        //TripCount.setText(completed + " completed carpools");
                     }
                     if (map.get("Username") != null) {
                         DBUsername = map.get("Username").toString();
@@ -328,12 +336,8 @@ public class DriverProfile extends AppCompatActivity
                     if(ratingTotal != 0){
                         ratingAvg  = ratingSum/ratingTotal;
                         ratingBar.setRating(ratingAvg);
-                        ratingText.setText(Math.round(ratingTotal) + " total ratings");
-                        ratingText.setVisibility(View.VISIBLE);
-                    }
-                    else{
-                        //set the text to visible
-                        ratingText.setVisibility(View.VISIBLE);
+                        ratingBar.setIsIndicator(true);
+                        Ratings.setText(""+Math.round(ratingTotal));
                     }
 
                 }

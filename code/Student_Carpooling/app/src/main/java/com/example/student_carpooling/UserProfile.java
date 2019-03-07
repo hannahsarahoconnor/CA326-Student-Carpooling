@@ -34,9 +34,9 @@ public class UserProfile extends AppCompatActivity {
     //show how many carpools theyve been apart of
 
     private RatingBar ratingBar;
-    private TextView Name,Username,Uni,ratingText,Type,TripCount;
+    private TextView Name,Username,Uni,ratings,Type,TripCount;
     private Intent intent;
-    private String UserID, name,username,college,userType,picurl,CurrentUserID;
+    private String UserID, name,username,college,userType,picurl,CurrentUserID,surname;
     private DatabaseReference UserDb;
     private CircleImageView profilePic;
     private Button report;
@@ -61,14 +61,14 @@ public class UserProfile extends AppCompatActivity {
         CurrentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //get id from intent
         intent = getIntent();
-        TripCount = findViewById(R.id.tripcount);
+        TripCount = findViewById(R.id.CompletedNo);
+        ratings = findViewById(R.id.RatingNo);
         report = findViewById(R.id.report);
         ratingBar = findViewById(R.id.rating);
-        ratingText = findViewById(R.id.ratingText);
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
-        Type = findViewById(R.id.Type);
+        Type = findViewById(R.id.type);
         profilePic = findViewById(R.id.ProfilePic);
         UserID = intent.getStringExtra("ID");
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
@@ -130,6 +130,11 @@ public class UserProfile extends AppCompatActivity {
                         Name.setText(name);
 
                     }
+                    if(map.get("Surname")!=null){
+                        surname = map.get("Surname").toString();
+                        Name.setText(name+ " " + surname);
+
+                    }
                     if(map.get("Type")!=null){
                         userType = map.get("Type").toString();
                         Type.setText(userType);
@@ -137,7 +142,7 @@ public class UserProfile extends AppCompatActivity {
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        TripCount.setText(completed + "completed carpools");
+                        TripCount.setText(completed);
                     }
                     if(map.get("University")!=null){
                         college = map.get("University").toString();
@@ -166,15 +171,11 @@ public class UserProfile extends AppCompatActivity {
                     }
 
                     //calculate average and set bar
-                    if(ratingTotal != 0){
-                        ratingAvg  = ratingSum/ratingTotal;
+                    if(ratingTotal != 0) {
+                        ratingAvg = ratingSum / ratingTotal;
                         ratingBar.setRating(ratingAvg);
-                        ratingText.setText(Math.round(ratingTotal) + " total ratings");
-                        ratingText.setVisibility(View.VISIBLE);
-                    }
-                    else{
-                        //set the text to visible
-                        ratingText.setVisibility(View.VISIBLE);
+                        ratingBar.setIsIndicator(true);
+                        ratings.setText(""+Math.round(ratingTotal));
                     }
 
 

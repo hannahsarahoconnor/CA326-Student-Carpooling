@@ -50,6 +50,7 @@
             android:background="@color/colorPrimaryDark"
             android:fontFamily="@font/amiko"
             android:text="Todays Date is"
+            android:textStyle="bold"
             android:textAlignment="center"
             android:textColor="@color/quantum_white_100"
             android:textSize="30dp" />
@@ -69,6 +70,7 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_passenger"
         app:menu="@menu/activity_passenger2_drawer"
+        android:theme="@style/NavigationView"
         app:itemTextColor="@color/colorPrimary"
         app:itemIconTint="@color/colorPrimary"/>
 

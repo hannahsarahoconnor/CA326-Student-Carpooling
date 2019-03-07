@@ -43,6 +43,7 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_passenger"
-        app:menu="@menu/activity_passenger2_drawer" />
+        app:menu="@menu/activity_passenger2_drawer"
+        android:theme="@style/NavigationView"/>
 
 </android.support.v4.widget.DrawerLayout>

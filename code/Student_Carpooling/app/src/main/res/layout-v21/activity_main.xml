@@ -18,7 +18,7 @@
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
-            android:textColor="#0A074A"
+            android:textColor="@color/quantum_white_100"
             android:layout_marginTop="40dp"
             android:textSize="30sp"
             android:layout_marginStart="39dp"
@@ -34,8 +34,8 @@
             android:layout_height="250dp"
             android:layout_gravity="center"
             android:src="@drawable/logo_new_2"
-
-            app:civ_border_color="@color/colorPrimaryDark"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/quantum_white_100"
 
             android:contentDescription="@string/Description"/>
 
@@ -47,8 +47,7 @@
 
             <Button
                 android:id="@+id/Register"
-                android:fontFamily="@font/amiko"
-                android:textStyle="bold"
+                android:fontFamily="@font/bowlby_one_sc"
                 android:textColor="@color/quantum_white_100"
                 android:textSize="20sp"
                 android:background="@drawable/buttons"
@@ -61,7 +60,7 @@
 
             <Button
                 android:id="@+id/Login"
-                android:fontFamily="@font/amiko"
+                android:fontFamily="@font/bowlby_one_sc"
                 android:textStyle="bold"
                 android:textColor="@color/quantum_white_100"
                 android:textSize="20sp"
@@ -77,8 +76,7 @@
 
             <Button
                 android:id="@+id/Reset"
-                android:fontFamily="@font/amiko"
-                android:textStyle="bold"
+                android:fontFamily="@font/bowlby_one_sc"
                 android:background="@null"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"

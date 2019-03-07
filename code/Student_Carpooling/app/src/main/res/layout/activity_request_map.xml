@@ -43,17 +43,23 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:text="Request"
-            android:background="@color/colorPrimaryDark"/>
+            android:textStyle="bold"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/quantum_white_100"
+            android:background="#E9BB63"/>
 
         <Button
             android:layout_marginLeft="200dp"
             android:layout_marginStart="200dp"
             android:id="@+id/cancel"
+            android:textStyle="bold"
             android:layout_width="220dp"
+            android:fontFamily="@font/amiko"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:text="Cancel"
-            android:background="@color/colorAccent"/>
+            android:textColor="@color/quantum_white_100"
+            android:background="#B10C0C"/>
 
     </RelativeLayout>
 

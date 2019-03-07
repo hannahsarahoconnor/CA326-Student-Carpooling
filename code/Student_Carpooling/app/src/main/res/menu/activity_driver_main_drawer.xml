@@ -9,15 +9,18 @@
         <item
             android:id="@+id/nav_message"
             android:icon="@drawable/ic_message"
-            android:title="Message"/>
+            android:title="Message"
+            android:theme="@style/NavigationView"/>
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
-            android:title="Profile" />
+            android:title="Profile"
+            android:theme="@style/NavigationView"/>
         <item
             android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_logout"
-            android:title="Sign Out"/>
+            android:title="Sign Out"
+            android:theme="@style/NavigationView"/>
     </group>
 
     <item android:title="Manage Trips">
@@ -25,15 +28,18 @@
             <item
                 android:id="@+id/nav_find_trips_requests"
                 android:icon="@drawable/ic_find"
-                android:title="Find Requests" />
+                android:title="Find Requests"
+                android:theme="@style/NavigationView"/>
             <item
                 android:id="@+id/nav_create_trips"
                 android:icon="@drawable/ic_create_trip"
-                android:title="Create Trips" />
+                android:title="Create Trips"
+                android:theme="@style/NavigationView"/>
             <item
                 android:id="@+id/nav_my_trips"
                 android:icon="@drawable/ic_my_trips"
-                android:title="My Trips" />
+                android:title="My Trips"
+                android:theme="@style/NavigationView"/>
         </menu>
 
     </item>

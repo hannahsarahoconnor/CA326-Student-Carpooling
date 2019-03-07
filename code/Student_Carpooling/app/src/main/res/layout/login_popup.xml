@@ -10,13 +10,13 @@
     android:padding="5dp"
     android:layout_gravity="center"
     android:orientation="vertical"
-    android:background="@drawable/side_nav_bar"
+    android:background="#E9BB63"
     >
 
     <TextView
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:textColor="@color/quantum_white_100"
+        android:textColor="@color/colorPrimaryDark"
         android:text="X"
         android:textAlignment="textEnd"
         android:layout_marginRight="5dp"
@@ -71,7 +71,9 @@
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="2dp"
+        android:textColor="@color/colorPrimaryDark"
         android:checked="true"
+        android:textStyle="bold"
         android:text="Driver" />
 
     <RadioButton
@@ -81,6 +83,8 @@
         android:fontFamily="@font/amiko"
         android:layout_marginTop="2dp"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
         android:text="Passenger" />
 
 </RadioGroup>
@@ -93,10 +97,10 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:layout_marginTop="15dp"
-    android:textColor="@color/colorPrimary"
+    android:textColor="@color/quantum_white_100"
     android:text="@string/Login"
     android:fontFamily="@font/amiko"
     android:textSize="20sp"
-    android:background="@color/quantum_white_100"
+    android:background="@color/colorPrimaryDark"
     android:textAllCaps="false"/>
 </LinearLayout>

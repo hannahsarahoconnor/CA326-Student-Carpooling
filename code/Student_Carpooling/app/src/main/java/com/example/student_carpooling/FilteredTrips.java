@@ -98,14 +98,13 @@ public class FilteredTrips extends AppCompatActivity {
         setContentView(R.layout.activity_filtered_trips2);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Trip Results");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //be able to go back out of the activity
                 finish();
             }
         });

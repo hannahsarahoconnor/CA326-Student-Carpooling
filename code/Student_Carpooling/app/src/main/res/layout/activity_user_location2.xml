@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:text="Go Back"
-        android:background="@color/colorAccent"/>
+        android:textStyle="bold"
+        android:textColor="@color/quantum_white_100"
+        android:fontFamily="@font/amiko"
+        android:background="#B10C0C"/>
 
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"

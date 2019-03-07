@@ -21,17 +21,18 @@
         <LinearLayout
             android:background="@drawable/app_start"
             android:layout_width="match_parent"
-            android:layout_height="650dp"
+            android:layout_height="670dp"
             android:orientation="vertical">
             <TextView
                 android:layout_marginTop="60dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Passenger"
-                android:textColor="#fff"
+                android:text="PASSENGER"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:textColor="@color/quantum_white_100"
                 android:textStyle="bold"
-                android:textSize="21sp"/>
+                android:textSize="26sp"/>
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/ProfilePic"
                 app:civ_border_width="2dp"
@@ -42,29 +43,35 @@
                 android:layout_height="150dp"
                 android:src="@drawable/logo"/>
             <TextView
+                android:id="@+id/Name"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hannah O'Connor"
+                android:fontFamily="@font/amiko"
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="21sp"/>
 
             <TextView
+                android:id="@+id/Username"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/amiko"
                 android:text="username"
                 android:textColor="#fff"
                 android:textStyle="bold"
                 android:textSize="15sp"/>
             <TextView
+                android:id="@+id/College"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/amiko"
                 android:text="DCU"
                 android:textColor="#fff"
                 android:textStyle="bold"
@@ -74,6 +81,7 @@
                 android:id="@+id/rating"
                 android:numStars="5"
                 android:stepSize="0.1"
+                android:isIndicator="true"
                 android:clickable="false"
                 android:layout_width="240dp"
                 android:layout_gravity="center"
@@ -101,11 +109,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ratings"
+                        android:textStyle="bold"
                         android:fontFamily="@font/amiko"
                         android:textSize="20sp"
                         android:textColor="@color/quantum_white_100"
                         />
                     <TextView
+                        android:id="@+id/RatingNo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -125,12 +135,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textStyle="bold"
                         android:text="Trips Completed"
                         android:fontFamily="@font/amiko"
                         android:textSize="20sp"
                         android:textColor="@color/quantum_white_100"
                         />
                     <TextView
+                        android:id="@+id/CompletedNo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -144,10 +156,31 @@
 
         </android.support.v7.widget.CardView>
             <Button
+                android:id="@+id/ConfirmPic"
+                android:visibility="invisible"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="HI"/>
+                android:background="@null"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/quantum_white_100"
+                android:text="Save New Pic"/>
+
+
+            <Button
+
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:id="@+id/SwitchMode"
+                android:textColor="@color/quantum_white_100"
+                android:text="Switch User Mode"/>
         </LinearLayout>
 
     </RelativeLayout>
@@ -164,6 +197,7 @@ android:layout_height="match_parent"
 android:layout_gravity="start"
 android:fitsSystemWindows="true"
 app:headerLayout="@layout/nav_header_passenger"
-app:menu="@menu/activity_passenger2_drawer" />
+app:menu="@menu/activity_passenger2_drawer"
+    android:theme="@style/NavigationView"/>
 
     </android.support.v4.widget.DrawerLayout>

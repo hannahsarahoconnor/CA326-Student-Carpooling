@@ -31,11 +31,13 @@
         android:textStyle="bold"
         android:fontFamily="@font/amiko"
         android:text="@string/nav_header_title"
+        android:textColor="@color/quantum_white_100"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:fontFamily="@font/amiko"
         android:id="@+id/emailNav"
+        android:textColor="@color/quantum_white_100"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/nav_header_subtitle" />

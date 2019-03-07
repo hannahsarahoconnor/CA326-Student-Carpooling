@@ -59,11 +59,12 @@ public class PassengerProfile extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail,TripCount;
+    private TextView NUsername, Nemail,TripCount,Ratings,Completed;
     private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
     private TextView Name,Username,Uni,ratingText;
+
 
     private ImageView profilePic;
     private String DBName, DBUsername, DBUni;
@@ -71,7 +72,7 @@ public class PassengerProfile extends AppCompatActivity
     private RatingBar ratingBar;
 
     private Uri ResultUri;
-    private Button Confirm;
+    private Button Confirm,Switch;
 
 
     FirebaseUser CurrentUser;
@@ -93,10 +94,11 @@ public class PassengerProfile extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        TripCount = findViewById(R.id.tripcount);
 
+        Ratings = findViewById(R.id.RatingNo);
+        Completed = findViewById(R.id.CompletedNo);
         ratingBar = findViewById(R.id.rating);
-        ratingText = findViewById(R.id.ratingText);
+        Switch = findViewById(R.id.SwitchMode);
 
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
@@ -126,12 +128,21 @@ public class PassengerProfile extends AppCompatActivity
             }
         });
 
-       // Confirm.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        saveUserDB();
-        //    }
-       // });
+        Confirm.setOnClickListener(new View.OnClickListener() {
+          @Override
+           public void onClick(View v) {
+                saveUserDB();
+          }
+        });
+
+        Switch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserDb.child("Type").setValue("Passenger");
+                startActivity(new Intent(PassengerProfile.this,DriverMain.class));
+            }
+        });
+
     }
 
     @Override
@@ -324,16 +335,16 @@ public class PassengerProfile extends AppCompatActivity
                     }
                     if(map.get("University")!=null){
                         DBUni = map.get("University").toString();
-                        //Uni.setText(DBUni);
+                        Uni.setText(DBUni);
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        //TripCount.setText(completed + "completed carpools");
+                        Completed.setText(completed);
                     }
                     if(map.get("Username")!=null){
                         DBUsername = map.get("Username").toString();
-                       // Username.setText(DBUsername);
-                       // NUsername.setText(DBUsername);
+                        Username.setText(DBUsername);
+                        NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
                         ProfilePicUrl = map.get("profileImageUrl").toString();
@@ -358,13 +369,10 @@ public class PassengerProfile extends AppCompatActivity
                     //calculate average and set bar
                     if(ratingTotal != 0){
                         ratingAvg  = ratingSum/ratingTotal;
-                       // ratingBar.setRating(ratingAvg);
-                       // ratingText.setText(Math.round(ratingTotal) + " total ratings");
-                        //ratingText.setVisibility(View.VISIBLE);
-                    }
-                    else{
-                        //set the text to visible
-                        //ratingText.setVisibility(View.VISIBLE);
+                        ratingBar.setRating(ratingAvg);
+                        ratingBar.setIsIndicator(true);
+                        Ratings.setText(""+Math.round(ratingTotal));
+
                     }
 
 

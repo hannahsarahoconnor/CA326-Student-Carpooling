@@ -96,7 +96,7 @@ public class FindTrips extends AppCompatActivity
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String TAG = "FindTrips";
 
-    FirebaseUser CurrentUser;
+    FirebaseUser firebaseUser;
 
 
     @Override
@@ -118,8 +118,11 @@ public class FindTrips extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
+        //CurrentUser = mAuth.getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            UserID = firebaseUser.getUid();
+        }
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
@@ -310,7 +313,7 @@ public class FindTrips extends AppCompatActivity
                 dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){

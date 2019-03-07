@@ -168,10 +168,14 @@ public class DriverMessage extends AppCompatActivity
 
                 private void showKeyboard(){
                     View view = this.getCurrentFocus();
-                    if (Objects.requireNonNull(view).requestFocus()) {
-                        InputMethodManager imm = (InputMethodManager)
-                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                        Objects.requireNonNull(imm).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                    try {
+                        if (view.requestFocus()) {
+                            InputMethodManager imm = (InputMethodManager)
+                                    getSystemService(Context.INPUT_METHOD_SERVICE);
+                            Objects.requireNonNull(imm).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    }catch(NullPointerException e){
+
                     }
 
                 }

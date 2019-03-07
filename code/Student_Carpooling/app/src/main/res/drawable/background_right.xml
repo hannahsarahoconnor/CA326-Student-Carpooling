@@ -8,6 +8,6 @@
 
     />
 
-    <solid android:color="@android:color/holo_red_light"/>
+    <solid android:color="@color/colorPrimaryDark"/>
 
 </shape>

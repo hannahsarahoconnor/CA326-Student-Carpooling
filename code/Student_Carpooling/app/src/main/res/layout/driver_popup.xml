@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:textColor="@color/quantum_black_100"
+            android:textColor="@color/colorPrimaryDark"
             android:text="X"
             android:id="@+id/close"
             android:textStyle="bold"
@@ -43,6 +43,8 @@
                     android:id="@+id/UserProfilePic"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    app:civ_border_color="@color/colorPrimaryDark"
+                    app:civ_border_width="1dp"
                     android:layout_marginTop="10dp"
                     android:src="@drawable/logo" />
 
@@ -51,10 +53,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:maxLines="1"
                     android:text="@string/Username"
-                    android:textColor="@color/quantum_black_100"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"
+                    android:textStyle="bold"
                     android:textSize="20sp" />
 
                 <ImageView
@@ -63,7 +67,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="120dp"
                     android:layout_marginLeft="120dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     app:srcCompat="@drawable/ic_person_black_24dp" />
 
 
@@ -73,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     app:srcCompat="@drawable/ic_message_black_24dp" />
 
 
@@ -105,7 +109,8 @@
                     android:layout_height="wrap_content"
                     android:text=" Starting "
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
             </LinearLayout>
 
             <LinearLayout android:layout_width="fill_parent"
@@ -128,7 +133,8 @@
                     android:text=" Destination "
                     android:layout_marginTop="5dp"
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
             </LinearLayout>
 
@@ -147,10 +153,11 @@
                     android:id="@+id/Ddate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=" Date"
+                    android:text="7/3/2019"
                     android:layout_marginTop="5dp"
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
                 <ImageView
                     android:id="@+id/clock"
@@ -168,7 +175,8 @@
                     android:layout_marginTop="5dp"
                     android:text=" Time"
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
             </LinearLayout>
             <LinearLayout android:layout_width="fill_parent"
@@ -189,7 +197,8 @@
                     android:layout_marginTop="5dp"
                     android:text=" Seats: "
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
                 <TextView
                     android:id="@+id/Dseats"
@@ -198,7 +207,8 @@
                     android:layout_marginTop="5dp"
                     android:textSize="20sp"
                     android:text=" 0"
-                    android:textColor="@color/quantum_black_100"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"
                     />
 
 
@@ -209,7 +219,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
                     app:srcCompat="@drawable/ic_bag"
-                    android:layout_marginLeft="70dp"/>
+                    android:layout_marginLeft="48dp"/>
 
                 <TextView
                     android:layout_marginTop="5dp"
@@ -218,7 +228,8 @@
                     android:layout_height="wrap_content"
                     android:text=" Luggage: "
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
                 <TextView
                     android:id="@+id/Dluggage"
@@ -227,7 +238,8 @@
                     android:text=" Yes/No"
                     android:layout_marginTop="6dp"
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
             </LinearLayout>
 
@@ -250,7 +262,8 @@
                     android:layout_height="wrap_content"
                     android:text=" Driver Note: "
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
             </LinearLayout>
 
@@ -267,7 +280,8 @@
                     android:layout_height="wrap_content"
                     android:text=" Note Here "
                     android:textSize="20sp"
-                    android:textColor="@color/quantum_black_100"/>
+                    android:textColor="@color/colorPrimaryDark"
+                    android:fontFamily="@font/amiko"/>
 
             </LinearLayout>
 
@@ -277,13 +291,19 @@
 
 
     <TextView
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="35dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="In order to request a trip, you must provide the location in which you wish to be picked up. If can, use a specific address. If a driver doesnt accept this request, he will no longer have access to your location "/>
+        android:fontFamily="@font/amiko"
+        android:textAlignment="center"
+        android:text="In order to request a trip, you must provide the location in which you wish to be picked up."/>
     <Button
         android:id="@+id/request"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="2dp"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/quantum_white_100"
+        android:fontFamily="@font/amiko"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:text="Request Seat"
         android:layout_gravity="center"/>
