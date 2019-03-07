@@ -9,14 +9,16 @@
 
 
     <View
-        android:layout_width="fill_parent"
+        android:layout_width="390dp"
         android:layout_height="2dp"
         android:background="#c0c0c0"/>
 
 
-        <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="390dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@color/quantum_white_100">
 
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -41,60 +43,60 @@
             android:textSize="20sp" />
 
 
-            <ImageView
-                android:layout_toRightOf="@+id/UserName"
-                android:id="@+id/profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:adjustViewBounds="true"
-                android:gravity="end"
-                app:srcCompat="@drawable/ic_person_black_24dp" />
+        <ImageView
+            android:layout_toRightOf="@+id/UserName"
+            android:id="@+id/profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:gravity="end"
+            app:srcCompat="@drawable/ic_person_black_24dp" />
 
 
-            <ImageView
-                android:id="@+id/message"
-                android:layout_toRightOf="@+id/profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:adjustViewBounds="true"
-                android:gravity="end"
-                app:srcCompat="@drawable/ic_message_black_24dp" />
+        <ImageView
+            android:id="@+id/message"
+            android:layout_toRightOf="@+id/profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:gravity="end"
+            app:srcCompat="@drawable/ic_message_black_24dp" />
 
 
-            <ImageView
-                android:visibility="visible"
-                android:layout_toRightOf="@+id/message"
-                android:id="@+id/location"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:adjustViewBounds="true"
-                android:gravity="end"
-                android:layout_marginRight="0dp"
-                android:layout_toEndOf="@+id/message"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                app:srcCompat="@drawable/ic_location" />
+        <ImageView
+            android:visibility="visible"
+            android:layout_toRightOf="@+id/message"
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:adjustViewBounds="true"
+            android:gravity="end"
+            android:layout_marginRight="0dp"
+            android:layout_toEndOf="@+id/message"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            app:srcCompat="@drawable/ic_location" />
 
 
 
-            <ImageView
-                android:visibility="visible"
-                android:layout_toRightOf="@+id/location"
-                android:layout_marginLeft="20dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/delete"
-                android:gravity="end"
-                android:adjustViewBounds="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_decline"
-                android:layout_marginRight="50dp"/>
+        <ImageView
+            android:visibility="visible"
+            android:layout_toRightOf="@+id/location"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/delete"
+            android:gravity="end"
+            android:adjustViewBounds="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_decline"
+            android:layout_marginRight="50dp"/>
 
 
 

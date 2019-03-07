@@ -167,11 +167,9 @@ public class DriverTripItem extends AppCompatActivity {
         request = findViewById(R.id.Requests);
         start = findViewById(R.id.Start);
 
-<<<<<<< HEAD
+
         delete = findViewById(R.id.delete);
-=======
-        //delete = findViewById(R.id.deleteTrip);
->>>>>>> 35e3ba15f63fa29265072f2a537475bcf8abea71
+
         intent = getIntent();
 
         final String _starting = intent.getStringExtra("Starting");

@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TripRequests"
-    android:layout_above="@+id/relLayout1">
+    android:layout_above="@+id/relLayout1"
+    android:background="@drawable/app_start">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_trip"
