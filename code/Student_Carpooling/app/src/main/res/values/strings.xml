@@ -30,7 +30,6 @@
     <string-array name="CollegeDomains">
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>
-        <item>live.ie</item>
     </string-array>
     <string-array name="no_seats">
         <item>1</item>

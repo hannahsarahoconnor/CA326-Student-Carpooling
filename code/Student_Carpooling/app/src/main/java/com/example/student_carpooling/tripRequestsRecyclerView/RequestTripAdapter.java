@@ -84,47 +84,6 @@ public class RequestTripAdapter extends RecyclerView.Adapter<RequestTripViewHold
 
         requestTripViewHolders.Note.setText(_Note);
 
-        if(list.get(i).getType().equals("Passenger")){
-
-            requestTripViewHolders.delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                    //show a dialog..
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-                    dialog.setTitle("Are you sure you want to remove this request?");
-                    dialog.setMessage("By Doing this, it will not longer be discoverable by other drivers, are you sure you wish to continue?");
-                    dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            DatabaseReference Requests = FirebaseDatabase.getInstance().getReference().child("TripRequests").child(firebaseUser.getUid()).child(RequestID);
-                            Requests.removeValue();
-                            Toast.makeText(context, "Trip Request has been deleted", Toast.LENGTH_LONG).show();
-
-                            //refresh the activity
-                            list.remove(requestTripViewHolders.getAdapterPosition());
-                            notifyDataSetChanged();
-
-                            //send notification to passengers of the cancellation
-                        }
-
-
-                    });
-
-                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    AlertDialog alertDialog = dialog.create();
-                    alertDialog.show();
-
-                }
-            });
-        }
-
 
         if(list.get(i).getType().equals("Driver")){
             //more options

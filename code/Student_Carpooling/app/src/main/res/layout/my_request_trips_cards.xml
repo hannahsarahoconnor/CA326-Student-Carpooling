@@ -26,36 +26,15 @@
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"/>
 
-
-        <TextView
-            android:id="@+id/Startingtxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Origin: "
-            android:layout_marginTop="5dp"
-            android:textSize="20sp"
-            android:textColor="@color/colorAccent"/>
-
-
         <TextView
             android:id="@+id/Starting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Starting "
+            android:fontFamily="@font/amiko"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
-
-        <ImageView
-            android:src="@drawable/ic_delete_black_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/delete"
-            android:layout_marginLeft="180dp"
-            android:textStyle="bold"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_gravity="end"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -75,26 +54,17 @@
             android:layout_marginStart="15dp"/>
 
 
-        <TextView
-            android:id="@+id/dsttxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" Destination: "
-            android:layout_marginTop="5dp"
-            android:textSize="20sp"
-            android:textColor="@color/colorAccent"
-            />
-
 
 
         <TextView
             android:id="@+id/Destination"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Destination "
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
 
     </LinearLayout>
@@ -113,13 +83,14 @@
             app:srcCompat="@drawable/ic_date" />
 
         <TextView
+            android:fontFamily="@font/amiko"
             android:id="@+id/Date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Date"
             android:layout_marginTop="5dp"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
         <ImageView
             android:id="@+id/clock"
@@ -132,12 +103,13 @@
 
         <TextView
             android:id="@+id/Time"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text=" Time"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -159,12 +131,13 @@
 
         <TextView
             android:visibility="visible"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text=" Luggage: "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:visibility="visible"
@@ -174,7 +147,8 @@
             android:layout_marginTop="5dp"
             android:textSize="20sp"
             android:text=" Yes"
-            android:textColor="@color/quantum_black_100"
+            android:fontFamily="@font/amiko"
+            android:textColor="@color/colorPrimaryDark"
             />
     </LinearLayout>
 
@@ -196,9 +170,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Note: "
+            android:fontFamily="@font/amiko"
             android:maxLines="2"
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 
@@ -211,11 +186,12 @@
             android:layout_marginLeft="20dp"
             android:textStyle="italic"
             android:id="@+id/Note"
+            android:fontFamily="@font/amiko"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=" Note Here "
             android:textSize="20sp"
-            android:textColor="@color/quantum_black_100"/>
+            android:textColor="@color/colorPrimaryDark"/>
 
     </LinearLayout>
 

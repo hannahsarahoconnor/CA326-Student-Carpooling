@@ -124,12 +124,6 @@ public class DriverProfile extends AppCompatActivity
             }
             });
 
-        Confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveUserDB();
-            }
-        });
 
         Switch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -326,7 +320,7 @@ public class DriverProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        Completed.setText(completed);
+                        Completed.setText(""+2);
                         //TripCount.setText(completed + " completed carpools");
                     }
                     if (map.get("Username") != null) {
@@ -425,6 +419,12 @@ public class DriverProfile extends AppCompatActivity
                 ResultUri = imageUri;
                 profilePic.setImageURI(ResultUri);
                 Confirm.setVisibility(View.VISIBLE);
+                Confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveUserDB();
+                    }
+                });
             }
         }
 

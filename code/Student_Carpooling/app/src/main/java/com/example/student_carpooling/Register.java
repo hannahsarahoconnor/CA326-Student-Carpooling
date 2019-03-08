@@ -105,92 +105,94 @@ public class Register extends AppCompatActivity {
         Registration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String[] CollegeDomains = getResources().getStringArray(R.array.CollegeDomains);
-                final String first = Email.getText().toString();
-                final String second = Domain.getText().toString();
+                    final String[] CollegeDomains = getResources().getStringArray(R.array.CollegeDomains);
+                    final String first = Email.getText().toString();
+                    final String second = Domain.getText().toString();
 
-                final String email = first + "@" + second;
-                final String password = Password.getText().toString();
-                final String username = Username.getText().toString();
-                final String name = Name.getText().toString();
-                final String surname = Surname.getText().toString();
-                final String age = Age.getText().toString();
-                final String university = University.getText().toString();
-                final int radioId = radioGroup.getCheckedRadioButtonId();
-                radioButton = findViewById(radioId);
-                final RadioButton male = findViewById(R.id.Male);
-                final RadioButton female = findViewById(R.id.Female);
+                    final String email = first + "@" + second;
+                    final String password = Password.getText().toString();
+                    final String username = Username.getText().toString();
+                    final String name = Name.getText().toString();
+                    final String surname = Surname.getText().toString();
+                    final String age = Age.getText().toString();
+                    final String university = University.getText().toString();
+                    final int radioId = radioGroup.getCheckedRadioButtonId();
+                    radioButton = findViewById(radioId);
+                    final RadioButton male = findViewById(R.id.Male);
+                    final RadioButton female = findViewById(R.id.Female);
 
-                final String gender = radioButton.getText().toString();
-                Query usernameCheck = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("Username").equalTo(username);
-                usernameCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getChildrenCount() > 0) {
-                            Toast.makeText(Register.this, "Username is already taken.", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            //add checks to make sure blanks arent empty
+                    final String gender = radioButton.getText().toString();
 
-                            if(TextUtils.isEmpty(first) || TextUtils.isEmpty(second) || TextUtils.isEmpty(password) || TextUtils.isEmpty(username) || TextUtils.isEmpty(age) || TextUtils.isEmpty(university)|| TextUtils.isEmpty(surname) || TextUtils.isEmpty(name)) {
-                                Toast.makeText(Register.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
-                            }
-
-                            //add to database
-                            if (password.length() < 6 || TextUtils.isEmpty(password)) {
-                                Toast.makeText(Register.this, "Password must be 6 or more characters", Toast.LENGTH_SHORT).show();
-                            }
-
-                            if (first.contains("@")) {
-                                Toast.makeText(Register.this, "Email Error", Toast.LENGTH_SHORT).show();
-                            }
-
-                            if (!Arrays.asList(CollegeDomains).contains(second)) {
-                                Toast.makeText(Register.this, "Choose a valid Email Domain", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(first) || TextUtils.isEmpty(second) || TextUtils.isEmpty(password) || TextUtils.isEmpty(username) || TextUtils.isEmpty(age) || TextUtils.isEmpty(university) || TextUtils.isEmpty(surname) || TextUtils.isEmpty(name)) {
+                    Toast.makeText(Register.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+                }else{
+                    Query usernameCheck = FirebaseDatabase.getInstance().getReference().child("users").orderByChild("Username").equalTo(username);
+                    usernameCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getChildrenCount() > 0) {
+                                Toast.makeText(Register.this, "Username is already taken.", Toast.LENGTH_SHORT).show();
                             } else {
-                                //creates a specific user account
-                                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (!task.isSuccessful()) {
-                                            //not successful
-                                            Toast.makeText(Register.this, "Registration Error", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            String userId = mAuth.getCurrentUser().getUid();
-                                            DatabaseReference currentUser = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
-                                            Map UserInfo = new HashMap();
+                                //add checks to make sure blanks arent empty
 
 
-                                            UserInfo.put("Username", username);
-                                            UserInfo.put("Name", name);
-                                            UserInfo.put("Surname", surname);
-                                            UserInfo.put("University", university);
-                                            UserInfo.put("Age", age);
-                                            UserInfo.put("Gender", gender);
-                                            UserInfo.put("Type", true);
-                                            UserInfo.put("profileImageUrl", "defaultPic");
-                                            UserInfo.put("Search", username.toLowerCase());
-                                            UserInfo.put("CompletedTrips",0);
+                                //add to database
+                                if (password.length() < 6 || TextUtils.isEmpty(password)) {
+                                    Toast.makeText(Register.this, "Password must be 6 or more characters", Toast.LENGTH_SHORT).show();
+                                }
 
-                                            currentUser.setValue(UserInfo);
-                                            sendVerificationEmail();
+                                if (first.contains("@")) {
+                                    Toast.makeText(Register.this, "Email Error", Toast.LENGTH_SHORT).show();
+                                }
+
+                                if (!Arrays.asList(CollegeDomains).contains(second)) {
+                                    Toast.makeText(Register.this, "Choose a valid Email Domain", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    //creates a specific user account
+                                    mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (!task.isSuccessful()) {
+                                                //not successful
+                                                Toast.makeText(Register.this, "Registration Error", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                String userId = mAuth.getCurrentUser().getUid();
+                                                DatabaseReference currentUser = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
+                                                Map UserInfo = new HashMap();
+
+
+                                                UserInfo.put("Username", username);
+                                                UserInfo.put("Name", name);
+                                                UserInfo.put("Surname", surname);
+                                                UserInfo.put("University", university);
+                                                UserInfo.put("Age", age);
+                                                UserInfo.put("Gender", gender);
+                                                UserInfo.put("Type", true);
+                                                UserInfo.put("profileImageUrl", "defaultPic");
+                                                UserInfo.put("Search", username.toLowerCase());
+                                                UserInfo.put("CompletedTrips", 0);
+
+                                                currentUser.setValue(UserInfo);
+                                                sendVerificationEmail();
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
-                    }
 
-                    //no use
+                        //no use
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
-            }
+                        }
+                    });
+                }}
 
-            });}
+            });
+
+        }
 
 
             private void sendVerificationEmail(){

@@ -61,7 +61,7 @@ public class PassengerProfile extends AppCompatActivity
 
     private ImageView navProfile;
     private TextView NUsername, Nemail,TripCount,Ratings,Completed;
-    private String email,UserID;
+    private String email,UserID,Surname;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
     private TextView Name,Username,Uni,ratingText;
@@ -199,27 +199,14 @@ public class PassengerProfile extends AppCompatActivity
         Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
         Button Submit = dialogView.findViewById(R.id.Submit);
 
-
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //is deleted
-                            Toast.makeText(PassengerProfile.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
-                            Intent intent = new Intent(PassengerProfile.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            dialogBuilder.dismiss();
-                        } else {
-                            Toast.makeText(PassengerProfile.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
+            public void onClick(View v) {
+                Toast.makeText(PassengerProfile.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(PassengerProfile.this, MainActivity.class);
+                startActivity(intent);
+                FirebaseAuth.getInstance().signOut();
+                dialogBuilder.dismiss();
             }
         });
 
@@ -342,7 +329,12 @@ public class PassengerProfile extends AppCompatActivity
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
                     if(map.get("Name")!=null){
                         DBName = map.get("Name").toString();
-                        //Name.setText(DBName);
+                        Name.setText(DBName);
+
+                    }
+                    if(map.get("Surname")!=null){
+                        Surname = map.get("Surname").toString();
+                        Name.setText(DBName + " " + Surname);
 
                     }
                     if(map.get("University")!=null){
@@ -351,7 +343,7 @@ public class PassengerProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        Completed.setText(completed);
+                        //Completed.setText(completed);
                     }
                     if(map.get("Username")!=null){
                         DBUsername = map.get("Username").toString();

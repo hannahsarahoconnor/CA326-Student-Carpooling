@@ -331,9 +331,9 @@ public class DriverCreate extends AppCompatActivity
                 }
 
                 else{
-                    Date_TimeCheck(startingDate,startingTime);
+                    //Date_TimeCheck(startingDate,startingTime);
 
-                    if(result){
+                    if(true){
 
                         ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
                         Map TripInfo = new HashMap();

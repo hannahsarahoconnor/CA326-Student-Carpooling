@@ -83,7 +83,7 @@ public class PassengerCreateRequests extends AppCompatActivity
         tabSwitch.setAdapter(tabAdapter);
         tabLayout.setupWithViewPager(tabSwitch);
 
-        tabSwitch.setCurrentItem(1);
+        tabSwitch.setCurrentItem(0);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

@@ -24,6 +24,7 @@
             android:background="@color/colorPrimary"
             android:hint="Search chats..."
             android:fontFamily="@font/amiko"
+            android:textColor="@color/quantum_white_100"
             android:textColorHint="@color/quantum_white_100"/>
 
         <android.support.v4.widget.NestedScrollView

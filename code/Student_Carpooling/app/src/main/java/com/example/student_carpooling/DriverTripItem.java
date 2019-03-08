@@ -343,13 +343,14 @@ public class DriverTripItem extends AppCompatActivity {
         request.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(started == 0){
+                    //if(started == 0){
                     Intent intent = new Intent(DriverTripItem.this, TripRequests.class);
                     intent.putExtra("TripID", TripID);
-                    startActivity(intent);}
-                    else{
-                        Toast.makeText(DriverTripItem.this, "This carpool has already started, you cannot accept any more new passengers", Toast.LENGTH_SHORT).show();
-                    }
+                    startActivity(intent);//}
+
+                   // else{
+                    //    Toast.makeText(DriverTripItem.this, "This carpool has already started, you cannot accept any more new passengers", Toast.LENGTH_SHORT).show();
+                   // }
                 }
             });
 
@@ -426,37 +427,35 @@ public class DriverTripItem extends AppCompatActivity {
 
                  else if(rightNow.before(tripdate) && started==0){
                         //show dialog confirming if they want to start this trip early
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(DriverTripItem.this);
-                        dialog.setTitle("Are you sure you want to start this trip early?");
-                        dialog.setMessage("You trip isn't scheduled to start yet, are you sure you wish to continue>");
-                        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (started == 0) {
-                                    if (PassengerNotKey.size() > 0) {
-                                        for (String notKey : PassengerNotKey) {
-                                            new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
-                                        }
+
+                    final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverTripItem.this).create();
+                    LayoutInflater inflater = getLayoutInflater();
+                    View dialogView = inflater.inflate(R.layout.dialog, null);
+                    TextView Text = dialogView.findViewById(R.id.Text);
+                    Text.setText("You trip isn't scheduled to start yet, are you sure you wish to continue?");
+                    Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+                    Submit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (started == 0) {
+                                if (PassengerNotKey.size() > 0) {
+                                    for (String notKey : PassengerNotKey) {
+                                        new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
                                     }
                                 }
-                                DatabaseReference StartUpdate = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
-                                StartUpdate.child("Started").setValue(1);
-                                startTrip();
                             }
+                            DatabaseReference StartUpdate = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                            StartUpdate.child("Started").setValue(1);
+                            startTrip();
+                            finish();
+                            dialogBuilder.dismiss();
+                        }
+                    });
 
-
-                        });
-
-                        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-
-                        AlertDialog alertDialog = dialog.create();
-                        alertDialog.show();
-
+                    dialogBuilder.setView(dialogView);
+                    dialogBuilder.show();
                     }
                else {
                     //only send the notification when the trip first starts, as the driver can click in and out and map without constantly resending the notifications each time
@@ -543,6 +542,10 @@ public class DriverTripItem extends AppCompatActivity {
 
     }
 
+
+    private void earlyTrip(){
+
+    }
 
 
     private void getPassengers() {

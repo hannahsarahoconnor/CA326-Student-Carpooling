@@ -1,147 +1,194 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".PassengerHelp">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar_trip"
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        android:layout_height="match_parent"
+        tools:context=".PassengerHelp"
+        android:background="@color/quantum_white_100"
+        >
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar_trip"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/back"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
+
+                <ImageView
+                    android:id="@+id/back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/ic_back" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="60dp"
+                    android:layout_marginLeft="60dp"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/bowlby_one_sc"
+                    android:text="Passenger Guide"
+                    android:textColor="@color/quantum_white_100"
+                    android:textSize="20sp" />
+
+
+
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:scrollbars="vertical">
+
+            <TextView
+                android:layout_gravity="center"
+                android:textAlignment="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginBottom="10dp"
-                android:src="@drawable/ic_back" />
+                android:layout_marginTop="70dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Messages"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/amiko"
+                android:text="Shows a list of all active chats with other app users. Click on a user to launch the chat"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
+
+
+            <TextView
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Profile"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/amiko"
+                android:text="Displays your user information, average ratings, number of ratings and completed trips. You can chose to upload a new profile image by simply clicking on the image and press 'save new image' below. To switch your user mode to Passenger, click 'switch user mode"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Find Trips"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/amiko"
+                android:text="Display all trips made by drivers according to your applied filters. To request a trip, simply click it and when the pop up is shown, press 'Request Seat'. You will be taken to a map activity where you must specify your pick up location."
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="Create Request"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/amiko"
+                android:text="To add a new carpool request to seek a suitable driver, enter the required details and click 'Create Request'. This request will be discoverable by all drivers, who can contact and invite you to join their trip "
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/bowlby_one_sc"
+                android:text="My Trips"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/amiko"
+                android:text="Displays and organises all your upcoming trips. To view further information, leave trip, contact or track the driver, simply click the specific trip."
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="15sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="60dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/bowlby_one_sc"
-                android:text="Passenger Guide"
-                android:textColor="@color/quantum_white_100"
-                android:textSize="20sp" />
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/amiko"
+                android:textAlignment="center"
+                android:text="If you require further assistance, please contact us by clicking the button below"
+                android:textColor="#B10C0C"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/amiko"
+                android:textStyle="bold"
+                android:background="#B10C0C"
+                android:text="Contact"
+                android:id="@+id/ContactAdmin"
+                android:textColor="@color/quantum_white_100" />
+        </LinearLayout>
 
 
-
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-
-        <TextView
-            android:layout_marginTop="60dp"
-            android:text="Messages"
-            android:fontFamily="@font/amiko"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#B10C0C"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="5dp"
-            android:text="Shows a list of all active chats with other app users. Click on a user to launch the chat"
-            android:fontFamily="@font/amiko"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-
-        <TextView
-            android:layout_marginTop="60dp"
-            android:text="Profile"
-            android:fontFamily="@font/amiko"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#B10C0C"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:layout_marginTop="5dp"
-            android:text="Create Trip"
-            android:fontFamily="@font/amiko"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="60dp"
-            android:text="Find Trips"
-            android:fontFamily="@font/amiko"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#B10C0C"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:layout_marginTop="5dp"
-            android:text="Create Trip"
-            android:fontFamily="@font/amiko"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="60dp"
-            android:text="Create Request"
-            android:fontFamily="@font/amiko"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#B10C0C"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="5dp"
-            android:text="Create Trip"
-            android:fontFamily="@font/amiko"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="60dp"
-            android:text="My Trips"
-            android:fontFamily="@font/amiko"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#B10C0C"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_marginTop="5dp"
-            android:text="Create Trip"
-            android:fontFamily="@font/amiko"
-            android:textSize="15sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-
-
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

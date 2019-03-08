@@ -235,6 +235,21 @@ public class FilteredTrips extends AppCompatActivity {
 
                     }
                 }
+                else{
+                    textView1.setVisibility(View.VISIBLE);
+                    textView2.setVisibility(View.VISIBLE);
+                    createRequest.setVisibility(View.VISIBLE);
+                    createRequest.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(FilteredTrips.this,PassengerCreateRequests.class);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    });
+
+                }
             }
 
             @Override
