@@ -343,7 +343,7 @@ public class PassengerProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        //Completed.setText(completed);
+                        Completed.setText(completed);
                     }
                     if(map.get("Username")!=null){
                         DBUsername = map.get("Username").toString();

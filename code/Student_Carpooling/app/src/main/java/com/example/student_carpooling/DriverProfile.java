@@ -320,7 +320,7 @@ public class DriverProfile extends AppCompatActivity
                     }
                     if (map.get("CompletedTrips") != null) {
                         String completed = map.get("CompletedTrips").toString();
-                        Completed.setText(""+2);
+                        Completed.setText(completed);
                         //TripCount.setText(completed + " completed carpools");
                     }
                     if (map.get("Username") != null) {

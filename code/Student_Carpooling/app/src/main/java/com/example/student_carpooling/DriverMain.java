@@ -102,6 +102,7 @@ public class DriverMain extends AppCompatActivity
 
             }
         });
+
         //show notfication in topbar
         OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
 
