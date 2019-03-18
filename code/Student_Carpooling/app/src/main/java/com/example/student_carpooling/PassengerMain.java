@@ -5,8 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,90 +40,84 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-public class PassengerActivity extends AppCompatActivity
+public class PassengerMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
-
     private ImageView navProfile;
-    private TextView NUsername, Nemail,Welcome,TodayDate;
-    private String email,UserID;
+    private TextView NUsername, Nemail,Welcome;
+    private String UserID,DBUsername,ProfilePicUrl, Day,Time;
     private DatabaseReference UserDb;
-    private String ProfilePicUrl, Day,Time;
-    private FirebaseUser firebaseUser;
-
-    int count = 0;
-    Date tripdate;
-
-    String DBUsername;
-
-    FirebaseUser CurrentUser;
+    private int count = 0;
+    private Date tripdate;
+    private FirebaseUser CurrentUser;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        TodayDate = findViewById(R.id.todaydate);
-        Welcome = findViewById(R.id.welcome);
-        Calendar calendar = Calendar.getInstance();
-        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
-        TodayDate.setText(currentDate);
-
-
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-       firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            UserID = firebaseUser.getUid();
-        }
-
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
-
-        OneSignal.startInit(this).init();
-        //notify one signal that the user wishes to recieves nofications
-        OneSignal.setSubscription(true);
-        //get key and add unique key to user database for that user
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("NotificationKey").setValue(userId);
-
-            }
-        });
-        //show notfication in topbar
-        OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
-
-
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.usernameNav);
         Nemail = hView.findViewById(R.id.emailNav);
         navProfile = hView.findViewById(R.id.ImageView);
 
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        if (CurrentUser != null) {
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+
+            OneSignal.startInit(this).init();
+            //notify one signal that the user wishes to receives notifications
+            OneSignal.setSubscription(true);
+            //get key and add unique key to user database for that user
+            OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                @Override
+                public void idsAvailable(String userId, String registrationId) {
+                    FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("NotificationKey").setValue(userId);
+
+                }
+            });
+            //show notification in topbar
+            OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
+
+        }
+
         setupFirebaseListener();
+
+
+
+        TextView TodayDate = findViewById(R.id.todaydate);
+        Welcome = findViewById(R.id.welcome);
+
+        //show current date on screen
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        TodayDate.setText(currentDate);
+
+
+
     }
+
+    //Navigation Drawer built in Functions
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -146,7 +140,7 @@ public class PassengerActivity extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(PassengerActivity.this);
+                AlertDialog.Builder dialog = new AlertDialog.Builder(PassengerMain.this);
                 dialog.setTitle("Are you sure you want to delete your account?");
                 dialog.setMessage("By Doing this.....");
                 dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -157,13 +151,13 @@ public class PassengerActivity extends AppCompatActivity
                             public void onComplete(@NonNull Task<Void> task) {
                                 if(task.isSuccessful()){
                                     //is deleted
-                                    Toast.makeText(PassengerActivity.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(PassengerMain.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
                                     UserDb.removeValue();
-                                    Intent intent = new Intent(PassengerActivity.this,MainActivity.class);
+                                    Intent intent = new Intent(PassengerMain.this,MainActivity.class);
                                     startActivity(intent);
                                 }
                                 else{
-                                    Toast.makeText(PassengerActivity.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(PassengerMain.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -183,39 +177,13 @@ public class PassengerActivity extends AppCompatActivity
                 break;
 
             case R.id.help:
-                //go to new activity
-                //tFRougwMUphm8B95q7EAToUoYci1
-                Intent intent = new Intent(PassengerActivity.this,PassengerHelp.class);
+                Intent intent = new Intent(PassengerMain.this,PassengerHelp.class);
                 startActivity(intent);
                 break;
 
             case R.id.contact:
-                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerActivity.this);
-                dialog1.setTitle("Contact Admins");
-                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent1 = new Intent(PassengerActivity.this,ChatActivity.class);
-                        intent1.putExtra("Username","StudentCarpooling");
-                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                        intent1.putExtra("Fullname","Admins");
-                        intent1.putExtra("ProfilePicURL","defaultPic");
-                        startActivity(intent1);
-                    }
-                });
-
-                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog1 = dialog1.create();
-                alertDialog1.show();
+                ContactAdmin();
                 break;
-
         }
 
         return super.onOptionsItemSelected(item);
@@ -223,19 +191,19 @@ public class PassengerActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
 
         switch (id){
             case R.id.pass_message:
-                Intent msg = new Intent(PassengerActivity.this, PassengerMessage.class);
+                Intent msg = new Intent(PassengerMain.this, PassengerMessage.class);
                 startActivity(msg);
                 break;
 
             case R.id.pass_profile:
-                Intent profile = new Intent(PassengerActivity.this, PassengerProfile.class);
+                Intent profile = new Intent(PassengerMain.this, PassengerProfile.class);
                 startActivity(profile );
                 break;
 
@@ -243,24 +211,59 @@ public class PassengerActivity extends AppCompatActivity
                 FirebaseAuth.getInstance().signOut();
 
             case R.id.pass_find_trips:
-                Intent create = new Intent(PassengerActivity.this,FindTrips.class);
+                Intent create = new Intent(PassengerMain.this,FindTrips.class);
                 startActivity(create);
                 break;
 
             case R.id.pass_trips:
-                Intent trips = new Intent(PassengerActivity.this,PassengerTrips.class);
+                Intent trips = new Intent(PassengerMain.this,PassengerTrips.class);
                 startActivity(trips);
                 break;
 
             case R.id.create_request:
-                Intent requests = new Intent(PassengerActivity.this,PassengerCreateRequests.class);
+                Intent requests = new Intent(PassengerMain.this,PassengerCreateRequests.class);
                 startActivity(requests);
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void ContactAdmin(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerMain.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
+                Intent intent1 = new Intent(PassengerMain.this,ChatActivity.class);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID",AdminID);
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
     }
     private void getUserDB(){
         UserDb.addValueEventListener(new ValueEventListener() {
@@ -270,21 +273,21 @@ public class PassengerActivity extends AppCompatActivity
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
                     Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                        //getTripIds(DBUsername);
-                        getTrips(DBUsername);
+                    if(map != null) {
+                        if (map.get("Username") != null) {
+                            DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                            getTrips(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
+
+
                     }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
-
-
-
-
                 }
             }
 
@@ -295,6 +298,8 @@ public class PassengerActivity extends AppCompatActivity
         });
     }
 
+    //get ids of trips that user is a passenger of
+
     private void getTrips(final String username){
         DatabaseReference getDriverId = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips");
         getDriverId.addValueEventListener(new ValueEventListener() {
@@ -303,6 +308,7 @@ public class PassengerActivity extends AppCompatActivity
                 if(dataSnapshot.exists()){
                     for(DataSnapshot id : dataSnapshot.getChildren()){
                         final String DriverId = id.getKey();
+                        if(DriverId != null){
                         DatabaseReference getTripId = FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("Trips").child(DriverId);
                         getTripId.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -319,10 +325,10 @@ public class PassengerActivity extends AppCompatActivity
                             }
                         });
                     }
+                    }
                 }
                 else{
                     Welcome.setText("Hello " + username + "!\n\n" + "You have no scheduled trips today");
-                    return;
                 }
             }
 
@@ -333,6 +339,7 @@ public class PassengerActivity extends AppCompatActivity
         });
     }
 
+    //show welcome message and number of trips
     private void getTripIds(String DriverID, String TripID, final String Username){
         DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(DriverID).child(TripID);
         TripsDB.addValueEventListener(new ValueEventListener() {
@@ -343,13 +350,14 @@ public class PassengerActivity extends AppCompatActivity
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
 
+                    if(map != null){
                     //check that none of them are null
                     if (map.get("Date") != null) {
-                        Day = map.get("Date").toString();
+                        Day = (String) map.get("Date");
 
                     }
                     if (map.get("Time") != null) {
-                        Time = map.get("Time").toString();
+                        Time = (String) map.get("Time");
                     }
 
 
@@ -357,10 +365,9 @@ public class PassengerActivity extends AppCompatActivity
                     try {
 
                         String dateStr = Day + " " + Time;
-                        Date Datee = format.parse(dateStr);
-                        long mili = Datee.getTime();
-                        tripdate = new Date(mili);
-                        //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                        Date Date = format.parse(dateStr);
+                        long mil = Date.getTime();
+                        tripdate = new Date(mil);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -372,8 +379,7 @@ public class PassengerActivity extends AppCompatActivity
                     Calendar cal2 = Calendar.getInstance();
                     cal1.setTime(tripdate);
                     cal2.setTime(rightNow);
-                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
-                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 
                     if(sameDay && tripdate.after(rightNow)){
                         count++;
@@ -388,7 +394,7 @@ public class PassengerActivity extends AppCompatActivity
                     Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
                 }
 
-            }
+            }}
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -398,8 +404,7 @@ public class PassengerActivity extends AppCompatActivity
 
     }
 
-
-
+    //check for when user signs out
 
     private void setupFirebaseListener(){
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -411,14 +416,15 @@ public class PassengerActivity extends AppCompatActivity
                     Nemail.setText(email);
                 }
                 else{
-                    Toast.makeText(PassengerActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(PassengerActivity.this, MainActivity.class);
+                    Toast.makeText(PassengerMain.this, "Sign Out", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(PassengerMain.this, MainActivity.class);
                     startActivity(intent);
                 }
             }
         };
     }
 
+    //Activity listeners
     @Override
     protected void onStart() {
         super.onStart();

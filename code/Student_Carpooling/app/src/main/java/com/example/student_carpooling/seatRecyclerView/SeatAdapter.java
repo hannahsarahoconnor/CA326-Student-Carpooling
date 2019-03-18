@@ -23,17 +23,13 @@ public class SeatAdapter extends RecyclerView.Adapter<SeatViewHolders> {
         this.context = context;
     }
 
-    public SeatAdapter(){
-    }
-
     @NonNull
     @Override
     public SeatViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.seat_card, null, false);
+        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.seat_card, viewGroup, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutView.setLayoutParams(lp);
-        SeatViewHolders svh = new SeatViewHolders(layoutView);
-        return svh;
+        return new SeatViewHolders(layoutView);
     }
 
     @Override

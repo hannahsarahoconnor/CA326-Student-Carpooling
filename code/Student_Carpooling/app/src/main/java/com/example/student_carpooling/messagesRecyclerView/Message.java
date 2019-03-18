@@ -33,12 +33,4 @@ public class Message {
     public void setMessage(String message) {
         Message = message;
     }
-
-    public void setRecipient(String recipient) {
-        Recipient = recipient;
-    }
-
-    public void setSender(String sender) {
-        Sender = sender;
-    }
 }

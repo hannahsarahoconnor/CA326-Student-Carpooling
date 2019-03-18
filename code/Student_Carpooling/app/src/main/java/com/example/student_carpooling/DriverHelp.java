@@ -19,7 +19,8 @@ public class DriverHelp extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        if(getSupportActionBar() != null){
+        getSupportActionBar().setTitle("");}
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,9 +34,10 @@ public class DriverHelp extends AppCompatActivity {
         Contact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(DriverHelp.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);

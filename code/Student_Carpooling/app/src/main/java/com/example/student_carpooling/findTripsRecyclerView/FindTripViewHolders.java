@@ -11,20 +11,20 @@ import com.example.student_carpooling.R;
 public class FindTripViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public TextView username, fullname, seats, time, starting, destination, date;
-    public ImageView profilePic;
+    ImageView profilePic;
 
-    public FindTripViewHolders(@NonNull View itemView) {
+    FindTripViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
-        username = (TextView) itemView.findViewById(R.id.Dusername);
-        fullname = (TextView) itemView.findViewById(R.id.Dfullname);
-        seats = (TextView) itemView.findViewById(R.id.Seats);
-        time = (TextView) itemView.findViewById(R.id.Time);
-        starting = (TextView) itemView.findViewById(R.id.Starting);
-        destination = (TextView) itemView.findViewById(R.id.Destination);
-        date = (TextView) itemView.findViewById(R.id.Date);
-        profilePic = (ImageView) itemView.findViewById(R.id.ProfilePic);
+        username = itemView.findViewById(R.id.Dusername);
+        fullname = itemView.findViewById(R.id.Dfullname);
+        seats = itemView.findViewById(R.id.Seats);
+        time =  itemView.findViewById(R.id.Time);
+        starting = itemView.findViewById(R.id.Starting);
+        destination =  itemView.findViewById(R.id.Destination);
+        date = itemView.findViewById(R.id.Date);
+        profilePic = itemView.findViewById(R.id.ProfilePic);
     }
 
     @Override

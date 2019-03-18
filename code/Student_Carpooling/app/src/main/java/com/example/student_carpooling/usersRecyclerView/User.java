@@ -36,19 +36,11 @@ public class User {
         this.ID = ID;
     }
 
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
-    }
-
     public String getProfilePicUrl() {
         return profilePicUrl;
     }
 
-    public void setUserName(String userName) {
-        UserName = userName;
-    }
-
-    public String getUserName() {
+    String getUserName() {
         return UserName;
     }
 }

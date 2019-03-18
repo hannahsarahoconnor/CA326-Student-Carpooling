@@ -1,14 +1,9 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -54,24 +50,16 @@ public class DriverFindRequests extends AppCompatActivity
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
     private String ProfilePicUrl;
-    private FirebaseAuth mAuth;
-    private DatabaseReference UserDb, reference;
+    private DatabaseReference UserDb;
 
     NavigationView navigationView;
     private ImageView navProfile;
-
-    private RecyclerView tripRecyclerView;
+    private Date datenew1,datenew2;
     private RequestTripAdapter tripAdapter;
-    private RecyclerView.LayoutManager tripLayoutManager;
 
-    private String UserID,Starting,Date,Destination,Note,Username, Fullname, First, Surname,Time,LuggageCheck,Day,PassengerURL,PassUsername;
+    private String UserID,Starting,Destination,Note,Fullname,Time,LuggageCheck,Day,PassengerURL,PassUsername;
 
     private java.util.Date tripdate;
-
-    private TabLayout tabLayout;
-    private ViewPager tabSwitch;
-    private TabAdapter tabAdapter;
-
     FirebaseUser CurrentUser;
 
     String PassengerKey;
@@ -80,44 +68,44 @@ public class DriverFindRequests extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_find_requests);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
-
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         View hView = navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
 
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        if(CurrentUser != null){
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
+
         setupFirebaseListener();
 
 
+        //set up recycler view
 
-        tripRecyclerView = findViewById(R.id.requestsRecycler);
-        tripRecyclerView.setNestedScrollingEnabled(false); //not true?
+        RecyclerView tripRecyclerView = findViewById(R.id.requestsRecycler);
+        tripRecyclerView.setNestedScrollingEnabled(false);
         tripRecyclerView.setHasFixedSize(true);
-        //resultsTrips.clear();
         tripAdapter = new RequestTripAdapter(getDataTrips(),DriverFindRequests.this);
         tripRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         tripRecyclerView.setAdapter(tripAdapter);
 
+        //get the ids of passengers who made requests
         getPassengerIDs();
     }
 
@@ -146,7 +134,7 @@ public class DriverFindRequests extends AppCompatActivity
 
     private void getRequestIds(final String PassID){
         DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripRequests").child(PassID);
-        TripIDs.addListenerForSingleValueEvent(new ValueEventListener() {
+        TripIDs.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -173,97 +161,94 @@ public class DriverFindRequests extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
 
-                    if (map.get("Time") != null) {
-                        Time = map.get("Time").toString();
-                    }
-
-                    //check that none of them are null
-                    if (map.get("Date") != null) {
-                        Day = map.get("Date").toString();
-                    }
-                    if (map.get("Fullname") != null) {
-                        Fullname = map.get("Fullname").toString();
-                    }
-
-                    if (map.get("Luggage") != null) {
-                        LuggageCheck = map.get("Luggage").toString();
-                    }
-                    if (map.get("Note") != null) {
-                        Note = map.get("Note").toString();
-                    }
-                    if (map.get("Starting") != null) {
-                        Starting = map.get("Starting").toString();
-                    }
-
-                    if (map.get("Destination") != null) {
-                        Destination = map.get("Destination").toString();
-                    }
-
-                    if (map.get("Username") != null) {
-                        PassUsername = map.get("Username").toString();
-                    }
-
-                    if (map.get("ProfilePic") != null) {
-                        PassengerURL = map.get("ProfilePic").toString();
-                    }
-
-                    if (!PassID.equals(UserID)) {
-                        Date rightNow = Calendar.getInstance().getTime();
-
-                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                        try {
-
-                            String dateStr = Day + " " + Time;
-                            Date Datee = format.parse(dateStr);
-                            long mili = Datee.getTime();
-                            tripdate = new Date(mili);
-                            //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
-                        } catch (ParseException e) {
-                            e.printStackTrace();
+                    if(map != null) {
+                        if (map.get("Time") != null) {
+                            Time = (String) map.get("Time");
                         }
-                        //only show upcoming requests
 
-                        if (rightNow.before(tripdate)) {
+                        //check that none of them are null
+                        if (map.get("Date") != null) {
+                            Day = (String) map.get("Date");
+                        }
+                        if (map.get("Fullname") != null) {
+                            Fullname = (String) map.get("Fullname");
+                        }
 
-                            RequestTrip object = new RequestTrip(RequestID,"Driver",Note, PassUsername, PassID,PassengerURL, Day, Time,Fullname, LuggageCheck, Starting, Destination);
-                            //sort the trips based on their date in milisec
+                        if (map.get("Luggage") != null) {
+                            LuggageCheck = (String) map.get("Luggage");
+                        }
+                        if (map.get("Note") != null) {
+                            Note = (String) map.get("Note");
+                        }
+                        if (map.get("Starting") != null) {
+                            Starting =(String) map.get("Starting");
+                        }
+
+                        if (map.get("Destination") != null) {
+                            Destination =(String) map.get("Destination");
+                        }
+
+                        if (map.get("Username") != null) {
+                            PassUsername = (String) map.get("Username");
+                        }
+
+                        if (map.get("ProfilePic") != null) {
+                            PassengerURL =(String) map.get("ProfilePic");
+                        }
+
+                        if (!PassID.equals(UserID)) {
+                            Date rightNow = Calendar.getInstance().getTime();
+
+                            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                            try {
+
+                                String dateStr = Day + " " + Time;
+                                Date Date = format.parse(dateStr);
+                                long mil = Date.getTime();
+                                tripdate = new Date(mil);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            //only show upcoming requests
+
+                            if (rightNow.before(tripdate)) {
+
+                                RequestTrip object = new RequestTrip(RequestID, "Driver", Note, PassUsername, PassID, PassengerURL, Day, Time, Fullname, LuggageCheck, Starting, Destination);
+                                //sort the trips based on their date in seconds
 
 
-                            //the trip is expired after 5 hours after if not started
-                            resultsTrips.add(object);
-                            resultsTrips.sort(new Comparator<RequestTrip>() {
-                                @Override
-                                public int compare(RequestTrip o1, RequestTrip o2) {
-                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                                    String date1 = o1.getDate() + " " + o1.getTime();
-                                    String date2 = o2.getDate() + " " + o2.getTime();
-                                    Date Date1 = null;
-                                    Date Date2 = null;
-                                    try {
-                                        Date1 = format.parse(date1);
-                                        Date2 = format.parse(date2);
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
+                                //the trip is expired after 5 hours after if not started
+                                resultsTrips.add(object);
+                                resultsTrips.sort(new Comparator<RequestTrip>() {
+                                    @Override
+                                    public int compare(RequestTrip o1, RequestTrip o2){
+                                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                        String date1 = o1.getDate() + " " + o1.getTime();
+                                        String date2 = o2.getDate() + " " + o2.getTime();
+                                        try {
+                                            Date Date1 = format.parse(date1);
+                                            Date Date2 = format.parse(date2);
+                                            long mili = Date1.getTime();
+                                            long mili2 = Date2.getTime();
+                                            datenew1 = new Date(mili);
+                                            datenew2 = new Date(mili2);
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        return datenew2.compareTo(datenew1);
                                     }
-                                    long mili = Date1.getTime();
-                                    long mili2 = Date2.getTime();
-                                    Date datenew1 = new Date(mili);
-                                    Date datenew2 = new Date(mili2);
+                                });
+                                tripAdapter.notifyDataSetChanged();
+                            }
 
 
-                                    return datenew2.compareTo(datenew1);
-
-                                }
-                            });
-                            tripAdapter.notifyDataSetChanged();
                         }
-
-
                     }
-
-
                 }
             }
 
@@ -278,7 +263,7 @@ public class DriverFindRequests extends AppCompatActivity
 
 
 
-    private ArrayList resultsTrips = new ArrayList<RequestTrip>();
+    private ArrayList<RequestTrip> resultsTrips = new ArrayList<>();
 
     private ArrayList<RequestTrip> getDataTrips() {
         return resultsTrips;
@@ -290,14 +275,12 @@ public class DriverFindRequests extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        //resultsTrips.clear();
-
     }
 
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -404,7 +387,7 @@ public class DriverFindRequests extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -439,7 +422,7 @@ public class DriverFindRequests extends AppCompatActivity
         }
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -483,17 +466,22 @@ public class DriverFindRequests extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
 
+                    if(map != null) {
+
+                        if (map.get("Username") != null) {
+                            String DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
+                    }
 
                 }
             }

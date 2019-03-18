@@ -1,12 +1,10 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
-import android.text.LoginFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -31,12 +29,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.onesignal.OneSignal;
 
-import org.joda.time.LocalDate;
-
-import java.sql.Driver;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,22 +44,14 @@ import java.util.Map;
 public class DriverMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
-    long mili;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
-
     private ImageView navProfile;
-    private TextView NUsername, Nemail,Welcome, TodayDate;
-    private String email,UserID;
+    private TextView NUsername, Nemail,Welcome;
+    private String UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-    String DBUsername, Date, Time;
-    String WelcomeMessage;
+    private String DBUsername, Date, Time;
     private Date tripdate;
     int count = 0;
 
@@ -74,51 +62,61 @@ public class DriverMain extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        //Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
-        String rightNow = Calendar.getInstance().getCalendarType();
-
-        TodayDate = findViewById(R.id.todaydate);
-        Welcome = findViewById(R.id.welcome);
-
-        Calendar calendar = Calendar.getInstance();
-        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
-        TodayDate.setText(currentDate);
-
-        OneSignal.startInit(this).init();
-        //notify one signal that the user wishes to recieves nofications
-        OneSignal.setSubscription(true);
-        //get key and add unique key to user database for that user
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("NotificationKey").setValue(userId);
-
-            }
-        });
-
-        //show notfication in topbar
-        OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
-
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        //Navigation Drawer Header
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
+
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        setupFirebaseListener();
+        if(CurrentUser!=null){
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+            OneSignal.startInit(this).init();
+            //notify one signal that the user wishes to receive notifications
+            OneSignal.setSubscription(true);
+            //get key and add unique key to user database for that user
+            OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+                @Override
+                public void idsAvailable(String userId, String registrationId) {
+                    FirebaseDatabase.getInstance().getReference().child("users").child(UserID).child("NotificationKey").setValue(userId);
+
+                }
+            });
+
+            //show notification in top bar
+            OneSignal.setInFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification);
+        }
+
+
+
+        TextView TodayDate = findViewById(R.id.todaydate);
+        Welcome = findViewById(R.id.welcome);
+
+        //Show Today's Dates on screen
+
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        TodayDate.setText(currentDate);
+
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+
 
         setupFirebaseListener();
 
@@ -126,9 +124,10 @@ public class DriverMain extends AppCompatActivity
 
     }
 
+    //Navigation Drawer Layout Functions
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -148,23 +147,22 @@ public class DriverMain extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
         switch(item.getItemId()) {
 
             case R.id.action_settings:
+                //delete current account
                 DeleteAccount();
                 break;
 
 
             case R.id.help:
-                //go to new activity
-                //tFRougwMUphm8B95q7EAToUoYci1
+                //show driver help guide
                 Intent intent = new Intent(DriverMain.this,DriverHelp.class);
                 startActivity(intent);
                 break;
 
             case R.id.contact:
+                //contact admins
                 ContactAdmins();
                 break;
 
@@ -172,81 +170,9 @@ public class DriverMain extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    private void DeleteAccount() {
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverMain.this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog, null);
-        TextView Text = dialogView.findViewById(R.id.Text);
-        TextView Title = dialogView.findViewById(R.id.Title);
-        Title.setText("Delete Account");
-        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
-        Button Submit = dialogView.findViewById(R.id.Submit);
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //is deleted
-                            Toast.makeText(DriverMain.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
-                            Intent intent = new Intent(DriverMain.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            dialogBuilder.dismiss();
-                        } else {
-                            Toast.makeText(DriverMain.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
-
-    private void ContactAdmins(){
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverMain.this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog, null);
-        TextView Text = dialogView.findViewById(R.id.Text);
-        ImageView warn = dialogView.findViewById(R.id.warn);
-        ImageView admin = dialogView.findViewById(R.id.admin);
-        TextView Title = dialogView.findViewById(R.id.Title);
-        warn.setVisibility(View.GONE);
-        admin.setVisibility(View.VISIBLE);
-        Title.setText("Contact Admins");
-        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-        Button Submit = dialogView.findViewById(R.id.Submit);
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent1 = new Intent(DriverMain.this,ChatActivity.class);
-                intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                intent1.putExtra("Fullname","Admins");
-                intent1.putExtra("ProfilePicURL","defaultPic");
-                startActivity(intent1);
-                finish();
-                dialogBuilder.dismiss();
-
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -282,34 +208,113 @@ public class DriverMain extends AppCompatActivity
         }
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverMain.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Title.setText("Delete Account");
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(DriverMain.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
+                            Intent intent = new Intent(DriverMain.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(DriverMain.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void ContactAdmins(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverMain.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
+                Intent intent1 = new Intent(DriverMain.this,ChatActivity.class);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID",AdminID);
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+
     private void getUserDB(){
-        //DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                        //Welcome.setText("Hello " + DBUsername);
-                        getTripIds(DBUsername);
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if(map != null) {
+                        if (map.get("Username") != null) {
+                            DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+
+                            //Get the trips ids that the user is apart of and pass the username as args for the welcome message
+                            getTripIds(DBUsername);
+
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
 
                     }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
-
-
 
                 }
 
@@ -323,6 +328,7 @@ public class DriverMain extends AppCompatActivity
         });
 
     }
+
     private void getTripIds(final String Username){
         DatabaseReference TripIDs = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
         TripIDs.addValueEventListener(new ValueEventListener() {
@@ -333,14 +339,13 @@ public class DriverMain extends AppCompatActivity
                     for(DataSnapshot id : dataSnapshot.getChildren()){
                         //then get the info under that unique ID
                         String key = id.getKey();
-                        Toast.makeText(DriverMain.this, ""+key, Toast.LENGTH_SHORT).show();
                         getTripCount(key, Username);
 
                     }
                 }
                 else{
+                    //if the user doesn't have any trips at all
                     Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
-                    return;
                 }
             }
 
@@ -359,54 +364,60 @@ public class DriverMain extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if (map != null) {
+                        //check that none of them are null
+                        if (map.get("Date") != null) {
+                            Date = (String) map.get("Date");
+
+                        }
+                        if (map.get("Time") != null) {
+                            Time = (String) map.get("Time");
+                        }
 
 
-                    //check that none of them are null
-                    if (map.get("Date") != null) {
-                        Date = map.get("Date").toString();
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                        try {
+
+                            String dateStr = Date + " " + Time;
+                            Date Date = format.parse(dateStr);
+                            long mil = Date.getTime();
+                            tripdate = new Date(mil);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        //get the time right now
+
+                        Date rightNow = Calendar.getInstance().getTime();
+
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        cal1.setTime(tripdate);
+                        cal2.setTime(rightNow);
+
+                        //check to make sure that trip date is the same day as today
+
+                        boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+                                cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+
+                        // if its the same day and its not in the past
+
+                        if (sameDay && tripdate.after(rightNow)) {
+                            count++;
+                        }
 
                     }
-                    if (map.get("Time") != null) {
-                        Time = map.get("Time").toString();
+                    //set the welcome message
+                    if (count > 0) {
+                        Welcome.setText("Hello " + Username + "!\n\n" + "You have " + count + " scheduled trips today");
+                    } else {
+                        Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
                     }
-
-
-                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                    try {
-
-                        String dateStr = Date + " " + Time;
-                        Date Datee = format.parse(dateStr);
-                        long mili = Datee.getTime();
-                        tripdate = new Date(mili);
-                        //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    Date rightNow = Calendar.getInstance().getTime();
-
-
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.setTime(tripdate);
-                    cal2.setTime(rightNow);
-                    boolean sameDay = cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
-                            cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
-
-                    if(sameDay && tripdate.after(rightNow)){
-                        count++;
-                    }
-
 
                 }
-                if(count >0){
-                    Welcome.setText("Hello " + Username + "!\n\n" + "You have " + count + " scheduled trips today");
-                }
-                else{
-                    Welcome.setText("Hello " + Username + "!\n\n" + "You have no scheduled trips today");
-                }
-
             }
 
             @Override
@@ -419,6 +430,7 @@ public class DriverMain extends AppCompatActivity
 
 
         private void setupFirebaseListener(){
+
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

@@ -33,20 +33,12 @@ public class FindTrip {
         this.CurrentID = CurrentID;
     }
 
-    public String getCurrentID() {
+    String getCurrentID() {
         return CurrentID;
     }
 
-    public void setCurrentID(String currentID) {
-        CurrentID = currentID;
-    }
-
-    public String getTripID() {
+    String getTripID() {
         return TripID;
-    }
-
-    public void setTripID(String tripID) {
-        TripID = tripID;
     }
 
     public String getID() {
@@ -84,10 +76,6 @@ public class FindTrip {
 
     public String getProfilePicUrl() {
         return profilePicUrl;
-    }
-
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
     }
 
     public void setTime(String time) {

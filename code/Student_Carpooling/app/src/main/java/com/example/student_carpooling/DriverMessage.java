@@ -2,16 +2,11 @@ package com.example.student_carpooling;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -32,8 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
-import com.example.student_carpooling.messagesRecyclerView.Message;
 import com.example.student_carpooling.usersRecyclerView.User;
 import com.example.student_carpooling.usersRecyclerView.UserAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,93 +37,78 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class DriverMessage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    NavigationView navigationView;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView Name, Username, Uni;
-
-    private FirebaseAuth mAuth;
-    private ImageView profilePic;
-    private DatabaseReference reference, UserDb;
-    private String DBName, DBUsername, DBUni, UserID, ProfilePicUrl, First, Surname, Fullname;
-    private TextView NUsername, Nemail;
-
-    private LinearLayoutManager userLayoutManager;
-
+    private DatabaseReference UserDb;
+    private String DBUsername, UserID, ProfilePicUrl, First, Surname, Fullname;
+    private TextView NUsername, NEmail;
     private ImageView navProfile;
-
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
-
     private String UserName, profilePicurl;
-
-    private EditText searchUsers;
-
-    FirebaseUser CurrentUser;
-
-
-    ArrayList<String> chatters;
+    private FirebaseUser CurrentUser;
+    private ArrayList<String> chatters;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_message);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         View hView = navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
-        Nemail = hView.findViewById(R.id.EmailNav);
+        NEmail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
 
 
-        chatters = new ArrayList<>();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        //.getUID() causing bug, check to see the user is not null first
+        if(CurrentUser!=null){
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+
+        }
 
         setupFirebaseListener();
+
+
+        //use this to keep track  of those in which the user has an active chat with (user ids)
+        chatters = new ArrayList<>();
+
+        //set up the recycler view and adapter
 
         recyclerView = findViewById(R.id.activechatsrv);
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         userAdapter = new UserAdapter(getDataUsers(), DriverMessage.this);
-       // userLayoutManager = new LinearLayoutManager(DriverMessage.this);
         recyclerView.setAdapter(userAdapter);
 
 
+        //Search bar -- search by username
 
-        searchUsers = findViewById(R.id.searchBar);
-
+        EditText searchUsers = findViewById(R.id.searchBar);
         searchUsers.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -141,48 +119,49 @@ public class DriverMessage extends AppCompatActivity
                 showKeyboard();
                 resultsUsers.clear();
                 searchUser(s.toString().toLowerCase());
-                //closeKeyboard();
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                //hide the keyboard to yield results
             }
         });
 
         if(searchUsers.getText().toString().equals("")) {
             //only get if no text in search bar has been entered
             resultsUsers.clear();
-            getRecievers();
+            getReceivers();
             getSenders();
 
 
         }}
-                private void closeKeyboard(){
-                    View view = this.getCurrentFocus();
-                    if(view != null){
-                        InputMethodManager inm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inm.hideSoftInputFromWindow(view.getWindowToken(),0);
-                    }
-                }
+    private void closeKeyboard(){
+        View view = this.getCurrentFocus();
+        if(view != null){
+            InputMethodManager inm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inm != null) {
+                inm.hideSoftInputFromWindow(view.getWindowToken(),0);
+            }
+        }
+    }
 
-                private void showKeyboard(){
+    private void showKeyboard(){
                     View view = this.getCurrentFocus();
                     try {
-                        if (view.requestFocus()) {
+                        if (view != null && view.requestFocus()) {
                             InputMethodManager imm = (InputMethodManager)
                                     getSystemService(Context.INPUT_METHOD_SERVICE);
                             Objects.requireNonNull(imm).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
                         }
                     }catch(NullPointerException e){
-
+                        Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
                 }
                 private void searchUser(String s){
+                    //close the soft keyboard to show and yield results
                     closeKeyboard();
-                    final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                    //the child search is the username in lowercase to make searching user's easier
                     Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("Search").startAt(s).endAt(s +"\uf8ff");
 
                     query.addValueEventListener(new ValueEventListener() {
@@ -193,9 +172,12 @@ public class DriverMessage extends AppCompatActivity
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                 // if (dataSnapshot.getChildrenCount() > 0){
                                 final String id = snapshot.getKey();
-                                // only show it if it's a reciever or sender to the currrent user.// how get this info -> function check, pass the id to a func
-                                if((!id.equals(CurrentUser.getUid()) && (chatters.contains(id)))){
+                                // only show it if it's a receiver or sender to the current user.// how get this info -> function check, pass the id to a func
+                                if (id != null && (!id.equals(UserID) && (chatters.contains(id)))) {
                                     resultsUsers.clear();
+                                    recyclerView.setAdapter(userAdapter);
+                                    userAdapter.notifyDataSetChanged();
+
                                     DatabaseReference GetUserDB = FirebaseDatabase.getInstance().getReference().child("users").child(id);
                                     GetUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
@@ -203,32 +185,36 @@ public class DriverMessage extends AppCompatActivity
                                             if (dataSnapshot.exists()) {
                                                 //get the info and create a new user object
                                                 //required -> Id, profilepicurl, username
-                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                                if (map.get("profileImageUrl") != null) {
-                                                    profilePicurl = map.get("profileImageUrl").toString();
+                                                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                                                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+                                                if(map != null) {
+                                                    if (map.get("profileImageUrl") != null) {
+                                                        profilePicurl = (String) map.get("profileImageUrl");
+
+                                                    }
+                                                    if (map.get("Username") != null) {
+                                                        UserName = (String)map.get("Username");
+
+                                                    }
+
+                                                    if (map.get("Surname") != null) {
+                                                        Surname = (String) map.get("Surname");
+
+                                                    }
+
+                                                    if (map.get("Name") != null) {
+                                                        First = (String)map.get("Name");
+
+                                                    }
+
+                                                    Fullname = First + " " + Surname;
+
+                                                    //reset the adapter
+                                                    User object = new User(id, profilePicurl, UserName, Fullname);
+                                                    resultsUsers.add(object);
+                                                    userAdapter.notifyDataSetChanged();
 
                                                 }
-                                                if (map.get("Username") != null) {
-                                                    UserName = map.get("Username").toString();
-
-                                                }
-
-                                                if (map.get("Surname") != null) {
-                                                    Surname = map.get("Surname").toString();
-
-                                                }
-
-                                                if (map.get("Name") != null) {
-                                                    First = map.get("Name").toString();
-
-                                                }
-
-                                                Fullname = First + " " + Surname;
-
-                                                User object = new User(id, profilePicurl, UserName, Fullname);
-                                                resultsUsers.add(object);
-                                                userAdapter.notifyDataSetChanged();
-
                                             }
                                         }
 
@@ -239,10 +225,8 @@ public class DriverMessage extends AppCompatActivity
                                     });
 
 
-
-
-
-                                }}}
+                                }
+                            }}
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -257,7 +241,7 @@ public class DriverMessage extends AppCompatActivity
 
 
 
-                private void getRecievers() {
+                private void getReceivers() {
                     DatabaseReference Chats = FirebaseDatabase.getInstance().getReference().child("ChatList").child(UserID);
                     Chats.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -267,40 +251,44 @@ public class DriverMessage extends AppCompatActivity
                                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                                     //get the id for each user
                                     final String key = id.getKey();
+                                    if(key != null){
                                     DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
                                     RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.exists()) {
                                                 //get the info and create a new user object
-                                                //required -> Id, profilepicurl, username
-                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                                if (map.get("profileImageUrl") != null) {
-                                                    profilePicurl = map.get("profileImageUrl").toString();
+                                                //required -> Id, profile pic url, username
+                                                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                                                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+
+                                                if (map != null) {
+
+                                                    if (map.get("profileImageUrl") != null) {
+                                                        profilePicurl = (String) map.get("profileImageUrl");
+
+                                                    }
+                                                    if (map.get("Username") != null) {
+                                                        UserName = (String) map.get("Username");
+
+                                                    }
+
+                                                    if (map.get("Surname") != null) {
+                                                        Surname = (String) map.get("Surname");
+
+                                                    }
+
+                                                    if (map.get("Name") != null) {
+                                                        First = (String) map.get("Name");
+
+                                                    }
+
+                                                    Fullname = First + " " + Surname;
+
+                                                    chatters.add(key);
+                                                    userAdapter.notifyDataSetChanged();
 
                                                 }
-                                                if (map.get("Username") != null) {
-                                                    UserName = map.get("Username").toString();
-
-                                                }
-
-                                                if (map.get("Surname") != null) {
-                                                    Surname = map.get("Surname").toString();
-
-                                                }
-
-                                                if (map.get("Name") != null) {
-                                                    First = map.get("Name").toString();
-
-                                                }
-
-                                                Fullname = First + " " + Surname;
-
-                                                User object = new User(key, profilePicurl, UserName, Fullname);
-                                                //resultsUsers.add(object);
-                                                chatters.add(key);
-                                                userAdapter.notifyDataSetChanged();
-
                                             }
                                         }
 
@@ -317,6 +305,7 @@ public class DriverMessage extends AppCompatActivity
 
                                 }
                             }
+                          }
                         }
 
                         @Override
@@ -337,9 +326,10 @@ public class DriverMessage extends AppCompatActivity
                     Chats.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot id : dataSnapshot.getChildren()) { ;
+                            for (DataSnapshot id : dataSnapshot.getChildren()) {
                                 //get the id for each user
                                 final String key = id.getKey();
+                                if(key != null){
                                 DatabaseReference SenderDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(key);
                                 SenderDB.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -347,7 +337,7 @@ public class DriverMessage extends AppCompatActivity
                                         if (dataSnapshot.exists()) {
                                             for (DataSnapshot id : dataSnapshot.getChildren()) {
                                                 final String recieverKey = id.getKey();
-                                                if (recieverKey.equals(UserID)) {
+                                                if (recieverKey != null && recieverKey.equals(UserID)) {
                                                     //add that user to database
                                                     //get their other info first
                                                     DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
@@ -357,23 +347,27 @@ public class DriverMessage extends AppCompatActivity
                                                             if (dataSnapshot.exists()) {
                                                                 //get the info and create a new user object
                                                                 //required -> Id, profilepicurl, username
-                                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                                                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                                                                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+
+                                                                if(map != null){
+
                                                                 if (map.get("profileImageUrl") != null) {
-                                                                    profilePicurl = map.get("profileImageUrl").toString();
+                                                                    profilePicurl = (String) map.get("profileImageUrl");
 
                                                                 }
                                                                 if (map.get("Username") != null) {
-                                                                    UserName = map.get("Username").toString();
+                                                                    UserName = (String) map.get("Username");
 
                                                                 }
 
                                                                 if (map.get("Surname") != null) {
-                                                                    Surname = map.get("Surname").toString();
+                                                                    Surname = (String) map.get("Surname");
 
                                                                 }
 
                                                                 if (map.get("Name") != null) {
-                                                                    First = map.get("Name").toString();
+                                                                    First = (String) map.get("Name");
 
                                                                 }
 
@@ -384,7 +378,7 @@ public class DriverMessage extends AppCompatActivity
                                                                 chatters.add(key);
                                                                 userAdapter.notifyDataSetChanged();
 
-                                                            }
+                                                            }}
                                                         }
 
                                                         @Override
@@ -404,6 +398,7 @@ public class DriverMessage extends AppCompatActivity
                                 });
 
                             }
+                            }
                         }
 
                         @Override
@@ -414,7 +409,10 @@ public class DriverMessage extends AppCompatActivity
 
                 }
 
-                private ArrayList resultsUsers = new ArrayList<User>();
+
+                //this is used for when the user enters a username into the search bar, result users holds the results of matching users to that string
+
+                private ArrayList<User> resultsUsers = new ArrayList<>();
 
                 private List<User> getDataUsers() {
                     return resultsUsers;
@@ -425,7 +423,7 @@ public class DriverMessage extends AppCompatActivity
 
                 @Override
                 public void onBackPressed() {
-                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    DrawerLayout drawer = findViewById(R.id.drawer_layout);
                     if (drawer.isDrawerOpen(GravityCompat.START)) {
                         drawer.closeDrawer(GravityCompat.START);
                     } else {
@@ -452,8 +450,6 @@ public class DriverMessage extends AppCompatActivity
                             break;
 
                         case R.id.help:
-                            //go to new activity
-                            //tFRougwMUphm8B95q7EAToUoYci1
                             Intent intent = new Intent(DriverMessage.this,DriverHelp.class);
                             startActivity(intent);
                             break;
@@ -466,6 +462,8 @@ public class DriverMessage extends AppCompatActivity
 
                     return super.onOptionsItemSelected(item);
                 }
+
+
     private void DeleteAccount() {
         final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverMessage.this).create();
         LayoutInflater inflater = getLayoutInflater();
@@ -489,7 +487,6 @@ public class DriverMessage extends AppCompatActivity
                             UserDb.removeValue();
                             Intent intent = new Intent(DriverMessage.this, MainActivity.class);
                             startActivity(intent);
-                            finish();
                             dialogBuilder.dismiss();
                         } else {
                             Toast.makeText(DriverMessage.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
@@ -522,9 +519,10 @@ public class DriverMessage extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(DriverMessage.this,ChatActivity.class);
-                intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("Username","Student Carpooling");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);
@@ -540,7 +538,7 @@ public class DriverMessage extends AppCompatActivity
 
                 @SuppressWarnings("StatementWithEmptyBody")
                 @Override
-                public boolean onNavigationItemSelected(MenuItem item) {
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     // Handle navigation view item clicks here.
                     int id = item.getItemId();
 
@@ -574,7 +572,7 @@ public class DriverMessage extends AppCompatActivity
                             break;
                     }
 
-                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    DrawerLayout drawer = findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
                     return true;
                 }
@@ -586,21 +584,19 @@ public class DriverMessage extends AppCompatActivity
                             //makes sure the data is present, else the app will crash if not
                             if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                                 //data originally added is kept in this format
-                                Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                                if(map.get("Name")!=null){
-                                    DBName = map.get("Name").toString();
-                                    // Name.setText(DBName);
-
-                                }
+                                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                                if(map != null){
                                 if(map.get("Username")!=null){
-                                    DBUsername = map.get("Username").toString();
+                                    DBUsername = (String) map.get("Username");
                                     NUsername.setText(DBUsername);
                                 }
                                 if(map.get("profileImageUrl")!=null){
-                                    ProfilePicUrl = map.get("profileImageUrl").toString();
-                                    if(!ProfilePicUrl.equals("defaultPic")) {
-                                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                                }}
+                                    ProfilePicUrl = (String) map.get("profileImageUrl");
+                                    if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                        Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                                    }
+                                }}}
 
 
                         }
@@ -621,7 +617,7 @@ public class DriverMessage extends AppCompatActivity
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             if (user != null) {
                                 String email = user.getEmail();
-                                Nemail.setText(email);
+                                NEmail.setText(email);
                             } else {
                                 Toast.makeText(DriverMessage.this, "Sign Out", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(DriverMessage.this, MainActivity.class);
@@ -646,5 +642,17 @@ public class DriverMessage extends AppCompatActivity
 
                 }
 
-            }
+    @Override
+    protected void onResume() {
+        //clear the list so when the activity is resumed there wont be duplicates
+        resultsUsers.clear();
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+}
 

@@ -1,8 +1,6 @@
 package com.example.student_carpooling.tripRequestsRecyclerView;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -14,25 +12,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
 import com.example.student_carpooling.R;
-import com.example.student_carpooling.SendNotification;
 import com.example.student_carpooling.UserProfile;
-import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTripViewHolders;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RequestTripAdapter extends RecyclerView.Adapter<RequestTripViewHolder>{
 
     private List<RequestTrip> list;
     private Context context;
 
-    public static final int PASSENGER = 0;
-    public static final int DRIVER = 1;
+    private static final int PASSENGER = 0;
+    private static final int DRIVER = 1;
 
     public RequestTripAdapter(List<RequestTrip> list, Context context){
         this.list = list;
@@ -45,7 +34,7 @@ public class RequestTripAdapter extends RecyclerView.Adapter<RequestTripViewHold
     public RequestTripViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
         if(i == DRIVER){
-            View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.request_trip_cards, null, false);
+            View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.request_trip_cards, viewGroup, false);
             RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutView.setLayoutParams(lp);
             return new RequestTripViewHolder(layoutView);
@@ -53,7 +42,7 @@ public class RequestTripAdapter extends RecyclerView.Adapter<RequestTripViewHold
 
         }
         else{
-            View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.my_request_trips_cards, null, false);
+            View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.my_request_trips_cards, viewGroup, false);
             RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             layoutView.setLayoutParams(lp);
             return new RequestTripViewHolder(layoutView);
@@ -74,7 +63,6 @@ public class RequestTripAdapter extends RecyclerView.Adapter<RequestTripViewHold
         final String _Starting = list.get(i).getStarting();
         final String _ID = list.get(i).getID();
         final String _Luggage = list.get(i).getLuggageCheck();
-        final String RequestID = list.get(i).getRequestID();
 
         requestTripViewHolders.Destination.setText(_Destination);
         requestTripViewHolders.Starting.setText(_Starting);

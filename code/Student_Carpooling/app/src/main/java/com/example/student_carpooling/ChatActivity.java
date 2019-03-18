@@ -3,18 +3,12 @@ package com.example.student_carpooling;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,44 +20,30 @@ import com.bumptech.glide.Glide;
 import com.example.student_carpooling.messagesRecyclerView.Message;
 import com.example.student_carpooling.messagesRecyclerView.MessageAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.onesignal.OneSignal;
-
-import org.checkerframework.checker.units.qual.Current;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChatActivity extends AppCompatActivity {
 
-    Intent intent;
+    private EditText text_send;
+    private String CurrentUserID, OtherUserID, AdminID;
+    private DatabaseReference userUpdate;
 
-    ImageView otherProfilePic, delete;
-
-    ImageButton btn_send;
-    EditText text_send;
-
-    Boolean result = false;
-
-    String CurrentUserID, OtherUserID, AdminID;
-    FirebaseAuth mAuth;
-
-    TextView otherFullname;
-    DatabaseReference userUpdate;
-
-    DatabaseReference AdminContact;
     // RecyclerView.Adapter
     MessageAdapter messageAdapter;
     List<Message> messageList;
     RecyclerView messageRecyclerView;
-    LinearLayoutManager msgLayoutManager;
-    String CurrentUsername, OtherUserKey, Type;
+    String CurrentUsername, OtherUserKey, Type, NotificationKey;
     DatabaseReference msgDB, reference, ref;
     ArrayList<String> chatters;
 
@@ -74,100 +54,31 @@ public class ChatActivity extends AppCompatActivity {
 
         chatters = new ArrayList<>();
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUserID = mAuth.getCurrentUser().getUid();
-        //get current users Username
-        DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
-        UserDb.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
-                    //data originally added is kept in this format
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if (map.get("Username") != null) {
-                        CurrentUsername = map.get("Username").toString();
-                    }
-
-                    if (map.get("Type") != null) {
-                        Type = map.get("Type").toString();
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        ImageView back = findViewById(R.id.back);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-
-        //set up Recycler View
-        messageRecyclerView = findViewById(R.id.chatRecycler);
-        messageRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setStackFromEnd(true);
-        messageRecyclerView.setLayoutManager(linearLayoutManager);
-
-
-        intent = getIntent();
-
-        btn_send = findViewById(R.id.send);
-        text_send = findViewById(R.id.message);
-
-        delete = findViewById(R.id.delete);
-        TextView otherUserName = findViewById(R.id.otherUsername);
-        otherProfilePic = findViewById(R.id.otherPic);
-        otherFullname = findViewById(R.id.otherFullName);
-        String StrOtherUserName = intent.getStringExtra("Username");
-        String OtherProfilePicUrl = intent.getStringExtra("ProfilePicURL");
-        String StrOtherFullName = intent.getStringExtra("Fullname");
-        OtherUserID = intent.getStringExtra("ID");
-        otherUserName.setText(StrOtherUserName);
-        otherFullname.setText(StrOtherFullName);
-        AdminID = "tFRougwMUphm8B95q7EAToUoYci1";
-
-
-        //Other User id is showing the current User Id instead
-
-        // Toast.makeText(ChatActivity.this, CurrentUserID, Toast.LENGTH_SHORT).show(); ubo
-        if (!(OtherProfilePicUrl.equals("defaultPic"))) {
-            Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
-        }
-
-
-
-        if (OtherUserID.equals(AdminID)) {
-            userUpdate = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
-            userUpdate.addValueEventListener(new ValueEventListener() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser CurrentUser = mAuth.getCurrentUser();
+        if(CurrentUser!=null){
+            CurrentUserID = mAuth.getCurrentUser().getUid();
+            DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+            UserDb.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        if (map.get("AdminContact") != null) {
-
-                            if (Integer.parseInt(map.get("AdminContact").toString()) == 1) {
-                                //nothing
-                            } else {
-                                String Message = "This is an automated message. Please send us your query and a member of our team will get back to you shortly!";
-                                SendNewMessage(Message, CurrentUserID, AdminID);
-                                userUpdate.child("AdminContact").setValue(1);
-
-                            }
+                    if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0){
+                        //data originally added is kept in this format
+                        GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                        Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                       if(map != null){
+                        if (map.get("Username") != null) {
+                            CurrentUsername = (String) map.get("Username");
                         }
-                    }
+                        //Need to get the current user type if they decided to leave the chat -- to changed activity to the driver or passenger home
+                        if (map.get("Type") != null) {
+                            Type = (String) map.get("Type");
+                        }
+                        if (map.get("NotificationKey") != null) {
+                            NotificationKey = (String) map.get("NotificationKey");
+                        }
+
+                    }}
                 }
 
                 @Override
@@ -179,6 +90,55 @@ public class ChatActivity extends AppCompatActivity {
         }
 
 
+        ImageView back = findViewById(R.id.back);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if(getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+        }
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               finish();
+            }
+        });
+
+
+        //set up Recycler View
+        messageRecyclerView = findViewById(R.id.chatRecycler);
+        messageRecyclerView.setHasFixedSize(true);
+        messageAdapter = new MessageAdapter(getData(), this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
+        messageRecyclerView.setAdapter(messageAdapter);
+
+        Intent intent = getIntent();
+        ImageButton btn_send = findViewById(R.id.send);
+        text_send = findViewById(R.id.message);
+
+        ImageView delete = findViewById(R.id.delete);
+        TextView otherUserName = findViewById(R.id.otherUsername);
+        ImageView otherProfilePic = findViewById(R.id.otherPic);
+        TextView otherFullname = findViewById(R.id.otherFullName);
+        String StrOtherUserName = intent.getStringExtra("Username");
+        String OtherProfilePicUrl = intent.getStringExtra("ProfilePicURL");
+        String StrOtherFullName = intent.getStringExtra("Fullname");
+        OtherUserID = intent.getStringExtra("ID");
+        otherUserName.setText(StrOtherUserName);
+        otherFullname.setText(StrOtherFullName);
+        AdminID = getResources().getString(R.string.AdminID);
+
+
+        //Other User id is showing the current User Id instead
+        try {
+            if (!(OtherProfilePicUrl.equals("defaultPic"))) {
+                Glide.with(ChatActivity.this).load(OtherProfilePicUrl).into(otherProfilePic);
+            }
+        }catch (Exception e){
+            //
+        }
+
         ref = FirebaseDatabase.getInstance().getReference("users").child(OtherUserID);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -187,14 +147,15 @@ public class ChatActivity extends AppCompatActivity {
                 //get their notification key
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     //data originally added is kept in this format
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if (map.get("NotificationKey") != null) {
-                        OtherUserKey = map.get("NotificationKey").toString();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if(map != null){
+                        if (map.get("NotificationKey") != null) {
+                            OtherUserKey = (String) map.get("NotificationKey");
+                        }
                     }
-
                 }
 
-                readMessage(CurrentUserID, OtherUserID);
             }
 
             @Override
@@ -215,7 +176,6 @@ public class ChatActivity extends AppCompatActivity {
                         DatabaseReference chats2 = FirebaseDatabase.getInstance().getReference().child("ChatList").child(OtherUserID).child(CurrentUserID);
                         chats.removeValue();
                         chats2.removeValue();
-
                         //get current user type
                         if (Type.equals("Driver")) {
                             Intent intent = new Intent(ChatActivity.this, DriverMessage.class);
@@ -243,6 +203,10 @@ public class ChatActivity extends AppCompatActivity {
 
         });
 
+        // if the user started this activity through the contact admin dialog
+        if (OtherUserID.equals(AdminID)) {
+            AdminContact();
+        }
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,7 +214,7 @@ public class ChatActivity extends AppCompatActivity {
                 //get Message
                 String Message = text_send.getText().toString();
                 if (!Message.equals("")) {
-                    SendNewMessage(Message, CurrentUserID, OtherUserID);
+                    SendNewMessage(Message, CurrentUserID, OtherUserID, CurrentUsername, OtherUserKey);
                     //once sent, reset the EditText Field
                     text_send.setText("");
                 } else {
@@ -262,45 +226,77 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
+        readMessage(CurrentUserID, OtherUserID);
+
+    }
+
+    private void AdminContact() {
+        userUpdate = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
+        userUpdate.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if(map != null){
+                    if (map.get("AdminContact") != null) {
+                        //check to see if this is the first time they've made contact( if AdminContact value is 0)
+                        //if it's 1 don't automatically send this message
+                        //only reset this value within the database
+                        String AdminContactStr = Objects.requireNonNull(map.get("AdminContact")).toString();
+                        int AdminContact = (Integer.parseInt(AdminContactStr));
+                        if (AdminContact == 0) {
+                            String Message = "This is an automated message. Please send us your query and a member of our team will get back to you shortly!";
+                            SendNewMessage(Message, AdminID, CurrentUserID, "StudentCarpooling", NotificationKey);
+                            userUpdate.child("AdminContact").setValue(1);
+                        }
+                    }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
-    private void SendNewMessage(String msg, String id, final String otherid) {
+    private void SendNewMessage(String msg, String id, final String otherid, String CurrentUsername, String OtherKey) {
+        msgDB = FirebaseDatabase.getInstance().getReference().child("Chats").push();
+        //.push() creates a unique id for this message
 
-        //create/add to Database -> "Chats"
-        //unique msg entry with push()
-        //msgDB = FirebaseDatabase.getInstance().getReference().child("Chats").push();
-
-        //Map MessageInfo = new HashMap();
-        //MessageInfo.put("Sender", CurrentUserID );
-        //MessageInfo.put("Recipient", OtherUserID);
-        //MessageInfo.put("Message", msg);
-
-
-        // msgDB.push().setValue(MessageInfo);
-
-        msgDB = FirebaseDatabase.getInstance().getReference();
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("Sender", id);
-        hashMap.put("Recipient", otherid);
-        hashMap.put("Message", msg);
+        HashMap<String, Object> MessageInfo = new HashMap<>();
+        MessageInfo.put("Sender", id);
+        MessageInfo.put("Recipient", otherid);
+        MessageInfo.put("Message", msg);
 
         //send notification to that user
         String msgFormat = CurrentUsername + ": " + msg;
-        new SendNotification(msgFormat, "Student Carpooling", OtherUserKey);
+        new SendNotification(msgFormat, "Student Carpooling", OtherKey);
 
-        msgDB.child("Chats").push().setValue(hashMap);
+        //add value to database
+        msgDB.setValue(MessageInfo);
 
+        //clear the current array list, notify the adapter of data change and reset the recycler view with updated message
+        resultsMessage.clear();
+        messageRecyclerView.setAdapter(messageAdapter);
+        messageAdapter.notifyDataSetChanged();
 
-        //for the active chats activity
-        final DatabaseReference ChatIDs = FirebaseDatabase.getInstance().getReference("ChatList")
-                .child(CurrentUserID).child(OtherUserID);
+        //used for within Driver/Passenger Message Activity
+        //stores that a chat has been created between the two users
+        //rather than having to scan through each message
+
+        //in format -->"ChatList" -> sender id(current) & recipient
+        final DatabaseReference ChatIDs = FirebaseDatabase.getInstance().getReference().child("ChatList").child(id).child(otherid);
+
 
         ChatIDs.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
+                    //re-add the other user id as a child so the branch can be created
                     ChatIDs.child("id").setValue(otherid);
                 }
 
@@ -312,15 +308,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-
-        //messages arent showing up straight away?
-
-
-        //get chats id, get info, create new object
-
-
-        //Chats -> chatid -> message id
-
     }
 
     private void readMessage(final String CurrentId, final String OtherId) {
@@ -328,24 +315,26 @@ public class ChatActivity extends AppCompatActivity {
 
         reference = FirebaseDatabase.getInstance().getReference("Chats");
 
-        //reference =
-
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageList.clear();
+                resultsMessage.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
+                    if(message != null){
                     if (message.getRecipient().equals(CurrentId) && message.getSender().equals(OtherId) ||
                             message.getSender().equals(CurrentId) && message.getRecipient().equals(OtherId)) {
-                        messageList.add(message);
+                        //messageList.add(message);
+                        resultsMessage.add(message);
+                        messageAdapter.notifyDataSetChanged();
                         //notify adapter
                     }
-
-                    messageAdapter = new MessageAdapter(messageList, ChatActivity.this);
-                    messageRecyclerView.setAdapter(messageAdapter);
-                }
+                    //change this to oncreate
+                    // messageAdapter = new MessageAdapter(messageList, ChatActivity.this);
+                    //messageRecyclerView.setAdapter(messageAdapter);
+                }}
             }
 
             @Override
@@ -354,4 +343,12 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+    private ArrayList<Message> resultsMessage = new ArrayList<>();
+
+    private ArrayList<Message> getData() {
+        return resultsMessage;
+
+    }
+
 }

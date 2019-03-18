@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 public class ResetPassword extends AppCompatActivity {
 
     private EditText Email;
-    private Button ResetPassword, Cancel;
     private FirebaseAuth mAuth;
 
     @Override
@@ -29,7 +27,8 @@ public class ResetPassword extends AppCompatActivity {
         ImageView back = findViewById(R.id.back);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        if(getSupportActionBar() != null){
+        getSupportActionBar().setTitle("");}
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,11 +37,11 @@ public class ResetPassword extends AppCompatActivity {
         });
 
         Email = findViewById(R.id.resetEmail);
-        ResetPassword = findViewById(R.id.reset_password);
-        Cancel = findViewById(R.id.cancel);
+        Button ResetPassword = findViewById(R.id.reset_password);
         mAuth = FirebaseAuth.getInstance();
 
 
+        Button Cancel = findViewById(R.id.cancel);
         Cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

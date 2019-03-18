@@ -5,8 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -31,6 +29,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
@@ -38,44 +37,30 @@ import java.util.Map;
 public class PassengerCreateRequests extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
-
     private ImageView navProfile;
     private TextView NUsername, Nemail;
-    private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-
-
-    private TabLayout tabLayout;
-    private ViewPager tabSwitch;
-    private TabAdapter tabAdapter;
-
-
-    FirebaseUser CurrentUser;
+    private FirebaseUser CurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_create_requests);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        tabLayout = findViewById(R.id.TabLayout);
-        tabSwitch = findViewById(R.id.Switch);
-        tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        ViewPager tabSwitch = findViewById(R.id.Switch);
+        TabAdapter tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         tabAdapter.addFragment(new CreateRequestFragment(),"Create Request");
         tabAdapter.addFragment(new MyRequestFragment(),"My Requests");
@@ -85,7 +70,7 @@ public class PassengerCreateRequests extends AppCompatActivity
 
         tabSwitch.setCurrentItem(0);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View hView =  navigationView.getHeaderView(0);
@@ -95,16 +80,18 @@ public class PassengerCreateRequests extends AppCompatActivity
 
         setupFirebaseListener();
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+        if(CurrentUser != null){
+            String UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -203,7 +190,7 @@ public class PassengerCreateRequests extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -237,7 +224,7 @@ public class PassengerCreateRequests extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -250,19 +237,23 @@ public class PassengerCreateRequests extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+                    if(map != null) {
                     if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
+                        String DBUsername = (String) map.get("Username");
                         NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
+                        ProfilePicUrl = (String) map.get("profileImageUrl");
 
-                        if(!ProfilePicUrl.equals("defaultPic")) {
+                        if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
                             Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
-                        }}
+                        }
+                    }
 
 
+                }
                 }
             }
 

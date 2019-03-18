@@ -15,7 +15,6 @@ public class RequestTrip {
     private String Type;
     private String RequestID;
 
-    public RequestTrip(){}
 
     public RequestTrip(String RequestID, String Type,String Note, String Username, String ID,String profilePicUrl,String Date,String Time,String Fullname,String LuggageCheck, String Starting, String Destination ){
         this.Type = Type;
@@ -33,7 +32,7 @@ public class RequestTrip {
 
     }
 
-    public String getRequestID() {
+    String getRequestID() {
         return RequestID;
     }
 
@@ -97,9 +96,6 @@ public class RequestTrip {
         Fullname = fullname;
     }
 
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
-    }
 
     public void setNote(String note) {
         Note = note;
@@ -113,11 +109,8 @@ public class RequestTrip {
         return Note;
     }
 
-    public void setLuggageCheck(String luggageCheck) {
-        LuggageCheck = luggageCheck;
-    }
 
-    public String getLuggageCheck() {
+    String getLuggageCheck() {
         return LuggageCheck;
     }
 }

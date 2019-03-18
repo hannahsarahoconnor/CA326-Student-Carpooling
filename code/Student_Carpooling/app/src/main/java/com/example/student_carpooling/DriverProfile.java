@@ -2,7 +2,6 @@ package com.example.student_carpooling;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -37,6 +36,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -45,28 +45,25 @@ import com.onesignal.OneSignal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DriverProfile extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     NavigationView navigationView;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView Name,Username,Uni;
-
-    private FirebaseAuth mAuth;
     private ImageView profilePic;
     private DatabaseReference UserDb;
-    private String DBName, DBSurname, DBUsername, DBUni,UserID;
-    private TextView NUsername, Nemail, ratingText,Ratings,Completed;
+    private String DBName, DBSurname, DBUsername, DBUni,UserID,AdminID;
+    private TextView NUsername, Nemail,Ratings,Completed;
 
     private RatingBar ratingBar;
-
     private Uri ResultUri;
     private String ProfilePicUrl;
-    private Button Confirm,Switch;
+    private Button Confirm;
     private ImageView navProfile;
-    FirebaseUser CurrentUser;
+    private FirebaseUser CurrentUser;
 
 
 
@@ -74,9 +71,15 @@ public class DriverProfile extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        navigationView =  findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View hView =  navigationView.getHeaderView(0);
+        NUsername = hView.findViewById(R.id.UsernameNav);
+        Nemail = hView.findViewById(R.id.EmailNav);
+        navProfile = hView.findViewById(R.id.imageView);
 
 
         Ratings = findViewById(R.id.RatingNo);
@@ -86,35 +89,25 @@ public class DriverProfile extends AppCompatActivity
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
         Confirm = findViewById(R.id.ConfirmPic);
-        profilePic = findViewById(R.id.ProfilePic);
-        Switch = findViewById(R.id.SwitchMode);
+        AdminID = getResources().getString(R.string.AdminID);
 
-
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+        if(CurrentUser!=null){
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
 
+        }
 
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View hView =  navigationView.getHeaderView(0);
-        NUsername = hView.findViewById(R.id.UsernameNav);
-        Nemail = hView.findViewById(R.id.EmailNav);
-        navProfile = hView.findViewById(R.id.imageView);
-
-
         setupFirebaseListener();
 
-
+        profilePic = findViewById(R.id.ProfilePic);
         profilePic.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -125,21 +118,23 @@ public class DriverProfile extends AppCompatActivity
             });
 
 
+        Button Switch = findViewById(R.id.SwitchMode);
         Switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatabaseReference switchType = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
                 switchType.child("Type").setValue("Passenger");
-                startActivity(new Intent(DriverProfile.this,PassengerActivity.class));
+                startActivity(new Intent(DriverProfile.this, PassengerMain.class));
             }
         });
     }
 
 
+    //Navigation Drawer Funcs
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -167,8 +162,6 @@ public class DriverProfile extends AppCompatActivity
 
 
             case R.id.help:
-                //go to new activity
-                //tFRougwMUphm8B95q7EAToUoYci1
                 Intent intent = new Intent(DriverProfile.this,DriverHelp.class);
                 startActivity(intent);
                 break;
@@ -239,7 +232,7 @@ public class DriverProfile extends AppCompatActivity
             public void onClick(View view) {
                 Intent intent1 = new Intent(DriverProfile.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);
@@ -255,7 +248,7 @@ public class DriverProfile extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -291,7 +284,7 @@ public class DriverProfile extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -301,60 +294,65 @@ public class DriverProfile extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //makes sure the data is present, else the app will crash if not
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
                     //data originally added is kept in this format
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if (map.get("Name") != null) {
-                        DBName = map.get("Name").toString();
+
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if (map != null) {
+                        if (map.get("Name") != null) {
+                            DBName = (String) map.get("Name");
 
 
-                    }
-                    if (map.get("Surname") != null) {
-                        DBSurname = map.get("Surname").toString();
-                        Name.setText(DBName + " "+ DBSurname);
-
-                    }
-                    if (map.get("University") != null) {
-                        DBUni = map.get("University").toString();
-                        Uni.setText(DBUni);
-                    }
-                    if (map.get("CompletedTrips") != null) {
-                        String completed = map.get("CompletedTrips").toString();
-                        Completed.setText(completed);
-                        //TripCount.setText(completed + " completed carpools");
-                    }
-                    if (map.get("Username") != null) {
-                        DBUsername = map.get("Username").toString();
-                        Username.setText("@" + DBUsername);
-                        NUsername.setText(DBUsername);
-                    }
-                    if (map.get("profileImageUrl") != null) {
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if (!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
                         }
-                    }
-                    int ratingSum = 0;
-                    float ratingTotal = 0;
-                    float ratingAvg =0;
-                    for(DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()){
-                        ratingSum = ratingSum + Integer.valueOf(rates.getValue().toString());
-                        ratingTotal++;
+                        if (map.get("Surname") != null) {
+                            DBSurname = (String) map.get("Surname");
+                            Name.setText(DBName + " " + DBSurname);
+
+                        }
+                        if (map.get("University") != null) {
+                            DBUni = (String) map.get("University");
+                            Uni.setText(DBUni);
+                        }
+                        if (map.get("CompletedTrips") != null) {
+                            String completed = Objects.requireNonNull(map.get("CompletedTrips")).toString();
+                            Completed.setText(completed);
+                        }
+                        if (map.get("Username") != null) {
+                            DBUsername = (String) map.get("Username");
+                            Username.setText("@" + DBUsername);
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
+                        int ratingSum = 0;
+                        float ratingTotal = 0;
+                        for (DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()) {
+                            String ratingStr = Objects.requireNonNull(rates.getValue()).toString();
+                            int rating = (Integer.parseInt(ratingStr));
+                            ratingSum = ratingSum + rating;
+                            ratingTotal++;
+
+                        }
+
+                        //calculate average and set bar
+                        if (ratingTotal != 0) {
+                            float ratingAvg = ratingSum / ratingTotal;
+                            ratingBar.setRating(ratingAvg);
+                            ratingBar.setIsIndicator(true);
+                            Ratings.setText("" + Math.round(ratingTotal));
+                        }
+
                     }
 
-                    //calculate average and set bar
-                    if(ratingTotal != 0){
-                        ratingAvg  = ratingSum/ratingTotal;
-                        ratingBar.setRating(ratingAvg);
-                        ratingBar.setIsIndicator(true);
-                        Ratings.setText(""+Math.round(ratingTotal));
-                    }
 
                 }
-
-
-                }
+            }
 
 
             @Override
@@ -377,7 +375,9 @@ public class DriverProfile extends AppCompatActivity
             }
 
             ByteArrayOutputStream Outputstream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, Outputstream);
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, Outputstream);
+            }
             byte[] data = Outputstream.toByteArray();
             UploadTask uploadTask = filePath.putBytes(data);
 
@@ -388,23 +388,19 @@ public class DriverProfile extends AppCompatActivity
                     filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Map newImage = new HashMap();
-                            newImage.put("profileImageUrl", uri.toString());
-                            UserDb.updateChildren(newImage);
+                            UserDb.child("profileImageUrl").setValue(uri.toString());
                             finish();
-                            return;
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             finish();
-                            return;
                         }
                     });
                 }
             });
 
-        };}
+        }}
 
         @Override
         protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

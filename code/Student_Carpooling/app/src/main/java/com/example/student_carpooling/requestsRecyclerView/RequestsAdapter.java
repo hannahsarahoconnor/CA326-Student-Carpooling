@@ -21,16 +21,19 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
 
     private List<Requests> list;
     private Context context;
+    private String UserID;
 
 
     public RequestsAdapter(List<Requests> list, Context context) {
@@ -38,22 +41,24 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         this.context = context;
     }
 
-    public RequestsAdapter() {
-
-    }
 
     @NonNull
     @Override
     public RequestsViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.requests_card, null, false);
+        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.requests_card, viewGroup, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        RequestsViewHolders rvh = new RequestsViewHolders(layoutView);
-        return rvh;
+        return new RequestsViewHolders(layoutView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final RequestsViewHolders requestsViewHolders, int i) {
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser != null){
+            UserID = firebaseUser.getUid();
+        }
+
         requestsViewHolders.UserName.setText(list.get(i).getUsername());
 
         final String url = list.get(i).getProfilePicUrl();
@@ -86,11 +91,10 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         requestsViewHolders.DeclineIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show();
                 //remove request and add to declined list, to prevent user from constantly requesting
                 final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                 DatabaseReference DeclineDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Declined").child(_id);
-                Map DeclineInfo = new HashMap();
+                Map<String, String> DeclineInfo = new HashMap<>();
                 DeclineInfo.put("ID", _id);
                 DeclineDB.setValue(DeclineInfo);
 
@@ -110,8 +114,6 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         requestsViewHolders.MessageIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast.makeText(context, "Starting new chat..." + _username, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("Username", _username);
                 intent.putExtra("ID", _id);
@@ -140,95 +142,126 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         requestsViewHolders.AcceptIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //remove from requests and add to trip passengers
-                final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-                DatabaseReference SeatCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID);
+                //add to
+                //seat check
+                DatabaseReference SeatCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
                 SeatCheck.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            //data originally added is kept in this format
-                            Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                            if (map.get("Seats") != null) {
-                                int seatsNo = Integer.parseInt(map.get("Seats").toString());
-                                if (seatsNo == 0) {
-                                    Toast.makeText(context, "You have no seats left, remove an existing passenger to accept this request", Toast.LENGTH_LONG).show();
-                                    return;
+                        GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
+                        Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                        if (map != null) {
+                        if (map.get("Seats") != null) {
+                            String SeatStr = Objects.requireNonNull(map.get("Seats")).toString();
+                            int seatsNo = (Integer.parseInt(SeatStr));
+                            if (seatsNo == 0) {
+                                Toast.makeText(context, "You have no seats left, remove an existing passenger to accept this request", Toast.LENGTH_LONG).show();
+                            } else {
+                                if (getItemCount() == 1) {
+                                    try {
+                                        addNewPassenger(_username, _fullname, url, _notificationKey, lat, lon, TripID, _id, _driverUsername);
+                                        updateSeats(TripID);
+                                        list.clear();
+                                        notifyDataSetChanged();
+                                    } catch (ArrayIndexOutOfBoundsException e) {
+                                        //
+                                    }
                                 } else {
-                                    DatabaseReference PassengersDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Passengers").child(_id);
-                                    Map PassengerInfo = new HashMap();
-                                    PassengerInfo.put("Username", _username);
-                                    PassengerInfo.put("Fullname",_fullname);
-                                    PassengerInfo.put("profileImageUrl", url);
-                                    PassengerInfo.put("NotificationKey", _notificationKey);
-                                    PassengerInfo.put("PickedUp",0);
-                                    PassengerInfo.put("lat", lat);
-                                    PassengerInfo.put("lon", lon);
-                                    PassengersDB.setValue(PassengerInfo);
-                                    //remove from requested
-                                    DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("TripRequests").child(_id);
-                                    RequestsDB.removeValue();
-                                    Toast.makeText(context, "Request accepted for  " + _username, Toast.LENGTH_SHORT).show();
-                                    //send notification to passenger
-                                    new SendNotification(_driverUsername + " accepted your request", "Student Carpooling", _notificationKey);
-
-                                    //add the trip info to passenger user info ...
-                                    DatabaseReference PassengerInfoDB = FirebaseDatabase.getInstance().getReference().child("users").child(_id).child("Trips").child(firebaseUser.getUid()).child(TripID);
-                                    Map TripInfo = new HashMap();
-                                    TripInfo.put("TripID",TripID);
-                                    PassengerInfoDB.setValue(TripInfo);
-
-
-                                    //update the seat count...
-                                    DatabaseReference TripDb = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID);
-                                    //get the current seat no, converter to int and -1
-                                    TripDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if (dataSnapshot.exists()) {
-                                                Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                                if (map.get("Seats") != null) {
-                                                    int seats = Integer.parseInt(map.get("Seats").toString());
-                                                    seats--;
-                                                    FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Seats").setValue(seats);
-                                                    Toast.makeText(context, "" + seats, Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
+                                    if (getItemCount() > 1) {
+                                        try {
+                                            addNewPassenger(_username, _fullname, url, _notificationKey, lat, lon, TripID, _id, _driverUsername);
+                                            updateSeats(TripID);
+                                            list.remove(requestsViewHolders.getAdapterPosition());
+                                            notifyDataSetChanged();
+                                        } catch (ArrayIndexOutOfBoundsException e) {
+                                            //
                                         }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                                    //refresh the activity
-                                    list.remove(requestsViewHolders.getAdapterPosition());
-                                    notifyDataSetChanged();
-
-
+                                    }
                                 }
+
+
                             }
                         }
-
+                        }
                     }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
                 });
-
-
             }
         });
 
     }
+
+    private void addNewPassenger(String username, String fullname, String profileUrl, String notificationKey, Float lat, Float lon,String tripid,String id,String driver){
+        DatabaseReference PassengersDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(tripid).child("Passengers").child(id);
+        Map<String, Object> PassengerInfo = new HashMap<>();
+        PassengerInfo.put("Username", username);
+        PassengerInfo.put("Fullname",fullname);
+        PassengerInfo.put("profileImageUrl", profileUrl);
+        PassengerInfo.put("NotificationKey", notificationKey);
+        PassengerInfo.put("PickedUp",0);
+        PassengerInfo.put("lat", lat);
+        PassengerInfo.put("lon", lon);
+        PassengersDB.setValue(PassengerInfo);
+        //remove from requested
+        DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(tripid).child("TripRequests").child(id);
+        RequestsDB.removeValue();
+        Toast.makeText(context, "Request accepted for  " + username, Toast.LENGTH_SHORT).show();
+        //send notification to passenger
+        new SendNotification(driver + " accepted your request", "Student Carpooling", notificationKey);
+
+        //add the trip info to passenger user info ...
+        DatabaseReference PassengerInfoDB = FirebaseDatabase.getInstance().getReference().child("users").child(id).child("Trips").child(UserID).child(tripid);
+        Map<String, Object> TripInfo = new HashMap<>();
+        TripInfo.put("TripID",tripid);
+        TripInfo.put("Removed",0);
+        PassengerInfoDB.setValue(TripInfo);
+    }
+
+    private void updateSeats(final String TripID){
+        //update the seat count...
+        DatabaseReference TripDb = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+        //get the current seat no, converter to int and -1
+        TripDb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if (map != null) {
+                    if (map.get("Seats") != null) {
+                        String SeatStr = Objects.requireNonNull(map.get("Seats")).toString();
+                        int seats = (Integer.parseInt(SeatStr));
+                        seats--;
+                        FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Seats").setValue(seats);
+                    }
+                }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
-        return this.list.size();
+        if (list == null) {
+            return 0;
+        }
+        else {
+            return this.list.size();
+        }
     }
 
 
 }
+

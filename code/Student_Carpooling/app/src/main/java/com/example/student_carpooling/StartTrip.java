@@ -10,12 +10,10 @@ import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -25,21 +23,17 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -47,10 +41,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -60,69 +56,44 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class StartTrip extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPolylineClickListener {
 
     private GoogleMap mMap;
-    private static final String TAG = "StartTrip";
-
-
     private Intent intent;
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 0;
     private Boolean LocationPermissionsGranted = false;
-
-    private String TripID, Username, CurrentUserID, DriverUserName, NotificationKey,PickedUp,PicUrl;
-    private FirebaseAuth mAuth;
-
-    private FusedLocationProviderClient fusedLocationProviderClient, fusedLocationProviderClient1;
-
+    private int PickedUp;
+    private String TripID, Username, CurrentUserID, DriverUserName,PicUrl;
     private ArrayList<Route> RouteArrayList = new ArrayList<>();
-
     private float PLat, PLon, DLon, DLat;
-
-    private ImageView refresh;
-
-    GoogleApiClient googleApiClient;
-    Location lastLocation;
-
-    Marker driverMarker;
-
-    boolean arrived = false;
-
-    int count = 0;
-
-    GeoApiContext mGeoApiContext = null;
-
+    private Marker driverMarker;
+    private boolean arrived = false;
+    private int count = 0;
     private LatLng DriverPosition, Loc;
-
-    LocationRequest locationRequest;
-
-    MarkerOptions driver;
-
-
-    private Button Back, End;
-    //when press end-> add a value to the trip info : Completed: True
-    //if Completed is true prompt users to rate eachother
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_trip);
-        fusedLocationProviderClient1 = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUserID = mAuth.getCurrentUser().getUid();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if(firebaseUser != null){
+            CurrentUserID = firebaseUser.getUid();
+        }
 
         intent = getIntent();
         TripID = intent.getStringExtra("TripID");
@@ -131,15 +102,14 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
         getLocationPermission();
 
-        Back = findViewById(R.id.back);
-        End = findViewById(R.id.end);
-        refresh = findViewById(R.id.refresh);
+        Button Back = findViewById(R.id.back);
+        Button End = findViewById(R.id.end);
+        ImageView refresh = findViewById(R.id.refresh);
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //remove polylines are reset the markers
-
                 if (mMap != null) {
                     refreshMap();
                     addPassengers();
@@ -191,7 +161,10 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                     completedCount.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
+                            String completedTrips = (String) dataSnapshot.child("CompletedTrips").getValue();
+                            if (completedTrips != null) {
+                                count = Integer.valueOf(completedTrips);
+                            }
                         }
 
                         @Override
@@ -208,51 +181,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                 else{
                     //AlertDialog -- you have no yet reached your destination, are you sure you want to end this trip??
                    showDialog();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(StartTrip.this);
-                    builder.setTitle("Are you sure you want to end this trip?").setMessage("You dont seem to have reached your destination yet, are you sure you wish to continue?").setCancelable(true).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                            DatabaseReference completed = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID);
-                            completed.child("Completed").setValue(1);
-                            Intent intent = new Intent(StartTrip.this,TripComplete.class);
-                            intent.putExtra("TripID",TripID);
-                            intent.putExtra("DriverID",CurrentUserID);
-                            intent.putExtra("DriverUsername",DriverUserName);
-                            intent.putExtra("driverUrl",PicUrl);
-                            intent.putExtra("Cancelled","0");
-
-                            final DatabaseReference completedCount = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
-                            completedCount.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-                            completedCount.child("CompletedTrips").setValue(count+1);
-                            startActivity(intent);
-                            finish();
-                            dialog.dismiss();
-                        }
-                    })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int which) {
-                                    dialog.cancel();
-
-                                }
-                            });
-                    final AlertDialog alert = builder.create();
-                    alert.show();
                 }
-
-                //finish the activity
-
             }
         });
 
@@ -263,7 +192,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                 LayoutInflater inflater = getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.dialog, null);
                 TextView Text = dialogView.findViewById(R.id.Text);
-                Text.setText("You dont seem to have reached your destination yet. Are you sure you wish to end this trip? ");
+                Text.setText("You don't seem to have reached your destination yet. Are you sure you wish to end this trip? ");
                 Button Submit = dialogView.findViewById(R.id.Submit);
 
 
@@ -283,7 +212,10 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                         completedCount.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
+                                String completedTrips = (String) dataSnapshot.child("CompletedTrips").getValue();
+                                if (completedTrips != null) {
+                                    count = Integer.valueOf(completedTrips);
+                                }
                             }
 
                             @Override
@@ -306,27 +238,23 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        //attach the polyline listener to the map
         mMap.setOnPolylineClickListener(this);
 
         if (LocationPermissionsGranted) {
 
-            locationRequest = new LocationRequest();
+            LocationRequest locationRequest = new LocationRequest();
             locationRequest.setInterval(1000);
             locationRequest.setFastestInterval(1000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-
             addPassengers();
             getDestination();
 
-
-
+            //get the new driver location every second
             handler.postDelayed(runnable, 1000);
             Passengerhandler.postDelayed(Passengerrunnable, 600000);
-            //get the new location every second
-
-
-            //every 20 mins could rerun the passenger, as the markers wont remove unless the driver manually refreshed hte map
 
 
         }
@@ -339,6 +267,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         mMap.setOnInfoWindowClickListener(this);
     }
 
+    //get the updated driver location every second
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -348,6 +277,9 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         }
     };
 
+
+    //add this handler to get the passengers pick up locations  every 5 mins otherwise the passenger markers wont be refreshed unless the driver clicks the refresh button
+    //old passenger markers from passenger who have been collected will be left on the map otherwise
     private Handler Passengerhandler = new Handler();
     private Runnable Passengerrunnable = new Runnable() {
         @Override
@@ -361,30 +293,43 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     private void getDriverLocation() {
 
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (LocationPermissionsGranted) {
 
-                final Task location = fusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
+                final Task<Location> location = fusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(this,new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
                             if (currentLocation == null) throw new AssertionError();
                             DriverPosition = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-                            //driver = new MarkerOptions().position(DriverPosition).title(Username);
-                            //mMap.addMarker(driver);
 
+
+
+
+                            //gives the effect of the marker moving, rather than having duplicates created
                             if(driverMarker != null){
                                 driverMarker.remove();
                             }
                             driverMarker = mMap.addMarker(new MarkerOptions().position(DriverPosition).title("Driver"));
+
+
+                            //update the driver location in the database for passsenger
                             DatabaseReference updateLoc = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID);
                             GeoFire geoFire = new GeoFire(updateLoc);
                             geoFire.setLocation("DriverLocation", new GeoLocation(currentLocation.getLatitude(), currentLocation.getLongitude()));
 
+                            //create map bounds so all markers will be shown on screen
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            builder.include(Loc);
+                            builder.include(DriverPosition);
+                            LatLngBounds bounds = builder.build();
+
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds,35);
+                            mMap.animateCamera(cameraUpdate);
 
 
                             Location Dst = new Location("");
@@ -395,28 +340,36 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                             Driver.setLatitude(DriverPosition.latitude);
                             Driver.setLongitude(DriverPosition.longitude);
 
+                            //get distance between the driver and destination points
+                            // distanceTo will return the distance in kilometres
                             float distance = Driver.distanceTo(Dst);
 
+                            //so if the distance is less than 100 km and arrived hasnt been set to true
                             if(distance<100 && !arrived){
                                 //send notification and display toast message
                                 Toast.makeText(StartTrip.this, "You have arrived at your Destination", Toast.LENGTH_SHORT).show();
-                                // new SendNotification(_driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
                                 arrived = true;
+
 
                                 DatabaseReference completed = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID);
                                 completed.child("Completed").setValue(1);
 
+
+                                //start the rating system activity
                                 Intent intent = new Intent(StartTrip.this, TripComplete.class);
                                 intent.putExtra("TripID",TripID);
                                 intent.putExtra("DriverID",CurrentUserID);
                                 intent.putExtra("DriverUsername",DriverUserName);
                                 intent.putExtra("driverUrl",PicUrl);
                                 intent.putExtra("Cancelled","0");
+
+                                //update the number of trips that driver has completed by 1
                                 final DatabaseReference completedCount = FirebaseDatabase.getInstance().getReference().child("users").child(CurrentUserID);
                                 completedCount.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        count = Integer.valueOf(dataSnapshot.child("CompletedTrips").getValue().toString());
+                                        String completedTrips =  Objects.requireNonNull(dataSnapshot.child("CompletedTrips").getValue()).toString();
+                                        count = Integer.parseInt(completedTrips);
                                     }
 
                                     @Override
@@ -424,10 +377,10 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
                                     }
                                 });
+
                                 completedCount.child("CompletedTrips").setValue(count+1);
                                 startActivity(intent);
                                 finish();
-
 
 
                             }
@@ -456,53 +409,56 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot id : dataSnapshot.getChildren()) {
                             final String passengerKey = id.getKey();
-                            DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID).child("Passengers").child(passengerKey);
-                            //get Key...
-                            PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if (map.get("lat") != null) {
-                                        PLat = Float.valueOf(map.get("lat").toString());
+                            if (passengerKey != null) {
+                                DatabaseReference PassengerInfo = FirebaseDatabase.getInstance().getReference().child("TripForms").child(CurrentUserID).child(TripID).child("Passengers").child(passengerKey);
+                                //get Key...
+                                PassengerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
+                                        Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                                        if (map != null) {
+                                            if (map.get("lat") != null) {
+                                                String latStr = Objects.requireNonNull(map.get("lat")).toString();
+                                                PLat = (Float.parseFloat(latStr));
+                                            }
+                                            if (map.get("lon") != null) {
+                                                String latStr = Objects.requireNonNull(map.get("lon")).toString();
+                                                PLon = (Float.parseFloat(latStr));
+
+                                            }
+                                            if (map.get("Username") != null) {
+                                                Username = (String) map.get("Username");
+
+                                            }
+                                            if (map.get("PickedUp") != null) {
+                                                String PickedUpStr = Objects.requireNonNull(map.get("PickedUp")).toString();
+                                                PickedUp = (Integer.parseInt(PickedUpStr));
+                                            }
+
+                                            //only show the passenger marker when they havent been picked up
+                                            //within the passenger map activity, once the driver has reached their location, picked up will be set to 1
+
+                                            if (PickedUp == 0) {
+                                                LatLng passengerLoc = new LatLng(PLat, PLon);
+                                                MarkerOptions options = new MarkerOptions().position(passengerLoc).title(Username).snippet("Calculate route to " + Username + "'s pick up location?").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                                                mMap.addMarker(options);
+
+                                            }
+
+
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                     }
-                                    if (map.get("lon") != null) {
-                                        PLon = Float.valueOf(map.get("lon").toString());
-
-                                    }
-                                    if (map.get("Username") != null) {
-                                        Username = map.get("Username").toString();
-
-                                    }
-                                    if (map.get("NotificationKey") != null) {
-                                        NotificationKey = map.get("NotificationKey").toString();
-
-                                    }
-                                    if (map.get("PickedUp") != null) {
-                                        PickedUp = map.get("PickedUp").toString();
-
-                                    }
-
-                                      if(Integer.parseInt(PickedUp) == 0){
-                                          LatLng passengerLoc = new LatLng(PLat, PLon);
-                                          MarkerOptions options = new MarkerOptions().position(passengerLoc).title(Username).snippet("Calculate route to " + Username + "'s pick up location?").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                          mMap.addMarker(options);
-
-                                      }
-                                    //could update the databse under passenger--> PickedUp = 1 and driver can view this, and if picked up, remove pick --> show snackbar?
-
-                                    //would this create duplicates?? test it out
+                                });
 
 
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-
+                            }
                         }
                     }
                 }
@@ -519,23 +475,12 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     private void getDestination(){
         DLat = intent.getFloatExtra("DLat", DLat);
         DLon = intent.getFloatExtra("DLon", DLon);
-        Toast.makeText(this, ""+DLat, Toast.LENGTH_SHORT).show();
         Loc = new LatLng(DLat, DLon);
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(Loc.latitude, Loc.longitude)).tilt(70)
-                .zoom(15)
-                .build();
-        //mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         MarkerOptions options = new MarkerOptions().position(Loc).title("Your Destination").snippet("Calculate the route to your destination?");
         mMap.addMarker(options);
-    }
-
-    private void moveCamera(LatLng latLng) { ;
-        MarkerOptions options = new MarkerOptions().position(latLng).title("Your current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        //icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_car_icon2));
-        mMap.addMarker(options);
 
     }
+
     private void getLocationPermission(){
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -565,8 +510,8 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         switch(requestCode){
             case LOCATION_PERMISSION_REQUEST_CODE:{
                 if(grantResults.length > 0){
-                    for(int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                    for(int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             LocationPermissionsGranted = false;
                             return;
                         }
@@ -583,12 +528,12 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: result routes: " + result.routes.length);
                 //clear the arraylist, for when it is clicked multiple times -- no dups
-                //Toast.makeText(PassengerLocation.this, "test:"+polylineArrayList.size(), Toast.LENGTH_SHORT).show();
                 if(RouteArrayList.size() > 0 ){
-                    for(Route route: RouteArrayList){
-                        //Toast.makeText(PassengerLocation.this, "test:"+id, Toast.LENGTH_SHORT).show()
+
+                    //this for loop removes all the other routes
+                    //so when a new route is created, all previous routes will be removed
+                    for(Route route : RouteArrayList){
                         route.getPolyline().remove();
                     }
                     RouteArrayList.clear();
@@ -597,20 +542,21 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
 
                 for(DirectionsRoute route: result.routes){
-                    Log.d(TAG, "run: leg" + route.legs[0].toString());
-                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+                    List<com.google.maps.model.LatLng> Path = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
                     List<LatLng> newPath = new ArrayList<>();
 
-                    for(com.google.maps.model.LatLng latLng: decodedPath){
+                    //then loop thro the coordinates for each individual polyline
+                    for(com.google.maps.model.LatLng latLng: Path){
+                        //add each to the array list 'new path '
                         newPath.add(new LatLng(latLng.lat,latLng.lng));
                     }
-
+                    //create new polyineoption object, '.addAll -> adds all the coordinates from new path array list to the end of the  new polyline ,so that polyline is added to the map
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newPath).color(Color.GRAY).width(10));
+                    //make it clickable show that the info about distance/duration will show
                     polyline.setClickable(true);
-                    //add the polyline here
+                    //keep track of each polyline and its duration/distance information -- so add a to our list of 'route' objects
                     RouteArrayList.add(new Route(polyline, route.legs[0]));
-                    //keep track of routes.legs[0] too.., diction - key being the polyline id?
                 }
             }
         });
@@ -647,8 +593,10 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     }
     private void getRoute(Marker marker){
         //need a way to remove old polylines-- each has its own id, add it to a list to keep track
+
+        String apiKey = getResources().getString(R.string.google_maps_routes);
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("AIzaSyCGNnh1lFiJ4mGCAdzJa50I77c2ITyGhnY")
+                .apiKey(apiKey)
                 .build();
 
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(marker.getPosition().latitude,marker.getPosition().longitude);
@@ -667,7 +615,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
 
             @Override
             public void onFailure(Throwable e) {
-                Log.d(TAG, "distance: Fail"+ e.getMessage());
+                Toast.makeText(StartTrip.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -677,22 +625,24 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     @Override
     public void onPolylineClick(Polyline polyline) {
         for(Route route: RouteArrayList){
+            //only want the clicked polyline is be orange
             if(polyline.getId().equals(route.getPolyline().getId())){
-                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
                 //change the color when clicks and show the duration time
                 polyline.setColor(ContextCompat.getColor(this,R.color.quantum_orange));
-                polyline.setZIndex(1);
                 //show the directions
                 //can we add to the
 
-                Toast.makeText(this, ""+route.getDirectionsLeg().distance +"\n"+ route.getDirectionsLeg().duration, Toast.LENGTH_LONG).show();
+                //z index refers to where the polyline will be placed on the map
 
-                //show a button on screen, showing the list of written directions?
+                polyline.setZIndex(1);
+
+                Toast.makeText(this, ""+route.getDirectionsLeg().distance +"\n"+ route.getDirectionsLeg().duration, Toast.LENGTH_LONG).show();
             }
             else{
                 //change the color when clicks and show the duration time
                 route.getPolyline().setColor(ContextCompat.getColor(this,R.color.quantum_grey));
-                route.getPolyline().setZIndex(0);
+                //need to set the z index, otherwise part of the polyline wont be shown if its apart of another polyline
+                polyline.setZIndex(0);
             }
         }
     }

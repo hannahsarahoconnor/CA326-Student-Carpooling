@@ -2,7 +2,6 @@ package com.example.student_carpooling;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -29,16 +26,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -46,25 +42,20 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class PassengerProfile extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
 
     private ImageView navProfile;
-    private TextView NUsername, Nemail,TripCount,Ratings,Completed;
-    private String email,UserID,Surname;
+    private TextView NUsername, Nemail,Ratings,Completed;
+    private String UserID,Surname;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-    private TextView Name,Username,Uni,ratingText;
+    private TextView Name,Username,Uni;
 
 
     private ImageView profilePic;
@@ -73,39 +64,38 @@ public class PassengerProfile extends AppCompatActivity
     private RatingBar ratingBar;
 
     private Uri ResultUri;
-    private Button Confirm,Switch;
 
-
-    FirebaseUser CurrentUser;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_profile);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
         Ratings = findViewById(R.id.RatingNo);
         Completed = findViewById(R.id.CompletedNo);
         ratingBar = findViewById(R.id.rating);
-        Switch = findViewById(R.id.SwitchMode);
+        Button Switch = findViewById(R.id.SwitchMode);
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser CurrentUser = mAuth.getCurrentUser();
+        if(CurrentUser != null){
+            UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
 
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.usernameNav);
@@ -115,7 +105,7 @@ public class PassengerProfile extends AppCompatActivity
         Name = findViewById(R.id.Name);
         Username = findViewById(R.id.Username);
         Uni = findViewById(R.id.College);
-        Confirm = findViewById(R.id.ConfirmPic);
+
         profilePic = findViewById(R.id.ProfilePic);
 
         setupFirebaseListener();
@@ -129,6 +119,7 @@ public class PassengerProfile extends AppCompatActivity
             }
         });
 
+        Button Confirm = findViewById(R.id.ConfirmPic);
         Confirm.setOnClickListener(new View.OnClickListener() {
           @Override
            public void onClick(View v) {
@@ -149,7 +140,7 @@ public class PassengerProfile extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -228,9 +219,10 @@ public class PassengerProfile extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(PassengerProfile.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);
@@ -247,7 +239,7 @@ public class PassengerProfile extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -281,7 +273,7 @@ public class PassengerProfile extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -326,60 +318,65 @@ public class PassengerProfile extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Name")!=null){
-                        DBName = map.get("Name").toString();
-                        Name.setText(DBName);
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if(map!= null) {
+                        if (map.get("Name") != null) {
+                            DBName =  (String) map.get("Name");
+                            Name.setText(DBName);
 
-                    }
-                    if(map.get("Surname")!=null){
-                        Surname = map.get("Surname").toString();
-                        Name.setText(DBName + " " + Surname);
-
-                    }
-                    if(map.get("University")!=null){
-                        DBUni = map.get("University").toString();
-                        Uni.setText(DBUni);
-                    }
-                    if (map.get("CompletedTrips") != null) {
-                        String completed = map.get("CompletedTrips").toString();
-                        Completed.setText(completed);
-                    }
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        Username.setText(DBUsername);
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-
-                        if(ProfilePicUrl.equals("defaultPic")){
-                            profilePic.setImageResource(R.drawable.logo);
-                            navProfile.setImageResource(R.drawable.logo);
                         }
-                        else{
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
-                        }}
+                        if (map.get("Surname") != null) {
+                            Surname =  (String) map.get("Surname");
+                            Name.setText(DBName + " " + Surname);
 
-                    int ratingSum = 0;
-                    float ratingTotal = 0;
-                    float ratingAvg =0;
-                    for(DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()){
-                        ratingSum = ratingSum + Integer.valueOf(rates.getValue().toString());
-                        ratingTotal++;
+                        }
+                        if (map.get("University") != null) {
+                            DBUni =  (String) map.get("University");
+                            Uni.setText(DBUni);
+                        }
+                        if (map.get("CompletedTrips") != null) {
+                            String completed =  (String) map.get("CompletedTrips");
+                            Completed.setText(completed);
+                        }
+                        if (map.get("Username") != null) {
+                            DBUsername =  (String) map.get("Username");
+                            Username.setText(DBUsername);
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl =  (String) map.get("profileImageUrl");
+
+                            if (ProfilePicUrl != null) {
+                                if (ProfilePicUrl.equals("defaultPic")) {
+                                    profilePic.setImageResource(R.drawable.logo);
+                                    navProfile.setImageResource(R.drawable.logo);
+                                } else {
+                                    Glide.with(getApplication()).load(ProfilePicUrl).into(profilePic);
+                                    Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                                }
+                            }
+                        }
+
+                        int ratingSum = 0;
+                        float ratingTotal = 0;
+                        for (DataSnapshot rates : dataSnapshot.child("Ratings").getChildren()) {
+                            String ratingStr = Objects.requireNonNull(rates.getValue()).toString();
+                            int rating = (Integer.parseInt(ratingStr));
+                            ratingSum = ratingSum + rating;
+                            ratingTotal++;
+                        }
+
+                        //calculate average and set bar
+                        if (ratingTotal != 0) {
+                            float ratingAvg = ratingSum / ratingTotal;
+                            ratingBar.setRating(ratingAvg);
+                            ratingBar.setIsIndicator(true);
+                            Ratings.setText("" + Math.round(ratingTotal));
+
+                        }
+
                     }
-
-                    //calculate average and set bar
-                    if(ratingTotal != 0){
-                        ratingAvg  = ratingSum/ratingTotal;
-                        ratingBar.setRating(ratingAvg);
-                        ratingBar.setIsIndicator(true);
-                        Ratings.setText(""+Math.round(ratingTotal));
-
-                    }
-
-
 
                 }
             }
@@ -404,7 +401,9 @@ public class PassengerProfile extends AppCompatActivity
             }
 
             ByteArrayOutputStream Outputstream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, Outputstream);
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 20, Outputstream);
+            }
             byte[] data = Outputstream.toByteArray();
             UploadTask uploadTask = filePath.putBytes(data);
 
@@ -415,23 +414,19 @@ public class PassengerProfile extends AppCompatActivity
                     filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Map newImage = new HashMap();
-                            newImage.put("profileImageUrl", uri.toString());
-                            UserDb.updateChildren(newImage);
+                            UserDb.child("profileImageUrl").setValue(uri.toString());
                             finish();
-                            return;
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
                             finish();
-                            return;
                         }
                     });
                 }
             });
 
-        };}
+        }}
 
 
     @Override

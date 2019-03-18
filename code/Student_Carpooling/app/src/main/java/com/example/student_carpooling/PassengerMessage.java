@@ -177,8 +177,6 @@ public class PassengerMessage extends AppCompatActivity
                     final String id = snapshot.getKey();
                     // only show it if it's a reciever or sender to the currrent user.// how get this info -> function check, pass the id to a func
                     if((!id.equals(CurrentUser.getUid()) && (chatters.contains(id)))){
-                        Toast.makeText(PassengerMessage.this, id, Toast.LENGTH_SHORT).show();
-
                         resultsUsers.clear();
                         DatabaseReference GetUserDB = FirebaseDatabase.getInstance().getReference().child("users").child(id);
                         GetUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -498,9 +496,10 @@ public class PassengerMessage extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(PassengerMessage.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);

@@ -9,36 +9,36 @@
         <item
             android:id="@+id/nav_message"
             android:icon="@drawable/ic_message"
-            android:title="Messages"
+            android:title="@string/Messages"
             android:theme="@style/NavigationView"/>
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
-            android:title="Profile"
+            android:title="@string/title_activity_user_profile"
             android:theme="@style/NavigationView"/>
         <item
             android:id="@+id/nav_sign_out"
             android:icon="@drawable/ic_logout"
-            android:title="Sign Out"
+            android:title="@string/SignOut"
             android:theme="@style/NavigationView"/>
     </group>
 
-    <item android:title="Manage Trips">
+    <item android:title="@string/Manage">
         <menu>
             <item
                 android:id="@+id/nav_find_trips_requests"
                 android:icon="@drawable/ic_find"
-                android:title="Find Requests"
+                android:title="@string/title_activity_driver_find_requests"
                 android:theme="@style/NavigationView"/>
             <item
                 android:id="@+id/nav_create_trips"
                 android:icon="@drawable/ic_create_trip"
-                android:title="Create Trips"
+                android:title="@string/title_activity_driver_create"
                 android:theme="@style/NavigationView"/>
             <item
                 android:id="@+id/nav_my_trips"
                 android:icon="@drawable/ic_my_trips"
-                android:title="My Trips"
+                android:title="@string/title_activity_passenger_trips"
                 android:theme="@style/NavigationView"/>
         </menu>
 

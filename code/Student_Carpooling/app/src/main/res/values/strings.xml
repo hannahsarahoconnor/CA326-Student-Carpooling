@@ -11,22 +11,37 @@
     <string name="CreateTrip">Create a Trip</string>
     <string name="NewTrip">New Trip</string>
     <string name="Username">Username</string>
-    <string name="Surname">Surname</string>
+    <string name="surname">Surname</string>
+    <string name="hint">Enter a message . . .</string>
     <string name="create_trip">Trip</string>
     <string name="profile">P</string>
+    <string name="sendButton">Send Button</string>
+    <string name="exitChat">Exit Chat</string>
+    <string name="fullname">fullname</string>
     <string name="messages">M</string>
     <string name="my_trips">T</string>
+    <string name="back">Back</string>
+    <string name="Show">Show Password</string>
+    <string name="Registration">Registration</string>
     <string name="navigation_drawer_open">Open Navigation Side Drawer</string>
     <string name="navigation_drawer_close">Close Navigation Side Drawer</string>
     <string name="Domain">Domain Name</string>
     <string name="Gender">Gender:</string>
     <string name="Male">Male</string>
     <string name="Female">Female</string>
+    <string name="Other">Other</string>
     <string name="Age">Age</string>
     <string name="University">University</string>
     <string name="Retype">Retype Password</string>
     <string name="Driver">Driver</string>
     <string name="Rider">Rider</string>
+    <string name="Messages">Messages</string>
+    <string name="Manage">Manage Trips</string>
+    <string name="SignOut">Sign Out</string>
+    <string name="Delete">Delete Account</string>
+    <string name="Help">Help</string>
+    <string name="Contact">Contact Admins</string>
+    <string name="AdminID">Sxddu8eOhEQVLnQwEjCiMiuRfrT2</string>
     <string-array name="CollegeDomains">
         <item>mail.dcu.ie</item>
         <item>tcd.ie</item>
@@ -36,7 +51,7 @@
         <item>ucd.ie</item>
         <item>ul.ie</item>
         <item>tcd.ie</item>
-        <item>live.ie</item>
+        <item>gmail.com</item>
     </string-array>
     <string-array name="no_seats">
         <item>1</item>

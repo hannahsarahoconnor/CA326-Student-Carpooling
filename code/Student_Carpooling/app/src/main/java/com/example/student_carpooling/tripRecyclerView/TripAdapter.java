@@ -22,12 +22,13 @@ public class TripAdapter extends RecyclerView.Adapter<TripViewHolders>{
     public TripAdapter(List<Trip> list, Context context){
         this.list = list;
         this.context = context;
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
     }
 
     @NonNull
     @Override
     public TripViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.trip_cards, null, false);
+        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.trip_cards, viewGroup, false);
        // this forces it to match parent in width and wrap content in its height.
         RecyclerView.LayoutParams lp  = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);

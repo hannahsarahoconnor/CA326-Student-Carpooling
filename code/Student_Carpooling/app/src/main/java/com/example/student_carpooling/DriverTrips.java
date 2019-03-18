@@ -1,15 +1,11 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -26,8 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.student_carpooling.tripRecyclerView.Trip;
-import com.example.student_carpooling.tripRecyclerView.TripAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,9 +30,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 import java.util.Map;
 
 public class DriverTrips extends AppCompatActivity
@@ -46,18 +39,10 @@ public class DriverTrips extends AppCompatActivity
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
-    private String ProfilePicUrl,UserID, Date, Destination, Seats, Starting, LuggageCheck, Time;
-    private FirebaseAuth mAuth;
-    private DatabaseReference UserDb, reference;
-
-    NavigationView navigationView;
-    private ImageView navProfile;;
-
-    private TabLayout tabLayout;
-    private ViewPager tabSwitch;
-    private TabAdapter tabAdapter;
-
-    FirebaseUser CurrentUser;
+    private String ProfilePicUrl;
+    private DatabaseReference UserDb;
+    private ImageView navProfile;
+    private FirebaseUser CurrentUser;
 
 
 
@@ -65,35 +50,37 @@ public class DriverTrips extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_trips);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.UsernameNav);
         Nemail = hView.findViewById(R.id.EmailNav);
         navProfile = hView.findViewById(R.id.imageView);
 
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        CurrentUser = mAuth.getCurrentUser();
+        if(CurrentUser!=null){
+            String UserID = CurrentUser.getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
+
         setupFirebaseListener();
 
-        tabLayout = findViewById(R.id.TabLayout);
-        tabSwitch = findViewById(R.id.Switch);
-        tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        ViewPager tabSwitch = findViewById(R.id.Switch);
+        TabAdapter tabAdapter = new TabAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
         tabAdapter.addFragment(new PastTripFragment(),"Past");
         tabAdapter.addFragment(new presentTripsFragment(),"Today");
@@ -104,14 +91,13 @@ public class DriverTrips extends AppCompatActivity
 
         tabSwitch.setCurrentItem(1);
 
-       // viewpager.setCurrentItem(posotion);
-
-
     }
+
+    //Nav drawer built in functions
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -139,6 +125,11 @@ public class DriverTrips extends AppCompatActivity
 
             case R.id.contact:
                 ContactAdmins();
+                break;
+
+            case R.id.help:
+                Intent intent = new Intent(DriverTrips.this,DriverHelp.class);
+                startActivity(intent);
                 break;
         }
 
@@ -200,9 +191,10 @@ public class DriverTrips extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(DriverTrips.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);
@@ -218,7 +210,7 @@ public class DriverTrips extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -253,7 +245,7 @@ public class DriverTrips extends AppCompatActivity
         }
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -269,18 +261,23 @@ public class DriverTrips extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
 
+                    if(map != null) {
 
+                        if (map.get("Username") != null) {
+                            String DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
+
+                    }
                 }
             }
 
@@ -294,9 +291,8 @@ public class DriverTrips extends AppCompatActivity
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    String email = user.getEmail();
+                if (CurrentUser!= null) {
+                    String email = CurrentUser.getEmail();
                     Nemail.setText(email);
                 } else {
                     Toast.makeText(DriverTrips.this, "Sign Out", Toast.LENGTH_SHORT).show();

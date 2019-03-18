@@ -15,13 +15,12 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolders> {
 
-    public static final int MSG_LEFT = 0;
-    public static final int MSG_RIGHT = 1;
+    private static final int MSG_LEFT = 0;
+    private static final int MSG_RIGHT = 1;
 
     private List<Message> list;
     private Context context;
-
-    FirebaseUser firebaseUser;
+    private String UserID;
 
 
     public MessageAdapter(List<Message> list, Context context){
@@ -72,10 +71,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolders> {
 
     @Override
     public int getItemViewType(int position) {
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         // check to see if receiver or sender
+        if(firebaseUser != null){
+            UserID = firebaseUser.getUid();
+        }
 
-        if(list.get(position).getSender().equals(firebaseUser.getUid())){
+        if(list.get(position).getSender().equals(UserID)){
            return MSG_RIGHT;
         }
         else{

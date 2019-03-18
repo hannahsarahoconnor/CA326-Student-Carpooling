@@ -18,16 +18,14 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-
-            >
+            android:background="@color/colorPrimary">
             <ImageView
                 android:id="@+id/back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_marginBottom="10dp"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"
+                android:contentDescription="@string/back" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/otherPic"
@@ -36,7 +34,6 @@
                 app:civ_border_width="1dp"
                 app:civ_border_color="@color/quantum_white_100"
                 android:layout_marginStart="30dp"
-                android:layout_marginLeft="30dp"
                 android:src="@drawable/logo" />
 
 
@@ -52,9 +49,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:textStyle="bold"
-                    android:layout_marginLeft="15dp"
                     android:fontFamily="@font/amiko"
-                    android:text="Full name"
+                    android:text="@string/fullname"
                     android:textSize="20sp" />
 
 
@@ -68,7 +64,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="15dp"
-                        android:layout_marginLeft="15dp"
                         android:fontFamily="@font/amiko"
                         android:text=" @" />
 
@@ -78,7 +73,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/amiko"
-                        android:text="Username" />
+                        android:text="@string/Username" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -87,9 +82,10 @@
                 android:id="@+id/delete"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_marginLeft="60dp"
+                android:layout_marginStart="60dp"
                 android:layout_marginBottom="10dp"
-                android:src="@drawable/ic_exit" />
+                android:src="@drawable/ic_exit"
+                android:contentDescription="@string/exitChat" />
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
@@ -117,9 +113,11 @@
             android:layout_height="40dp"
             android:fontFamily="@font/amiko"
             android:background="@android:color/transparent"
-            android:hint="Enter your message...."
-            android:layout_toLeftOf="@+id/send"
-            android:layout_centerVertical="true"/>
+            android:hint="@string/hint"
+            android:layout_toStartOf="@+id/send"
+            android:inputType="text"
+            android:layout_centerVertical="true"
+            android:autofillHints="@string/messages" />
 
         <!-- android:layout_toLeftOf="@id/send" -->
 
@@ -127,10 +125,9 @@
             android:id="@+id/send"
             android:layout_width="40dp"
             android:layout_height="40dp"
-
             android:background="@drawable/ic_send_black_24dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"/>
+            android:contentDescription="@string/sendButton" />
 
 
     </RelativeLayout>

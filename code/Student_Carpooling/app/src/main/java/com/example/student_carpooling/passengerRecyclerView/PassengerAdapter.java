@@ -13,26 +13,30 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
-import com.example.student_carpooling.DriverTripItem;
-import com.example.student_carpooling.DriverTrips;
 import com.example.student_carpooling.PassengerLocation;
 import com.example.student_carpooling.R;
 import com.example.student_carpooling.SendNotification;
 import com.example.student_carpooling.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders> {
 
 
     private List<Passenger> list;
     private Context context;
+    private String UserID;
 
 
     public PassengerAdapter(List<Passenger> list, Context context){
@@ -40,23 +44,26 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
         this.context = context;
     }
 
-    public PassengerAdapter(){
-
-    }
-
 
     @NonNull
     @Override
     public PassengerViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.passenger_cards, null, false);
+        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.passenger_cards, viewGroup, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        PassengerViewHolders pvh = new PassengerViewHolders(layoutView);
-        return pvh;
+        return new PassengerViewHolders(layoutView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final PassengerViewHolders passengerViewHolders, int i) {
+        FirebaseAuth mAuth;
+        FirebaseUser firebaseUser;
+        mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
+        if(firebaseUser!=null){
+            UserID = mAuth.getCurrentUser().getUid();
+        }
+
         final String Fullname = list.get(i).getFullname();
         final String Username = list.get(i).getUserName();
         final String ProfilePicUrl = list.get(i).getProfilePicUrl();
@@ -86,7 +93,6 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                 intent.putExtra("ID", ID);
                 intent.putExtra("Fullname",Fullname);
                 intent.putExtra("ProfilePicURL", ProfilePicUrl);
-                Toast.makeText(context, "Starting Chat with " + Username, Toast.LENGTH_SHORT).show();
                 context.startActivity(intent);
             }
         });
@@ -115,7 +121,7 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                    Intent intent = new Intent(context, PassengerLocation.class);
                    intent.putExtra("Username", Username);
                    intent.putExtra("ID", ID);
-                   intent.putExtra("ProfilePicURL", ProfilePicUrl);
+                   intent.putExtra("TripID",TripID);
                    intent.putExtra("Lat", lat);
                    intent.putExtra("Lon", lon);
                    intent.putExtra("DLat", dlat);
@@ -133,7 +139,6 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
            passengerViewHolders.DeleteIcon.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View v) {
-                   final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
                    //show a dialog..
                    AlertDialog.Builder dialog = new AlertDialog.Builder(context);
                    dialog.setTitle("Are you sure you want to remove this passenger?");
@@ -141,13 +146,16 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                    dialog.setPositiveButton("Remove Passenger", new DialogInterface.OnClickListener() {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
-                           DatabaseReference DeclineDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Declined").child(ID);
-                           Map DeclineInfo = new HashMap();
+                           DatabaseReference DeclineDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Declined").child(ID);
+                           Map<String, String> DeclineInfo = new HashMap<>();
                            DeclineInfo.put("ID", ID);
                            DeclineDB.setValue(DeclineInfo);
 
-                           DatabaseReference PassDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("Passengers").child(ID);
+                           DatabaseReference PassDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Passengers").child(ID);
                            PassDB.removeValue();
+                           //update the passenger view
+                           DatabaseReference PassTripInfo = FirebaseDatabase.getInstance().getReference().child("users").child(ID).child("Trips").child(UserID).child(TripID);
+                           PassTripInfo.child("Removed").setValue(1);
                            Toast.makeText(context, Username + " has been deleted from your trip", Toast.LENGTH_LONG).show();
 
                            new SendNotification(_driverUsername + " has removed you from their carpool", "Student Carpooling", _notificationKey);
@@ -156,6 +164,37 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                            notifyDataSetChanged();
 
                            //send notification to passengers of the cancellation
+
+                           //update seat count
+                           DatabaseReference TripDb = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+                           //get the current seat no, converter to int and -1
+                           TripDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                               @Override
+                               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                   if (dataSnapshot.exists()) {
+                                       GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                                       };
+                                       Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                                       if (map != null) {
+                                           if (map.get("Seats") != null) {
+                                               String SeatStr = Objects.requireNonNull(map.get("Seats")).toString();
+                                               int seats = (Integer.parseInt(SeatStr));
+                                               seats++;
+                                               FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Seats").setValue(seats);
+                                           }
+                                       }
+                                   }
+                               }
+
+                               @Override
+                               public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                               }
+                           });
+
+
+
                        }
 
 

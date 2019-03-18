@@ -14,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -26,9 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -37,8 +34,14 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
@@ -48,69 +51,50 @@ import com.google.maps.model.DirectionsRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class PassengerLocation extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPolylineClickListener {
 
     private GoogleMap mMap;
-    private static final String TAG = "PassengerLocation";
-
-
+    private String UserID;
+    private Float Lat,Lon,DstLat,DstLon;
 
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean LocationPermissionsGranted = false;
-
-    private String PickUp, PickUpID, DriverID, TripID, CurrentUserID, driverNotificationKey;
-
-    private LatLng latLng, passengerLoc,DriverPosition,DestLoc;
-
-    GeoApiContext mGeoApiContext =null;
-
-    private Button Back;
-
-    Intent intent;
-    private FirebaseAuth mAuth;
-
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
+    private LatLng passengerLoc,DriverPosition,DestLoc;
     private ArrayList<Route> RouteArrayList = new ArrayList<>();
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //Toast.makeText(this, "Map is ready", Toast.LENGTH_SHORT).show();
         mMap = googleMap;
+        //attach the polyline listener to the map
         mMap.setOnPolylineClickListener(this);
 
-
+        //make sure the driver has agreed to accessing device location
         if (LocationPermissionsGranted) {
-
-            intent = getIntent();
-            String PassengerID = intent.getStringExtra("ID");
+            Intent intent = getIntent();
             String Username = intent.getStringExtra("Username");
-            float Lat = (float) intent.getFloatExtra("Lat",0);
-            float Lon = (float) intent.getFloatExtra("Lon",0);
-            float DstLon = (float) intent.getFloatExtra("DLon",0);
-            float DstLat = (float) intent.getFloatExtra("DLat",0);
+            String TripID = intent.getStringExtra("TripID");
+            String PassID = intent.getStringExtra("ID");
 
+            FirebaseUser CurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if(CurrentUser != null){
+               UserID = CurrentUser.getUid();
+            }
+
+            //get the passenger's location
+            getPassengerLocation(Username,TripID, PassID);
             getCurrentUserLocation();
+            //get destination coordinates
+            getDestination(TripID);
 
-            String title = Username + "'s pick up location";
-            passengerLoc = new LatLng(Lat,Lon);
-            MarkerOptions options = new MarkerOptions().position(passengerLoc).title(title).snippet("Calculate route to "+Username +"?").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));;
-            mMap.addMarker(options);
-
-            DestLoc = new LatLng(DstLat,DstLon);
-            MarkerOptions options2 = new MarkerOptions().position(DestLoc).title("Your Destination");
-            mMap.addMarker(options2);
-
+            //attach info window listener for map markers
             mMap.setOnInfoWindowClickListener(this);
 
-            //also create marker for their destination
-
-            //getPassengerLocation(PassengerID,Username,Lat,Lon);
-            //once both markers are set up -- form a route between the two using directions API
-
+            //permission check
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -128,22 +112,16 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_location2);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(PassengerLocation.this);
+        }
 
-        mapFragment.getMapAsync(PassengerLocation.this);
-
+        //get permissions from user
         getLocationPermission();
 
-        Back = findViewById(R.id.back);
-
-        mAuth = FirebaseAuth.getInstance();
-        CurrentUserID = mAuth.getCurrentUser().getUid();
-
-       // lat = Float.valueOf(intent.getStringExtra("Lat"));
-      // Toast.makeText(this, ""+Lat, Toast.LENGTH_SHORT).show();
-
-
-
+        Button Back = findViewById(R.id.back);
         Back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,26 +130,103 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
         });
     }
 
+    private void getPassengerLocation(final String Username,String TripID, String PassID){
+
+        DatabaseReference Passenger = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID).child("Passengers").child(PassID);
+        Passenger.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {};
+                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                if (map != null) {
+                    if (map.get("lat") != null) {
+                        String latStr = Objects.requireNonNull(map.get("lat")).toString();
+                        Lat = (Float.parseFloat(latStr));
+
+                    }
+                    if (map.get("lon") != null) {
+                        String lonStr = Objects.requireNonNull(map.get("lon")).toString();
+                        Lon = (Float.parseFloat(lonStr));
+
+                    }
+
+                    //create new marker
+
+                    String title = Username + "'s pick up location";
+                    passengerLoc = new LatLng(Lat, Lon);
+                    MarkerOptions options = new MarkerOptions().position(passengerLoc).title(title).snippet("Calculate route to " + Username + "?").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                    mMap.addMarker(options);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void getDestination(String TripID){
+        DatabaseReference Destination = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(TripID);
+        Destination.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                };
+                Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                if (map != null) {
+                    if (map.get("DstLat") != null) {
+                        String latStr = Objects.requireNonNull(map.get("DstLat")).toString();
+                        DstLat = (Float.parseFloat(latStr));
+
+                    }
+                    if (map.get("DstLon") != null) {
+                        String lonStr = Objects.requireNonNull(map.get("DstLon")).toString();
+                        DstLon = (Float.parseFloat(lonStr));
+
+                    }
+
+                    DestLoc = new LatLng(DstLat,DstLon);
+                    MarkerOptions options2 = new MarkerOptions().position(DestLoc).title("Your Destination").snippet("Calculate route to your destination?");
+                    mMap.addMarker(options2);
+                }
+
+
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
 
     private void getCurrentUserLocation() {
 
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         try {
             if (LocationPermissionsGranted) {
 
-                final Task location = fusedLocationProviderClient.getLastLocation();
-                location.addOnCompleteListener(new OnCompleteListener() {
+                //get device location
+                final Task<Location> location = fusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(this,new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location currentLocation = (Location) task.getResult();
 
-                            DriverPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            if (currentLocation != null) {
+                                DriverPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            }
 
-                            //moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()));
-
+                            //create map bounds so all markers will be shown on screen
                             LatLngBounds.Builder builder = new LatLngBounds.Builder();
                             builder.include(DestLoc);
                             builder.include(passengerLoc);
@@ -191,19 +246,6 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
             Toast.makeText(this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-    private void moveCamera(LatLng latLng){
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(latLng.latitude, latLng.longitude)).tilt(70)
-                .zoom(10)
-                .build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        MarkerOptions options = new MarkerOptions().position(latLng).title("Your current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        //icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_car_icon2));
-        mMap.addMarker(options);
-    }
-
 
     private void getLocationPermission(){
         String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -228,12 +270,11 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
 
     private void getRoute(Marker marker){
 
-        //need a way to remove old polylines-- each has its own id, add it to a list to keep track
 
-
-
+        //
+        String apiKey = getResources().getString(R.string.google_maps_routes);
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("AIzaSyCGNnh1lFiJ4mGCAdzJa50I77c2ITyGhnY")
+                .apiKey(apiKey)
                 .build();
 
 
@@ -248,16 +289,12 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
         directionsApiRequest.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
             public void onResult(DirectionsResult result) {
-                Log.d(TAG, "HI routes: "+ result.routes[0].toString());
-                Log.d(TAG, "HI duration: "+ result.routes[0].legs[0].duration);
-                Log.d(TAG, "HI distance: "+ result.routes[0].legs[0].duration);
-                Log.d(TAG, "HI geo: "+ result.geocodedWaypoints[0].toString());
                 DrawRoute(result);
             }
 
             @Override
             public void onFailure(Throwable e) {
-                Log.d(TAG, "distance: Fail"+ e.getMessage());
+                Toast.makeText(PassengerLocation.this, ""+ e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -271,30 +308,29 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
         switch(requestCode){
             case LOCATION_PERMISSION_REQUEST_CODE:{
                 if(grantResults.length > 0){
-                    for(int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                    for (int grantResult : grantResults) {
+                        if (grantResult != PackageManager.PERMISSION_GRANTED) {
                             LocationPermissionsGranted = false;
                             return;
                         }
                     }
                     LocationPermissionsGranted = true;
-                    //initialize our map
-                    //initMap();
                 }
             }
         }
     }
 
     private void DrawRoute(final DirectionsResult result){
+        //using a handler to pass this to the main thread as because the google map is on the main thread and this function is called inside another
+        //to add this polylines to the map need to do this.
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: result routes: " + result.routes.length);
-                //clear the arraylist, for when it is clicked multiple times -- no dups
-                //Toast.makeText(PassengerLocation.this, "test:"+polylineArrayList.size(), Toast.LENGTH_SHORT).show();
                 if(RouteArrayList.size() > 0 ){
-                    for(Route route: RouteArrayList){
-                        //Toast.makeText(PassengerLocation.this, "test:"+id, Toast.LENGTH_SHORT).show()
+
+                    //this for loop removes all the other routes
+                    //so when a new route is created, all previous routes will be removed
+                    for(Route route : RouteArrayList){
                         route.getPolyline().remove();
                     }
                     RouteArrayList.clear();
@@ -302,8 +338,10 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
                 }
 
 
+
                 for(DirectionsRoute route: result.routes){
-                    Log.d(TAG, "run: leg" + route.legs[0].toString());
+                    //get the encoded path ( get all the points along each rote)in order to build the polyline
+
                     List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
 
                     List<LatLng> newPath = new ArrayList<>();
@@ -313,8 +351,10 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
                     }
 
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newPath).color(Color.GRAY).width(10));
+
+                    //make it clickable show that the info about distance/duration will show
                     polyline.setClickable(true);
-                    //add the polyline here
+
                     RouteArrayList.add(new Route(polyline, route.legs[0]));
                     //keep track of routes.legs[0] too.., diction - key being the polyline id?
                 }
@@ -353,22 +393,15 @@ public class PassengerLocation extends FragmentActivity implements OnMapReadyCal
     public void onPolylineClick(Polyline polyline) {
         for(Route route: RouteArrayList){
             if(polyline.getId().equals(route.getPolyline().getId())){
-                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
                 //change the color when clicks and show the duration time
                 polyline.setColor(ContextCompat.getColor(this,R.color.quantum_orange));
-                polyline.setZIndex(1);
                 //show the directions
                 //can we add to the
-
-
                 Toast.makeText(this, ""+route.getDirectionsLeg().distance +"\n"+ route.getDirectionsLeg().duration, Toast.LENGTH_LONG).show();
-
-                //show a button on screen, showing the list of written directions?
             }
             else{
                 //change the color when clicks and show the duration time
                 route.getPolyline().setColor(ContextCompat.getColor(this,R.color.quantum_grey));
-                route.getPolyline().setZIndex(0);
             }
         }
 

@@ -43,36 +43,21 @@ public class Passenger {
         Type = type;
     }
 
-    public String getDriverUN() {
+    String getDriverUN() {
         return DriverUN;
     }
 
-    public void setDriverUN(String driverUN) {
-        DriverUN = driverUN;
-    }
-
-    public String getTripID() {
+    String getTripID() {
         return TripID;
     }
 
-    public void setTripID(String tripID) {
-        TripID = tripID;
-    }
 
-    public float getDLat() {
+    float getDLat() {
         return DLat;
     }
 
-    public float getDLon() {
+    float getDLon() {
         return DLon;
-    }
-
-    public void setDLat(float DLat) {
-        this.DLat = DLat;
-    }
-
-    public void setDLon(float DLon) {
-        this.DLon = DLon;
     }
 
     public void setFullname(String fullname) {
@@ -83,11 +68,7 @@ public class Passenger {
         return Fullname;
     }
 
-    public void setNotificationKey(String notificationKey) {
-        NotificationKey = notificationKey;
-    }
-
-    public String getNotificationKey() {
+    String getNotificationKey() {
         return NotificationKey;
     }
 
@@ -114,19 +95,12 @@ public class Passenger {
         return ID;
     }
 
-    public void setProfilePicUrl(String profilePicUrl) {
-        this.profilePicUrl = profilePicUrl;
-    }
 
     public String getProfilePicUrl() {
         return profilePicUrl;
     }
 
-    public void setUserName(String userName) {
-        UserName = userName;
-    }
-
-    public String getUserName() {
+    String getUserName() {
         return UserName;
     }
 }

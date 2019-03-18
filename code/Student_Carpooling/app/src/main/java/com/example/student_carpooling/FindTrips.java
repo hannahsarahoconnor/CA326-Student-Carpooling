@@ -2,13 +2,9 @@ package com.example.student_carpooling;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,18 +24,14 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -50,6 +42,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -63,37 +56,23 @@ import java.util.Map;
 public class FindTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
-
     private ImageView navProfile;
     private TextView NUsername, Nemail;
-    private String email,UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-
     private TextView DateInput;
-    DatePickerDialog datePickerDialog;
-    Calendar calendar;
-    int hour;
-    int minutes;
-    int year;
-    int month;
+    private DatePickerDialog datePickerDialog;
+    private Calendar calendar;
+    private int year;
+    private int month;
     private Date date,rightNow;
     int dayOfMonth;
-    private RadioGroup radioGroup;;
+    private RadioGroup radioGroup;
     private RadioButton radioButton;
     private String StartingPt="", DestinationPt="";
-    private Button filter;
     private String DBUsername;
     private EditText DriverName;
-
-    private String apiKey;
-
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String TAG = "FindTrips";
 
@@ -104,25 +83,27 @@ public class FindTrips extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_trips);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar =  findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mAuth = FirebaseAuth.getInstance();
-        //CurrentUser = mAuth.getCurrentUser();
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        View hView =  navigationView.getHeaderView(0);
+        NUsername = hView.findViewById(R.id.usernameNav);
+        Nemail = hView.findViewById(R.id.emailNav);
+        navProfile = hView.findViewById(R.id.ImageView);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
-            UserID = firebaseUser.getUid();
+            String UserID = firebaseUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
             getUserDB();
         }
@@ -130,66 +111,57 @@ public class FindTrips extends AppCompatActivity
 
         DriverName = findViewById(R.id.DriverName);
 
-        View hView =  navigationView.getHeaderView(0);
-        NUsername = hView.findViewById(R.id.usernameNav);
-        Nemail = hView.findViewById(R.id.emailNav);
-        navProfile = hView.findViewById(R.id.ImageView);
-
-
         setupFirebaseListener();
 
-        apiKey = getResources().getString(R.string.google_maps_places_key);
+        String apiKey = getResources().getString(R.string.google_maps_places_key);
         Places.initialize(getApplicationContext(), apiKey);
 
-        //Create a new Places client instance.
-        if (!Places.isInitialized()) {
-            PlacesClient placesClient = Places.createClient(this);}
+
 
         // Initialize the AutocompleteSupportFragment.
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentSTART);
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        if (autocompleteFragment != null) {
+            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+            autocompleteFragment.setCountry("IE");
+            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
-        autocompleteFragment.setCountry("IE");
+                @Override
+                public void onPlaceSelected(@NonNull Place place) {
+                    StartingPt = place.getName();
+                }
 
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                @Override
+                public void onError(@NonNull Status status) {
+                    Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
+                }
+            });
 
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                StartingPt = (String) place.getName();
-            }
+            autocompleteFragment.setHint("Starting Point?");
+        }
 
-            @Override
-            public void onError(@NonNull Status status) {
-                Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        autocompleteFragment.setHint("Starting Point?");
 
         AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDEST);
 
-        autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-        autocompleteFragmentDST.setCountry("IE");
+        if (autocompleteFragmentDST != null) {
+            autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+            autocompleteFragmentDST.setCountry("IE");
 
-        autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(@NonNull Place place) {
-                LatLng string_location = place.getLatLng();
-                //("destinationLat", destinationLatLng.latitude);
-                //("destinationLng", destinationLatLng.longitude);
-                //CharSequence address = place.getAddress();
-                final CharSequence address = place.getAddress();
-                DestinationPt = (String) place.getName();
-            }
+            autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                @Override
+                public void onPlaceSelected(@NonNull Place place) {
+                    DestinationPt = place.getName();
+                }
 
-            @Override
-            public void onError(@NonNull Status status) {
-                Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onError(@NonNull Status status) {
+                    Toast.makeText(FindTrips.this,"error",Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        autocompleteFragmentDST.setHint("Destination?");
+            autocompleteFragmentDST.setHint("Destination?");
+        }
 
 // Set up a PlaceSelectionListener to handle the response.
 
@@ -219,12 +191,11 @@ public class FindTrips extends AppCompatActivity
         radioGroup = findViewById(R.id.LuggageInput);
 
 
-        filter = findViewById(R.id.filter);
+        Button filter = findViewById(R.id.filter);
         filter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String startingDate;
-                String luggage = "";
                 String driverName = DriverName.getText().toString();
                 startingDate = DateInput.getText().toString();
                 //covert startingDate to mili secs
@@ -243,8 +214,7 @@ public class FindTrips extends AppCompatActivity
                     rightNow = Calendar.getInstance().getTime();
                     int radioId = radioGroup.getCheckedRadioButtonId();
                     radioButton = findViewById(radioId);
-                    luggage = radioButton.getText().toString();
-                    //pass this info to the next activity
+                    String luggage = radioButton.getText().toString();
                     Calendar cal1 = Calendar.getInstance();
                     Calendar cal2 = Calendar.getInstance();
                     cal1.setTime(date);
@@ -286,7 +256,7 @@ public class FindTrips extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -393,7 +363,7 @@ public class FindTrips extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -422,7 +392,7 @@ public class FindTrips extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -431,20 +401,25 @@ public class FindTrips extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //makes sure the data is present, else the app will crash if not
-                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0) {
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
-                    }
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+
+                    if (map != null) {
+                        if (map.get("Username") != null) {
+                            DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
 
 
+                    }
                 }
             }
 
@@ -498,8 +473,6 @@ public class FindTrips extends AppCompatActivity
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
                 Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
             }
         }
     }

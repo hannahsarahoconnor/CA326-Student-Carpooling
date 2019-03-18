@@ -9,14 +9,14 @@ import com.example.student_carpooling.R;
 
 public class SeatViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView seatNo;
+    TextView seatNo;
 
-    public SeatViewHolders(@NonNull View itemView) {
+    SeatViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
 
-        seatNo = (TextView) itemView.findViewById(R.id.Seats);
+        seatNo = itemView.findViewById(R.id.Seats);
     }
 
     @Override

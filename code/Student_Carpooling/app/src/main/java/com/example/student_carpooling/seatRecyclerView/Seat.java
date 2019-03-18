@@ -7,15 +7,7 @@ public class Seat {
     public Seat(String Number){
         this.Number = Number;
     }
-
-    public Seat(){}
-
-
-    public String getNumber() {
+    String getNumber() {
         return Number;
-    }
-
-    public void setNumber(String number) {
-        Number = number;
     }
 }

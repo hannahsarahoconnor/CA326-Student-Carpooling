@@ -18,14 +18,14 @@ public class TripViewHolders extends RecyclerView.ViewHolder {
     // what about buttons? show when expanded? maybe the seats and luggage info could be hidden also.
 
 
-    public TripViewHolders(@NonNull View itemView) {
+    TripViewHolders(@NonNull View itemView) {
         super(itemView);
-        Starting = (TextView) itemView.findViewById(R.id.Starting);
-        Destination = (TextView) itemView.findViewById(R.id.Destination);
-        Time = (TextView) itemView.findViewById(R.id.Time);
-        Date = (TextView) itemView.findViewById(R.id.Date);
-        Seats = (TextView) itemView.findViewById(R.id.Seats);
-        Luggage = (TextView) itemView.findViewById(R.id.Luggage);
+        Starting = itemView.findViewById(R.id.Starting);
+        Destination =  itemView.findViewById(R.id.Destination);
+        Time = itemView.findViewById(R.id.Time);
+        Date =  itemView.findViewById(R.id.Date);
+        Seats = itemView.findViewById(R.id.Seats);
+        Luggage = itemView.findViewById(R.id.Luggage);
         //UserName = (TextView) itemView.findViewById(R.id.username);
     }
 

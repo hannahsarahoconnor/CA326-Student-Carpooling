@@ -1,13 +1,9 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,8 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.student_carpooling.findTripsRecyclerView.FindTrip;
-import com.example.student_carpooling.findTripsRecyclerView.FindTripAdapter;
 import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTrip;
 import com.example.student_carpooling.passengerTripsRecyclerView.PassengerTripAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,59 +32,42 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.Objects;
 
 public class PassengerTrips extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    DrawerLayout drawer;
-    NavigationView navigationView;
-    Toolbar toolbar=null;
-
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
 
     private ImageView navProfile;
     private TextView NUsername, Nemail;
-    private String email,UserID;
+    private String UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
-
-    String Time,Date,DriverId, TripId,Starting,Destination,DriverUsername,profileImageUrl, Name,Surname,Fullname,NotificationKey,Cancelled;
-
-    float lat, lon, DstLat,DstLon;
-    FirebaseUser CurrentUser;
-
-    private RecyclerView tripRecyclerView;
+    private String Time,Date,DriverId, TripId,Starting,Destination,DriverUsername,profileImageUrl, Name,Surname,Fullname,NotificationKey;
+    private float lat, lon, DstLat,DstLon;
+    private FirebaseUser CurrentUser;
     private RecyclerView.Adapter tripAdapter;
-    private RecyclerView.LayoutManager tripLayoutManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_trips);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View hView =  navigationView.getHeaderView(0);
@@ -100,18 +77,19 @@ public class PassengerTrips extends AppCompatActivity
 
         setupFirebaseListener();
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
+        if(CurrentUser != null){
+        UserID = CurrentUser.getUid();
+        }
         UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         getUserDB();
 
-        tripRecyclerView = findViewById(R.id.TripsRecycler);
+        RecyclerView tripRecyclerView = findViewById(R.id.TripsRecycler);
         tripRecyclerView.setNestedScrollingEnabled(true); //not true?
         tripRecyclerView.setHasFixedSize(true);
         tripAdapter = new PassengerTripAdapter(getDataTrips(),PassengerTrips.this);
-        tripLayoutManager = new LinearLayoutManager(PassengerTrips.this);
-        tripRecyclerView.setLayoutManager(tripLayoutManager);
+        tripRecyclerView.setLayoutManager( new LinearLayoutManager(PassengerTrips.this));
         tripRecyclerView.setAdapter(tripAdapter);
 
 
@@ -119,7 +97,7 @@ public class PassengerTrips extends AppCompatActivity
 
     }
     //when driver accepts a passenger add a child to their info -> Trips > driver id > trip id
-    private ArrayList trips = new ArrayList<PassengerTrip>();
+    private ArrayList<PassengerTrip> trips = new ArrayList<>();
     private ArrayList<PassengerTrip> getDataTrips() {
         return trips;
     }
@@ -153,20 +131,24 @@ public class PassengerTrips extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if(map != null) {
                     if(map.get("profileImageUrl")!=null){
-                        profileImageUrl = map.get("profileImageUrl").toString();
+                        profileImageUrl = (String) map.get("profileImageUrl");
                     }
                     if(map.get("Name")!=null){
-                        Name = map.get("Name").toString();
+                        Name = (String) map.get("Name");
                     }
                     if(map.get("Surname")!=null){
-                        Surname = map.get("Surname").toString();
+                        Surname = (String) map.get("Surname");
                     }
 
                     Fullname = Name + " " + Surname;
 
 
+                }
                 }
             }
 
@@ -202,14 +184,20 @@ public class PassengerTrips extends AppCompatActivity
         Coord.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    if(map.get("lat")!=null){
-                        lat = Float.parseFloat(map.get("lat").toString());
+                if (dataSnapshot.exists()) {
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                    };
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if (map != null) {
+                        if (map.get("lat") != null) {
+                            String Lat = Objects.requireNonNull(map.get("lat")).toString();
+                            lat = Float.parseFloat(Lat);
 
-                    }
-                    if(map.get("lon")!=null){
-                        lon = Float.parseFloat(map.get("lon").toString());
+                        }
+                        if (map.get("lon") != null) {
+                            String Lon = Objects.requireNonNull(map.get("lon")).toString();
+                            lon = Float.parseFloat(Lon);
+                        }
                     }
                 }
             }
@@ -226,34 +214,40 @@ public class PassengerTrips extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if(map != null) {
 
                     if (map.get("Time") != null) {
-                        Time = map.get("Time").toString();
+                        Time = (String) map.get("Time");
                     }
 
                     //check that none of them are null
                     if (map.get("Date") != null) {
-                        Date = map.get("Date").toString();
+                        Date = (String) map.get("Date");
 
                     if (map.get("Starting") != null) {
-                        Starting = map.get("Starting").toString();
+                        Starting = (String) map.get("Starting");
                     }
 
                     if (map.get("Destination") != null) {
-                        Destination = map.get("Destination").toString();
+                        Destination = (String) map.get("Destination");
                     }
 
                    if (map.get("Username") != null) {
-                       DriverUsername = map.get("Username").toString();
+                       DriverUsername = (String) map.get("Username");
                     }
 
                   if (map.get("DstLat") != null) {
-                      DstLat = Float.parseFloat(map.get("DstLat").toString());
+                      String lat = Objects.requireNonNull(map.get("DstLat")).toString();
+                      DstLat = Float.parseFloat(lat);
                    }
 
                     if(map.get("DstLon") != null) {
-                      DstLon = Float.parseFloat(map.get("DstLon").toString());
+                        String lon = Objects.requireNonNull(map.get("DstLon")).toString();
+                        DstLon = Float.parseFloat(lon);
                     }
 
                         //Toast.makeText(PassengerTrips.this, ""+profileImageUrl, Toast.LENGTH_SHORT).show();
@@ -262,7 +256,7 @@ public class PassengerTrips extends AppCompatActivity
                     trips.add(object);
                     tripAdapter.notifyDataSetChanged();
 
-                            }}
+                            }}}
 
     }
 
@@ -275,7 +269,7 @@ public class PassengerTrips extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -302,8 +296,6 @@ public class PassengerTrips extends AppCompatActivity
                 break;
 
             case R.id.help:
-                //go to new activity
-                //tFRougwMUphm8B95q7EAToUoYci1
                 Intent intent = new Intent(PassengerTrips.this,PassengerHelp.class);
                 startActivity(intent);
                 break;
@@ -317,7 +309,7 @@ public class PassengerTrips extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -351,7 +343,7 @@ public class PassengerTrips extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -363,25 +355,29 @@ public class PassengerTrips extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+
+                    if(map != null) {
                     if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
+                        String DBUsername = (String) map.get("Username");
                         NUsername.setText(DBUsername);
                     }
                     if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
+                        ProfilePicUrl = (String) map.get("profileImageUrl");
 
-                        if(!ProfilePicUrl.equals("defaultPic")) {
+                        if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
                             Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
                         }
                     }
 
                     if(map.get("NotificationKey")!=null){
-                        NotificationKey= map.get("NotificationKey").toString();
+                        NotificationKey= (String) map.get("NotificationKey");
 
                     }
 
 
+                }
                 }
             }
 
@@ -465,9 +461,10 @@ public class PassengerTrips extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(PassengerTrips.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);

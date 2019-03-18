@@ -24,17 +24,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
-import static android.os.Build.ID;
-
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
     private List<User> list;
     private Context context;
 
-
-    String LastMessage;
-
-    FirebaseUser firebaseUser;
+    private String LastMessage,userid;
 
 
     public UserAdapter(List<User> list, Context context) {
@@ -42,30 +37,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
         this.context = context;
     }
 
-    public UserAdapter() {
-    }
-
 
     @NonNull
     @Override
     public UserViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_cards, null, false);
+        View layoutView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_cards, viewGroup, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutView.setLayoutParams(lp);
-        UserViewHolders uvh = new UserViewHolders(layoutView);
-        return uvh;
+        return new UserViewHolders(layoutView);
     }
-
-    public void swipePos(int position){
-        //delete from database
-        DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(firebaseUser.getUid()).child(ID);
-        RequestsDB.removeValue();
-        list.remove(position);
-        notifyDataSetChanged();
-    }
-
-
-
 
 
     @Override
@@ -108,26 +88,31 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolders> {
 
     private void getRecentMessage(final String userID, final TextView msg, final String username) {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser != null){
+            userid = firebaseUser.getUid();
+        }
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
-                    if(message.getRecipient().equals(firebaseUser.getUid())&& message.getSender().equals(userID) ||
-                            message.getRecipient().equals(userID)&& message.getSender().equals(firebaseUser.getUid())){
-                        if(message.getSender().equals(firebaseUser.getUid())){
-                            LastMessage = "You: " + message.getMessage();
+                    if (message != null) {
+
+                        if (message.getRecipient().equals(userid) && message.getSender().equals(userID) ||
+                                message.getRecipient().equals(userID) && message.getSender().equals(userid)){
+                            if (message.getSender().equals(userid)){
+                                LastMessage = "You: " + message.getMessage();
+                            } else {
+
+                                LastMessage = username + ": " + message.getMessage();
+                            }
+
+
                         }
-                        else{
-
-                            LastMessage = username + ": " + message.getMessage();
-                        }
-
-
                     }
                 }
-               msg.setText(LastMessage);
+                msg.setText(LastMessage);
             }
 
 

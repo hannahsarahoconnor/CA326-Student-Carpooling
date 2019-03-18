@@ -3,7 +3,6 @@ package com.example.student_carpooling;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.location.Address;
@@ -52,8 +51,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
 
 
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -66,7 +63,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 
@@ -83,40 +80,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class DriverCreate extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private TextView NUsername, Nemail;
+    private TextView NUsername, NEmail;
     private String UserID,ProfilePicUrl;
-    private FirebaseAuth mAuth;
     private DatabaseReference UserDb, ref;
-    NavigationView navigationView;
     private ImageView navProfile;
-    private TextView DateInput, Time;
-    TimePickerDialog timePickerDialog;
-    DatePickerDialog datePickerDialog;
-    Calendar calendar;
-    int hour;
-    int minutes;
-    int year;
-    int month;
-    int dayOfMonth;
-    private String startingDate, startingTime;
+    private TextView DateInput, TimeInput;
+    private TimePickerDialog timePickerDialog;
+    private DatePickerDialog datePickerDialog;
+    private Calendar calendar;
+    private int hour;
+    private int minutes;
+    private int year;
+    private int month;
+    private int dayOfMonth;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private EditText TripNote;
     private String DBUsername, numberSeats,oldDate, oldTime;
     private String starting ,destination;
-    private boolean result = false;
-    FirebaseUser CurrentUser;
-    private String apiKey;
-
-    private Date tripdate,trip,oldtripdate;
-
+    private FirebaseUser CurrentUser;
+    private Date trip,oldTripDate;
     private LatLng latLng;
 
 
@@ -127,61 +116,75 @@ public class DriverCreate extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_create);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        mAuth = FirebaseAuth.getInstance();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View hView =  navigationView.getHeaderView(0);
+        NUsername = hView.findViewById(R.id.UsernameNav);
+        NEmail = hView.findViewById(R.id.EmailNav);
+        navProfile = hView.findViewById(R.id.imageView);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+        if(CurrentUser!=null){
+            UserID = mAuth.getCurrentUser().getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View hView =  navigationView.getHeaderView(0);
-        NUsername = hView.findViewById(R.id.UsernameNav);
-        Nemail = hView.findViewById(R.id.EmailNav);
-        navProfile = hView.findViewById(R.id.imageView);
+        //add listener to check when user signs out
+        addListener();
 
-        setupFirebaseListener();
-
-
-        // Initialize Places.
-
-        apiKey = getResources().getString(R.string.google_maps_places_key);
+        // Initialize auto-place dialog.
+        String apiKey = getResources().getString(R.string.google_maps_places_key);
         Places.initialize(getApplicationContext(), apiKey);
-
-        //Create a new Places client instance.
-        PlacesClient placesClient = Places.createClient(this);
-
         // Initialize the AutocompleteSupportFragment.
+
+        //Origin Search Dialog
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-
-        AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDST);
-
-
-
-        autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        assert autocompleteFragment != null;
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
         autocompleteFragment.setCountry("IE");
-        autocompleteFragmentDST.setCountry("IE");
 
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                starting = place.getName();
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+                // Log.i(TAG, "An error occurred: " + status);
+                Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        autocompleteFragment.setHint("Starting Point?");
+
+
+        //Destination Search Dialog
+
+        AutocompleteSupportFragment autocompleteFragmentDST = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragmentDST);
+
+        assert autocompleteFragmentDST != null;
+        autocompleteFragmentDST.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragmentDST.setCountry("IE");
         autocompleteFragmentDST.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                //LatLng string_location = place.getLatLng();
-                String address = (String) place.getAddress();
-                destination = (String) place.getName();
+                destination = place.getName();
                 geoLocate();
 
             }
@@ -191,35 +194,13 @@ public class DriverCreate extends AppCompatActivity
                 Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
             }
         });
-
         autocompleteFragmentDST.setHint("Destination?");
 
-// Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
 
-            @Override
-            public void onPlaceSelected(Place place) {
-                //LatLng string_location = place.getLatLng();
-                //String address = (String) place.getAddress();
-                starting = (String) place.getName();
-                //Toast.makeText(DriverCreate.this,""+starting,Toast.LENGTH_SHORT).show();
-            }
+        //Time Dialog
 
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                // Log.i(TAG, "An error occurred: " + status);
-                Toast.makeText(DriverCreate.this,"error",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        autocompleteFragment.setHint("Starting Point?");
-
-
-        //onActivityResult, you must call super.onActivityResult, otherwise the fragment will not function properly.
-
-        Time = findViewById(R.id.TimeInput);
-        Time.setOnClickListener(new View.OnClickListener() {
+        TimeInput = findViewById(R.id.TimeInput);
+        TimeInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //show the current time by defaultPic rather than 12:00
@@ -234,7 +215,7 @@ public class DriverCreate extends AppCompatActivity
                         //how to show if time is am or pm, rather than 24 hours
                         // FORMAT THIS TO BE IN FORM HH:MM
                         String format = (String.format(Locale.US,"%02d:%02d", hourOfDay, minute));
-                        Time.setText(format);
+                        TimeInput.setText(format);
                     }
 
                 },hour,minutes,false);
@@ -242,7 +223,7 @@ public class DriverCreate extends AppCompatActivity
             }
         });
 
-        //Getting time input
+        //Date Dialog
 
         DateInput = findViewById(R.id.DateInput);
         DateInput.setOnClickListener(new View.OnClickListener() {
@@ -264,14 +245,11 @@ public class DriverCreate extends AppCompatActivity
         });
 
 
-
-        //no_seats
-        Spinner spinner = (Spinner) findViewById(R.id.seats_spinner);
+        //Drop down (spinner) for number of seats
+        Spinner spinner = findViewById(R.id.seats_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.no_seats, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         spinner.setAdapter(adapter);
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -286,140 +264,109 @@ public class DriverCreate extends AppCompatActivity
         });
 
 
-        //Getting the User Input
+        //Getting the user input for note and luggage button check
         radioGroup = findViewById(R.id.LuggageInput);
         TripNote = findViewById(R.id.Note);
 
+
+        // when user clicks create -- convert to string
         Button Create;
         Create = findViewById(R.id.CreateId);
-
-
-
-
-
         Create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                //get time right now to compare that it's not a past date
                 Date rightNow = Calendar.getInstance().getTime();
-                final String startingDate = DateInput.getText().toString();
-                final String startingTime = Time.getText().toString();
+
+                final String startingDate = (String) DateInput.getText();
+                final String startingTime = (String) TimeInput.getText();
                 int radioId = radioGroup.getCheckedRadioButtonId();
                 radioButton = findViewById(radioId);
                 final String luggageCheck = radioButton.getText().toString();
-                final String Tripnote = TripNote.getText().toString();
+                final String Trip_note = TripNote.getText().toString();
 
-                if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Tripnote)) {
+                //check that all fields are entered
+                if(TextUtils.isEmpty(starting) || TextUtils.isEmpty(destination) || TextUtils.isEmpty(startingDate) || TextUtils.isEmpty(startingTime) || TextUtils.isEmpty(Trip_note)) {
                     Toast.makeText(DriverCreate.this, "Please enter all fields", Toast.LENGTH_SHORT).show();
                 }else{
 
 
+                //convert the inputted trip date to the same format as the 'rightnow' date object so we can compare them
                 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
                 try {
-
                     String dateStr = startingDate + " " + startingTime;
-                    Date Datee = format.parse(dateStr);
-                    long mili = Datee.getTime();
-                    trip = new Date(mili);
-                    //Toast.makeText(FilteredTrips.this, "t:"+tripdate, Toast.LENGTH_SHORT).show();
+                    Date Date = format.parse(dateStr);
+                    long mil = Date.getTime();
+                    trip = new Date(mil);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
 
                 if(rightNow.after(trip)){
-                    Toast.makeText(DriverCreate.this, "past date", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(DriverCreate.this, "You cannot choose a past date", Toast.LENGTH_SHORT).show();
                 }
 
                 else{
-                    //Date_TimeCheck(startingDate,startingTime);
 
-                    if(true){
+                       //First check that the driver doesnt have a trip created at the same date and time..
 
-                        ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                        Map TripInfo = new HashMap();
-                        //add driver username and maybe name to the form too
-                        TripInfo.put("Username", DBUsername);
-                        TripInfo.put("Starting", starting);
-                        TripInfo.put("Destination",destination);
-                        TripInfo.put("DstLat", latLng.latitude);
-                        TripInfo.put("DstLon", latLng.longitude);
-                        TripInfo.put("Date", startingDate);
-                        TripInfo.put("Seats", numberSeats);
-                        TripInfo.put("Time", startingTime);
-                        TripInfo.put("Luggage", luggageCheck);
-                        TripInfo.put("Note", Tripnote);
-                        TripInfo.put("Started", 0);
-                        TripInfo.put("Completed", 0);
-                        TripInfo.put("Cancelled",0);
-                        TripInfo.put("Deleted",0);
-
-                        ref.push().setValue(TripInfo);
-                        Toast.makeText(DriverCreate.this, "new trip has been added", Toast.LENGTH_SHORT).show();
-
-                       startActivity(new Intent(DriverCreate.this, DriverMain.class));
-                       finish();
-
-                    }
-                    //   DateInput.setText("");
-                    //    Time.setText("");
-
-
-                }
-
-
-            }}
-
-        });
-
-
-    }
-
-
-    private void Date_TimeCheck(final String Date, final String Time){
-        DatabaseReference TripIDCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-        TripIDCheck.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        //get the id for trip
-                        final String key = id.getKey();
-                        DatabaseReference TripDetailsCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(key);
-                        TripDetailsCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                        DatabaseReference TripIDCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                        TripIDCheck.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.exists()) {
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if (map.get("Date") != null) {
-                                        oldDate = map.get("Date").toString();
-                                    }
-                                    if (map.get("Time") != null) {
-                                        oldTime = map.get("Time").toString();
-                                    }
+                                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                        //get the id for trip
+                                        final String key = id.getKey();
+                                        if(key != null){
+                                        DatabaseReference TripDetailsCheck = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID).child(key);
+                                        TripDetailsCheck.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.exists()) {
+                                                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                                                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
 
-                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                                    try {
-                                        String dateStr2 = oldDate + " " + oldTime;
-                                        Date OldTripDate = format.parse(dateStr2);
-                                        Date TripDate = format.parse(Date + " " + Time);
-                                        long mili2 = OldTripDate.getTime();
-                                        long mili = TripDate.getTime();
-                                        oldtripdate = new Date(mili2);
-                                        tripdate = new Date(mili);
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
+                                                    if(map != null) {
+                                                        if (map.get("Date") != null) {
+                                                            oldDate = (String) map.get("Date");
+                                                        }
+                                                        if (map.get("Time") != null) {
+                                                            oldTime = (String) map.get("Time");
+                                                        }
 
-                                    if(oldtripdate.equals(tripdate)){
-                                        Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
-                                        result = false;
-                                    }
-                                    else{
-                                        result = true;
-                                        return;
+                                                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                                        try {
+                                                            String dateStr2 = oldDate + " " + oldTime;
+                                                            Date OldTripDate = format.parse(dateStr2);
+                                                            long seconds2 = OldTripDate.getTime();
+                                                            oldTripDate = new Date(seconds2);
+                                                        } catch (ParseException e) {
+                                                            e.printStackTrace();
+                                                        }
+
+                                                        if (oldTripDate.equals(trip)) {
+                                                            Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
+                                                            //refresh the activity if its a conflicting time
+                                                            //add fields will be reset
+                                                            Intent intent = getIntent();
+                                                            finish();
+                                                            startActivity(intent);
+
+                                                        }
+                                                    }
+                                                }}
+
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
                                     }
                                 }
-                            }
+                            }}
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -427,41 +374,59 @@ public class DriverCreate extends AppCompatActivity
                             }
                         });
 
+                            //Create new trip and add to database
+                            ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                            Map<String, Object> TripInfo = new HashMap<>();
+                            TripInfo.put("Username", DBUsername);
+                            TripInfo.put("Starting", starting);
+                            TripInfo.put("Destination",destination);
+                            TripInfo.put("DstLat", latLng.latitude);
+                            TripInfo.put("DstLon", latLng.longitude);
+                            TripInfo.put("Date", startingDate);
+                            TripInfo.put("Seats", numberSeats);
+                            TripInfo.put("Time", startingTime);
+                            TripInfo.put("Luggage", luggageCheck);
+                            TripInfo.put("Note", Trip_note);
+                            TripInfo.put("Started", 0);
+                            TripInfo.put("Completed", 0);
+                            TripInfo.put("Cancelled",0);
+                            TripInfo.put("Deleted",0);
+
+                            ref.push().setValue(TripInfo);
+                            Toast.makeText(DriverCreate.this, "new trip has been added successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(DriverCreate.this, DriverTrips.class));
+                            finish();
+                        }
                     }
 
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+
         });
 
     }
 
-
-
     private void geoLocate(){
+        //convert the destination name into geographical coordinates
         Geocoder geocoder = new Geocoder(DriverCreate.this);
-        Toast.makeText(this, ""+destination, Toast.LENGTH_SHORT).show();
-
         List<Address> list = new ArrayList<>();
         try {
             list = geocoder.getFromLocationName(destination, 1);
 
-        } catch (
-                IOException e) {
-            Log.e(TAG, "IOException:" + e.getMessage());
+        } catch (IOException e) {
+            Toast.makeText(this, "IOException:" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         if (list.size() > 0) {
             Address address = list.get(0);
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
         }}
 
+
+    //Navigation Drawer Functions
+
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -484,40 +449,7 @@ public class DriverCreate extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(DriverCreate.this);
-                dialog.setTitle("Are you sure you want to delete your account?");
-                dialog.setMessage("By Doing this.....");
-                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    //is deleted
-                                    Toast.makeText(DriverCreate.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
-                                    UserDb.removeValue();
-                                    Intent intent = new Intent(DriverCreate.this,MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(DriverCreate.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
+                DeleteAccount();
                 break;
 
 
@@ -534,81 +466,10 @@ public class DriverCreate extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    private void DeleteAccount() {
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog, null);
-        TextView Text = dialogView.findViewById(R.id.Text);
-        TextView Title = dialogView.findViewById(R.id.Title);
-        Title.setText("Delete Account");
-        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
-        Button Submit = dialogView.findViewById(R.id.Submit);
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //is deleted
-                            Toast.makeText(DriverCreate.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
-                            Intent intent = new Intent(DriverCreate.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            dialogBuilder.dismiss();
-                        } else {
-                            Toast.makeText(DriverCreate.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
-
-    private void ContactAdmins(){
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog, null);
-        TextView Text = dialogView.findViewById(R.id.Text);
-        ImageView warn = dialogView.findViewById(R.id.warn);
-        ImageView admin = dialogView.findViewById(R.id.admin);
-        TextView Title = dialogView.findViewById(R.id.Title);
-        warn.setVisibility(View.GONE);
-        admin.setVisibility(View.VISIBLE);
-        Title.setText("Contact Admins");
-        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-        Button Submit = dialogView.findViewById(R.id.Submit);
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent1 = new Intent(DriverCreate.this,ChatActivity.class);
-                intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                intent1.putExtra("Fullname","Admins");
-                intent1.putExtra("ProfilePicURL","defaultPic");
-                startActivity(intent1);
-                finish();
-                dialogBuilder.dismiss();
-
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -643,29 +504,117 @@ public class DriverCreate extends AppCompatActivity
         }
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+
+
+    // Delete the Users' Account
+
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Title.setText("Delete Account");
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //auth library func -- email and password removed
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(DriverCreate.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            //Remove corresponding user info stored in the database
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
+
+                            //sign out user
+                            Intent intent = new Intent(DriverCreate.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(DriverCreate.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void ContactAdmins(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverCreate.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        //adjust the dialog text and image view from warning dialog to admin
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(DriverCreate.this,ChatActivity.class);
+                String AdminID = getResources().getString(R.string.AdminID);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID", AdminID);
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+
     private void getUserDB(){
+        // Use this info to set the user info in the navigation drawer header
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                    if(map!= null) {
+                        if (map.get("Username") != null) {
+                            DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
                     }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);};
-                    }
-
 
                 }
             }
@@ -677,14 +626,14 @@ public class DriverCreate extends AppCompatActivity
         });
     }
 
-    private void setupFirebaseListener() {
+    private void addListener() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     String email = user.getEmail();
-                    Nemail.setText(email);
+                    NEmail.setText(email);
                 } else {
                     Toast.makeText(DriverCreate.this, "Sign Out", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(DriverCreate.this, MainActivity.class);
@@ -694,14 +643,18 @@ public class DriverCreate extends AppCompatActivity
         };
     }
 
+
+
     @Override
     protected void onStart() {
+        //add listener when activity is created
         super.onStart();
         FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onStop() {
+        //remove listener when activity is stopped
         super.onStop();
         if (mAuthStateListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
@@ -709,20 +662,20 @@ public class DriverCreate extends AppCompatActivity
 
     }
 
+    //Places API
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //onActivityResult, you must call super.onActivityResult, otherwise the fragment will not function properly
         super.onActivityResult(requestCode,resultCode,data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
                 Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
             }
-        }
+    }
     }
 }

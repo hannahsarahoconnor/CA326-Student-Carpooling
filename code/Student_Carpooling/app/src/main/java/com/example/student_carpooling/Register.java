@@ -20,7 +20,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.example.student_carpooling.usersRecyclerView.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -46,18 +45,18 @@ public class Register extends AppCompatActivity {
     private AutoCompleteTextView Domain;
     private RadioGroup radioGroup;
     private RadioButton radioButton;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        AppCompatCheckBox checkBox;
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         ImageView back = findViewById(R.id.back);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        if(getSupportActionBar() != null){
+        getSupportActionBar().setTitle("");}
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,8 +117,6 @@ public class Register extends AppCompatActivity {
                     final String university = University.getText().toString();
                     final int radioId = radioGroup.getCheckedRadioButtonId();
                     radioButton = findViewById(radioId);
-                    final RadioButton male = findViewById(R.id.Male);
-                    final RadioButton female = findViewById(R.id.Female);
 
                     final String gender = radioButton.getText().toString();
 
@@ -156,10 +153,12 @@ public class Register extends AppCompatActivity {
                                                 //not successful
                                                 Toast.makeText(Register.this, "Registration Error", Toast.LENGTH_SHORT).show();
                                             } else {
-                                                String userId = mAuth.getCurrentUser().getUid();
+                                                FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                                                if(firebaseUser != null){
+                                                    userId = mAuth.getCurrentUser().getUid();
+                                                }
                                                 DatabaseReference currentUser = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
-                                                Map UserInfo = new HashMap();
-
+                                                Map<String, Object> UserInfo = new HashMap<>();
 
                                                 UserInfo.put("Username", username);
                                                 UserInfo.put("Name", name);
@@ -171,6 +170,7 @@ public class Register extends AppCompatActivity {
                                                 UserInfo.put("profileImageUrl", "defaultPic");
                                                 UserInfo.put("Search", username.toLowerCase());
                                                 UserInfo.put("CompletedTrips", 0);
+                                                UserInfo.put("AdminContact",0);
 
                                                 currentUser.setValue(UserInfo);
                                                 sendVerificationEmail();

@@ -85,7 +85,6 @@
             android:name=".DriverTripItem"
             android:label="@string/title_activity_driver_trip_item"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".TripFilter" />
         <activity
             android:name=".PassengerProfile"
             android:label="@string/title_activity_passenger_profile"
@@ -103,7 +102,7 @@
             android:label="@string/title_activity_find_trips"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".PassengerActivity"
+            android:name=".PassengerMain"
             android:label="@string/title_activity_passenger"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--

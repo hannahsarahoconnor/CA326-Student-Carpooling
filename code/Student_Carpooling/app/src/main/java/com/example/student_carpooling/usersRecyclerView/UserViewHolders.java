@@ -11,16 +11,16 @@ import com.example.student_carpooling.R;
 public class UserViewHolders extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     public ImageView UserProfilePic;
-    public TextView UserName, Message;
+    TextView UserName, Message;
 
 
-    public UserViewHolders(@NonNull View itemView) {
+    UserViewHolders(@NonNull View itemView) {
         super(itemView);
         itemView.setOnClickListener(this);
 
-        UserProfilePic = (ImageView) itemView.findViewById(R.id.UserProfilePic);
-        UserName = (TextView) itemView.findViewById(R.id.UserName);
-        Message = (TextView) itemView.findViewById(R.id.Message);
+        UserProfilePic = itemView.findViewById(R.id.UserProfilePic);
+        UserName = itemView.findViewById(R.id.UserName);
+        Message = itemView.findViewById(R.id.Message);
 
 
     }

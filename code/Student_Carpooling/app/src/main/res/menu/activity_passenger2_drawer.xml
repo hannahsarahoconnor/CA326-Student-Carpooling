@@ -7,31 +7,31 @@
         <item
             android:id="@+id/pass_message"
             android:icon="@drawable/ic_message"
-            android:title="Messages" />
+            android:title="@string/Messages" />
         <item
             android:id="@+id/pass_profile"
             android:icon="@drawable/ic_profile"
-            android:title="Profile" />
+            android:title="@string/title_activity_user_profile" />
         <item
             android:id="@+id/pass_sign_out"
             android:icon="@drawable/ic_logout"
-            android:title="Sign Out"/>
+            android:title="@string/SignOut"/>
     </group>
 
-    <item android:title="Manage Trips">
+    <item android:title="@string/Manage">
         <menu>
             <item
                 android:id="@+id/pass_find_trips"
                 android:icon="@drawable/ic_find"
-                android:title="Find Trips" />
+                android:title="@string/title_activity_find_trips" />
             <item
                 android:id="@+id/create_request"
                 android:icon="@drawable/ic_create_trip"
-                android:title="Trip Requests" />
+                android:title="@string/title_activity_passenger_create_requests" />
             <item
                 android:id="@+id/pass_trips"
                 android:icon="@drawable/ic_my_trips"
-                android:title="My Trips" />
+                android:title="@string/title_activity_passenger_trips" />
         </menu>
     </item>
 
