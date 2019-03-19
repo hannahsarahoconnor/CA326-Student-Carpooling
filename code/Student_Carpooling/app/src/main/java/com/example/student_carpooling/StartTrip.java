@@ -529,8 +529,8 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
             @Override
             public void run() {
                 //clear the arraylist, for when it is clicked multiple times -- no dups
-                if(RouteArrayList.size() > 0 ){
 
+                if(RouteArrayList.size() > 0 ){
                     //this for loop removes all the other routes
                     //so when a new route is created, all previous routes will be removed
                     for(Route route : RouteArrayList){
@@ -540,22 +540,23 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
                     RouteArrayList = new ArrayList<>();
                 }
 
-
+                //results gives all the info about the routes
+                //gets the .routes to get the directions names and then encode into Latlng
                 for(DirectionsRoute route: result.routes){
+                    //get the encoded path ( get all the points along each route)in order to build the polyline
                     List<com.google.maps.model.LatLng> Path = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
                     List<LatLng> newPath = new ArrayList<>();
-
                     //then loop thro the coordinates for each individual polyline
                     for(com.google.maps.model.LatLng latLng: Path){
                         //add each to the array list 'new path '
                         newPath.add(new LatLng(latLng.lat,latLng.lng));
                     }
-                    //create new polyineoption object, '.addAll -> adds all the coordinates from new path array list to the end of the  new polyline ,so that polyline is added to the map
+                    //create new polyline option object, '.addAll -> adds all the coordinates from new path array list to the end of the  new polyline ,so that polyline is added to the map
                     Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newPath).color(Color.GRAY).width(10));
                     //make it clickable show that the info about distance/duration will show
                     polyline.setClickable(true);
                     //keep track of each polyline and its duration/distance information -- so add a to our list of 'route' objects
+                    //legs gives the duration and distance info
                     RouteArrayList.add(new Route(polyline, route.legs[0]));
                 }
             }
@@ -594,11 +595,13 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
     private void getRoute(Marker marker){
         //need a way to remove old polylines-- each has its own id, add it to a list to keep track
 
+        //initialize geoapi client using the key
         String apiKey = getResources().getString(R.string.google_maps_routes);
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)
                 .build();
 
+        //initialize the directions api request using the geo api context and the marker location(destination), and driver location(origin)
         com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(marker.getPosition().latitude,marker.getPosition().longitude);
         DirectionsApiRequest directionsApiRequest = new DirectionsApiRequest(context);
 
@@ -607,6 +610,7 @@ public class StartTrip extends FragmentActivity implements OnMapReadyCallback, G
         directionsApiRequest.alternatives(true);
         //the driver is the origin
         directionsApiRequest.origin(new com.google.maps.model.LatLng(DriverPosition.latitude,DriverPosition.longitude));
+        //makes call on the direction result to the web service and returns the result
         directionsApiRequest.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
             @Override
             public void onResult(DirectionsResult result) {

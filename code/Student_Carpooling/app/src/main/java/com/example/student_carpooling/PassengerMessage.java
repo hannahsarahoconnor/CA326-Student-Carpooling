@@ -2,12 +2,9 @@ package com.example.student_carpooling;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -40,12 +37,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class PassengerMessage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,22 +55,17 @@ public class PassengerMessage extends AppCompatActivity
     Toolbar toolbar=null;
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mAuth;
 
     private ImageView navProfile;
     private TextView NUsername, Nemail;
-    private String email,UserID;
+    private String UserID;
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
     private String First, Surname, Fullname, profilePicurl, UserName;
 
-    private LinearLayoutManager userLayoutManager;
-
     FirebaseUser CurrentUser;
 
-    private RecyclerView recyclerView;
     private RecyclerView.Adapter userAdapter;
-    private EditText searchUsers;
     ArrayList<String> chatters;
 
 
@@ -79,23 +73,25 @@ public class PassengerMessage extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_passenger_message);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
-        UserID = mAuth.getCurrentUser().getUid();
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
-        getUserDB();
+        if(CurrentUser != null) {
+            UserID = mAuth.getCurrentUser().getUid();
+            UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+            getUserDB();
+        }
 
         View hView =  navigationView.getHeaderView(0);
         NUsername = hView.findViewById(R.id.usernameNav);
@@ -106,16 +102,15 @@ public class PassengerMessage extends AppCompatActivity
 
         chatters = new ArrayList<>();
 
-        recyclerView = findViewById(R.id.activechatsrv);
+        RecyclerView recyclerView = findViewById(R.id.activechatsrv);
         recyclerView.setNestedScrollingEnabled(true);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         userAdapter = new UserAdapter(getDataUsers(), PassengerMessage.this);
-        userLayoutManager = new LinearLayoutManager(PassengerMessage.this);
         recyclerView.setAdapter(userAdapter);
 
 
-        searchUsers = findViewById(R.id.searchBar);
+        EditText searchUsers = findViewById(R.id.searchBar);
 
         searchUsers.addTextChangedListener(new TextWatcher() {
             @Override
@@ -151,19 +146,27 @@ public class PassengerMessage extends AppCompatActivity
         View view = this.getCurrentFocus();
         if(view != null){
             InputMethodManager inm =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            inm.hideSoftInputFromWindow(view.getWindowToken(),0);
+            if (inm != null) {
+                inm.hideSoftInputFromWindow(view.getWindowToken(),0);
+            }
         }
     }
-  private void showKeyboard(){
-    View view = this.getCurrentFocus();
-      if (view.requestFocus()) {
-        InputMethodManager imm = (InputMethodManager)
-                  getSystemService(Context.INPUT_METHOD_SERVICE);
-         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
-       } }
+
+    private void showKeyboard() {
+        View view = this.getCurrentFocus();
+        try {
+            if (view != null && view.requestFocus()) {
+                InputMethodManager imm = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                Objects.requireNonNull(imm).showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+            }
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
     private void searchUser(String s){
         closeKeyboard();
-        final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         Query query = FirebaseDatabase.getInstance().getReference("users").orderByChild("Search").startAt(s).endAt(s +"\uf8ff");
 
         query.addValueEventListener(new ValueEventListener() {
@@ -176,7 +179,7 @@ public class PassengerMessage extends AppCompatActivity
                     // if (dataSnapshot.getChildrenCount() > 0){
                     final String id = snapshot.getKey();
                     // only show it if it's a reciever or sender to the currrent user.// how get this info -> function check, pass the id to a func
-                    if((!id.equals(CurrentUser.getUid()) && (chatters.contains(id)))){
+                    if (id != null && (!id.equals(UserID) && (chatters.contains(id)))) {
                         resultsUsers.clear();
                         DatabaseReference GetUserDB = FirebaseDatabase.getInstance().getReference().child("users").child(id);
                         GetUserDB.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -185,32 +188,36 @@ public class PassengerMessage extends AppCompatActivity
                                 if (dataSnapshot.exists()) {
                                     //get the info and create a new user object
                                     //required -> Id, profilepicurl, username
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if (map.get("profileImageUrl") != null) {
-                                        profilePicurl = map.get("profileImageUrl").toString();
+                                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                                    };
+                                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                                    if (map != null) {
+                                        if (map.get("profileImageUrl") != null) {
+                                            profilePicurl = (String) map.get("profileImageUrl");
+
+                                        }
+                                        if (map.get("Username") != null) {
+                                            UserName = (String) map.get("Username");
+
+                                        }
+
+                                        if (map.get("Surname") != null) {
+                                            Surname = (String) map.get("Surname");
+
+                                        }
+
+                                        if (map.get("Name") != null) {
+                                            First = (String) map.get("Name");
+
+                                        }
+
+                                        Fullname = First + " " + Surname;
+
+                                        User object = new User(id, profilePicurl, UserName, Fullname);
+                                        resultsUsers.add(object);
+                                        userAdapter.notifyDataSetChanged();
 
                                     }
-                                    if (map.get("Username") != null) {
-                                        UserName = map.get("Username").toString();
-
-                                    }
-
-                                    if (map.get("Surname") != null) {
-                                        Surname = map.get("Surname").toString();
-
-                                    }
-
-                                    if (map.get("Name") != null) {
-                                        First = map.get("Name").toString();
-
-                                    }
-
-                                    Fullname = First + " " + Surname;
-
-                                    User object = new User(id, profilePicurl, UserName, Fullname);
-                                    resultsUsers.add(object);
-                                    userAdapter.notifyDataSetChanged();
-
                                 }
                             }
 
@@ -221,10 +228,8 @@ public class PassengerMessage extends AppCompatActivity
                         });
 
 
-
-
-
-                    }}}
+                    }
+                }}
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -245,54 +250,58 @@ public class PassengerMessage extends AppCompatActivity
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
                         //get the id for each user
                         final String key = id.getKey();
-                        DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
-                        RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    //get the info and create a new user object
-                                    //required -> Id, profilepicurl, username
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if (map.get("profileImageUrl") != null) {
-                                        profilePicurl = map.get("profileImageUrl").toString();
+                        if (key != null) {
+                            DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
+                            RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        //get the info and create a new user object
+                                        //required -> Id, profilepicurl, username
+                                        GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                                        };
+                                        Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
+                                        if (map != null) {
 
+                                            if (map.get("profileImageUrl") != null) {
+                                                profilePicurl = (String) map.get("profileImageUrl");
+
+                                            }
+                                            if (map.get("Username") != null) {
+                                                UserName = (String) map.get("Username");
+
+                                            }
+
+                                            if (map.get("Surname") != null) {
+                                                Surname = (String) map.get("Surname");
+
+                                            }
+
+                                            if (map.get("Name") != null) {
+                                                First = (String) map.get("Name");
+
+                                            }
+
+                                            Fullname = First + " " + Surname;
+                                            chatters.add(key);
+                                            userAdapter.notifyDataSetChanged();
+
+                                        }
                                     }
-                                    if (map.get("Username") != null) {
-                                        UserName = map.get("Username").toString();
+                                }
 
-                                    }
-
-                                    if (map.get("Surname") != null) {
-                                        Surname = map.get("Surname").toString();
-
-                                    }
-
-                                    if (map.get("Name") != null) {
-                                        First = map.get("Name").toString();
-
-                                    }
-
-                                    Fullname = First + " " + Surname;
-
-                                    User object = new User(key, profilePicurl, UserName, Fullname);
-                                    //resultsUsers.add(object);
-                                    chatters.add(key);
-                                    userAdapter.notifyDataSetChanged();
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                 }
-                            }
+                            });
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            //add to the User List..
 
-                            }
-                        });
-
-                        //add to the User List..
-
-                        //query the user db to get more information
+                            //query the user db to get more information
 
 
+                        }
                     }
                 }
             }
@@ -305,6 +314,7 @@ public class PassengerMessage extends AppCompatActivity
     }
 
 
+
     private void getSenders() {
         //be in the form ChatList -> otheruserid, currentuser id..
 
@@ -315,72 +325,79 @@ public class PassengerMessage extends AppCompatActivity
         Chats.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot id : dataSnapshot.getChildren()) { ;
+                for (DataSnapshot id : dataSnapshot.getChildren()) {
                     //get the id for each user
                     final String key = id.getKey();
-                    DatabaseReference SenderDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(key);
-                    SenderDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                    final String recieverKey = id.getKey();
-                                    if (recieverKey.equals(UserID)) {
-                                        //add that user to database
-                                        //get their other info first
-                                        DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
-                                        RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.exists()) {
-                                                    //get the info and create a new user object
-                                                    //required -> Id, profilepicurl, username
-                                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                                    if (map.get("profileImageUrl") != null) {
-                                                        profilePicurl = map.get("profileImageUrl").toString();
+                    if(key != null) {
+                        DatabaseReference SenderDB = FirebaseDatabase.getInstance().getReference().child("ChatList").child(key);
+                        SenderDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                        final String recieverKey = id.getKey();
+                                        if (recieverKey != null && recieverKey.equals(UserID)) {
+                                            //add that user to database
+                                            //get their other info first
+                                            DatabaseReference RecieverDB = FirebaseDatabase.getInstance().getReference().child("users").child(key);
+                                            RecieverDB.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.exists()) {
+                                                        //get the info and create a new user object
+                                                        //required -> Id, profilepicurl, username
+                                                        GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>() {
+                                                        };
+                                                        Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator);
 
+                                                        if (map != null) {
+                                                            if (map.get("profileImageUrl") != null) {
+                                                                profilePicurl = (String) map.get("profileImageUrl");
+
+                                                            }
+                                                            if (map.get("Username") != null) {
+                                                                UserName = (String) map.get("Username");
+
+                                                            }
+
+                                                            if (map.get("Surname") != null) {
+                                                                Surname = (String) map.get("Surname");
+
+                                                            }
+
+                                                            if (map.get("Name") != null) {
+                                                                First = (String) map.get("Name");
+
+                                                            }
+
+                                                            Fullname = First + " " + Surname;
+
+                                                            User object = new User(key, profilePicurl, UserName, Fullname);
+                                                            resultsUsers.add(object);
+                                                            chatters.add(key);
+                                                            userAdapter.notifyDataSetChanged();
+
+                                                        }
                                                     }
-                                                    if (map.get("Username") != null) {
-                                                        UserName = map.get("Username").toString();
+                                                }
 
-                                                    }
-
-                                                    if (map.get("Surname") != null) {
-                                                        Surname = map.get("Surname").toString();
-
-                                                    }
-
-                                                    if (map.get("Name") != null) {
-                                                        First = map.get("Name").toString();
-
-                                                    }
-
-                                                    Fullname = First + " " + Surname;
-
-                                                    User object = new User(key, profilePicurl, UserName, Fullname);
-                                                    resultsUsers.add(object);
-                                                    chatters.add(key);
-                                                    userAdapter.notifyDataSetChanged();
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
                                                 }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    } }
+                                            });
+                                        }
+                                    }
+                                }
                             }
-                        }
 
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-
+                            }
+                        });
+                    }
                 }
             }
 
@@ -392,7 +409,7 @@ public class PassengerMessage extends AppCompatActivity
 
     }
 
-    private ArrayList resultsUsers = new ArrayList<User>();
+    private ArrayList<User> resultsUsers = new ArrayList<>();
 
     private List<User> getDataUsers() {
         return resultsUsers;
@@ -400,7 +417,7 @@ public class PassengerMessage extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer =findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -427,8 +444,6 @@ public class PassengerMessage extends AppCompatActivity
                 break;
 
             case R.id.help:
-                //go to new activity
-                //tFRougwMUphm8B95q7EAToUoYci1
                 Intent intent = new Intent(PassengerMessage.this,PassengerHelp.class);
                 startActivity(intent);
                 break;
@@ -516,7 +531,7 @@ public class PassengerMessage extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -549,7 +564,7 @@ public class PassengerMessage extends AppCompatActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -561,15 +576,20 @@ public class PassengerMessage extends AppCompatActivity
                 //makes sure the data is present, else the app will crash if not
                 if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() >0){
                     //data originally added is kept in this format
-                    Map<String,Object> map = (Map<String,Object>) dataSnapshot.getValue();
-                    if(map.get("Username")!=null){
-                        String DBUsername = map.get("Username").toString();
-                        NUsername.setText(DBUsername);
-                    }
-                    if(map.get("profileImageUrl")!=null){
-                        ProfilePicUrl = map.get("profileImageUrl").toString();
-                        if(!ProfilePicUrl.equals("defaultPic")) {
-                            Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);}
+                    GenericTypeIndicator<Map<String, Object>> genericTypeIndicator = new GenericTypeIndicator<Map<String, Object>>(){};
+                    Map<String, Object> map = dataSnapshot.getValue(genericTypeIndicator );
+
+                    if(map != null) {
+                        if (map.get("Username") != null) {
+                            String DBUsername = (String) map.get("Username");
+                            NUsername.setText(DBUsername);
+                        }
+                        if (map.get("profileImageUrl") != null) {
+                            ProfilePicUrl = (String) map.get("profileImageUrl");
+                            if (ProfilePicUrl != null && !ProfilePicUrl.equals("defaultPic")) {
+                                Glide.with(getApplication()).load(ProfilePicUrl).into(navProfile);
+                            }
+                        }
                     }
 
 

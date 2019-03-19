@@ -154,10 +154,12 @@ public class Register extends AppCompatActivity {
                                                 //not successful
                                                 Toast.makeText(Register.this, "Registration Error", Toast.LENGTH_SHORT).show();
                                             } else {
+                                                //now that user has been created-> can now get the ID of that user
                                                 FirebaseUser firebaseUser = mAuth.getCurrentUser();
                                                 if(firebaseUser != null){
                                                     userId = mAuth.getCurrentUser().getUid();
                                                 }
+                                                //save their registration info to database
                                                 DatabaseReference currentUser = FirebaseDatabase.getInstance().getReference().child("users").child(userId);
                                                 Map<String, Object> UserInfo = new HashMap<>();
 
