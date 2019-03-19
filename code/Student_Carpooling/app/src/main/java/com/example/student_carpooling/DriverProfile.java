@@ -194,7 +194,8 @@ public class DriverProfile extends AppCompatActivity
                         if (task.isSuccessful()) {
                             //is deleted
                             Toast.makeText(DriverProfile.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
                             Intent intent = new Intent(DriverProfile.this, MainActivity.class);
                             startActivity(intent);
                             finish();

@@ -15,7 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
 import com.example.student_carpooling.PassengerLocation;
 import com.example.student_carpooling.R;
-import com.example.student_carpooling.SendNotification;
+import com.example.student_carpooling.Notification;
 import com.example.student_carpooling.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -158,7 +158,7 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerViewHolders>
                            PassTripInfo.child("Removed").setValue(1);
                            Toast.makeText(context, Username + " has been deleted from your trip", Toast.LENGTH_LONG).show();
 
-                           new SendNotification(_driverUsername + " has removed you from their carpool", "Student Carpooling", _notificationKey);
+                           new Notification(_driverUsername + " has removed you from their carpool", "Student Carpooling", _notificationKey);
                            //refresh the activity
                            list.remove(passengerViewHolders.getAdapterPosition());
                            notifyDataSetChanged();

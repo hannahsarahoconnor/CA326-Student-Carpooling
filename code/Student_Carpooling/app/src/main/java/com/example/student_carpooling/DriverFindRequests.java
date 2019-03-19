@@ -333,7 +333,8 @@ public class DriverFindRequests extends AppCompatActivity
                         if (task.isSuccessful()) {
                             //is deleted
                             Toast.makeText(DriverFindRequests.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
                             Intent intent = new Intent(DriverFindRequests.this, MainActivity.class);
                             startActivity(intent);
                             finish();

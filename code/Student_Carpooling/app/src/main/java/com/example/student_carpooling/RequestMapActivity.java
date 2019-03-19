@@ -102,7 +102,7 @@ public class RequestMapActivity extends FragmentActivity implements OnMapReadyCa
 
                                 if(map.get("NotificationKey")!=null){
                                     driverNotificationKey = (String) map.get("NotificationKey");
-                                    new SendNotification("You have a new request","Student Carpooling",driverNotificationKey);
+                                    new Notification("You have a new request","Student Carpooling",driverNotificationKey);
 
                                 }}}
                             @Override

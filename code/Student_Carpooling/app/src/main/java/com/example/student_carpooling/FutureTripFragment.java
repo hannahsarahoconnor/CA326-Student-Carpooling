@@ -224,6 +224,7 @@ public class FutureTripFragment extends Fragment  {
 
     @Override
     public void onResume() {
+        resultsTrips.clear();
         super.onResume();
     }
 }

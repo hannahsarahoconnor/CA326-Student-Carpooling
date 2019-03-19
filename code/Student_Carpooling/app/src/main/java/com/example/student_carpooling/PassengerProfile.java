@@ -26,8 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -56,8 +58,7 @@ public class PassengerProfile extends AppCompatActivity
     private DatabaseReference UserDb;
     private String ProfilePicUrl;
     private TextView Name,Username,Uni;
-
-
+    private FirebaseUser CurrentUser;
     private ImageView profilePic;
     private String DBName, DBUsername, DBUni;
 
@@ -90,7 +91,7 @@ public class PassengerProfile extends AppCompatActivity
         Button Switch = findViewById(R.id.SwitchMode);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser CurrentUser = mAuth.getCurrentUser();
+        CurrentUser = mAuth.getCurrentUser();
         if(CurrentUser != null){
             UserID = CurrentUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
@@ -190,14 +191,28 @@ public class PassengerProfile extends AppCompatActivity
         Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
         Button Submit = dialogView.findViewById(R.id.Submit);
 
+
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(PassengerProfile.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(PassengerProfile.this, MainActivity.class);
-                startActivity(intent);
-                FirebaseAuth.getInstance().signOut();
-                dialogBuilder.dismiss();
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(PassengerProfile.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
+                            Intent intent = new Intent(PassengerProfile.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(PassengerProfile.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
             }
         });
 
@@ -323,7 +338,7 @@ public class PassengerProfile extends AppCompatActivity
                     if(map!= null) {
                         if (map.get("Name") != null) {
                             DBName =  (String) map.get("Name");
-                            Name.setText(DBName);
+                            Name.setText("@"+DBName);
 
                         }
                         if (map.get("Surname") != null) {
@@ -336,7 +351,7 @@ public class PassengerProfile extends AppCompatActivity
                             Uni.setText(DBUni);
                         }
                         if (map.get("CompletedTrips") != null) {
-                            String completed =  (String) map.get("CompletedTrips");
+                            String completed = Objects.requireNonNull(map.get("CompletedTrips")).toString();
                             Completed.setText(completed);
                         }
                         if (map.get("Username") != null) {

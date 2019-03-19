@@ -1,12 +1,12 @@
 package com.example.student_carpooling;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +42,7 @@ public class PassengerCreateRequests extends AppCompatActivity
     private ImageView navProfile;
     private TextView NUsername, Nemail;
     private DatabaseReference UserDb;
-    private String ProfilePicUrl;
+    private String ProfilePicUrl,UserID;
     private FirebaseUser CurrentUser;
 
     @Override
@@ -83,7 +84,7 @@ public class PassengerCreateRequests extends AppCompatActivity
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
         if(CurrentUser != null){
-            String UserID = CurrentUser.getUid();
+            UserID = CurrentUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
             getUserDB();
         }
@@ -114,40 +115,7 @@ public class PassengerCreateRequests extends AppCompatActivity
         switch(item.getItemId()) {
 
             case R.id.action_settings:
-                AlertDialog.Builder dialog = new AlertDialog.Builder(PassengerCreateRequests.this);
-                dialog.setTitle("Are you sure you want to delete your account?");
-                dialog.setMessage("By Doing this.....");
-                dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful()){
-                                    //is deleted
-                                    Toast.makeText(PassengerCreateRequests.this,"Account Successfully deleted",Toast.LENGTH_LONG).show();
-                                    UserDb.removeValue();
-                                    Intent intent = new Intent(PassengerCreateRequests.this,MainActivity.class);
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(PassengerCreateRequests.this,"Account couldn't be deleted at this time",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog = dialog.create();
-                alertDialog.show();
+                DeleteAccount();
                 break;
 
             case R.id.help:
@@ -156,36 +124,88 @@ public class PassengerCreateRequests extends AppCompatActivity
                 break;
 
             case R.id.contact:
-                AlertDialog.Builder dialog1 = new AlertDialog.Builder(PassengerCreateRequests.this);
-                dialog1.setTitle("Contact Admins");
-                dialog1.setMessage("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
-                dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent1 = new Intent(PassengerCreateRequests.this,ChatActivity.class);
-                        intent1.putExtra("Username","StudentCarpooling");
-                        intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
-                        intent1.putExtra("Fullname","Admins");
-                        intent1.putExtra("ProfilePicURL","defaultPic");
-                        startActivity(intent1);
-                    }
-                });
-
-                dialog1.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alertDialog1 = dialog1.create();
-                alertDialog1.show();
+                ContactAdmins();
                 break;
 
         }
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void DeleteAccount() {
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerCreateRequests.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        Title.setText("Delete Account");
+        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            //is deleted
+                            Toast.makeText(PassengerCreateRequests.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
+                            Intent intent = new Intent(PassengerCreateRequests.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            dialogBuilder.dismiss();
+                        } else {
+                            Toast.makeText(PassengerCreateRequests.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
+    }
+
+    private void ContactAdmins(){
+        final AlertDialog dialogBuilder = new AlertDialog.Builder(PassengerCreateRequests.this).create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog, null);
+        TextView Text = dialogView.findViewById(R.id.Text);
+        ImageView warn = dialogView.findViewById(R.id.warn);
+        ImageView admin = dialogView.findViewById(R.id.admin);
+        TextView Title = dialogView.findViewById(R.id.Title);
+        warn.setVisibility(View.GONE);
+        admin.setVisibility(View.VISIBLE);
+        Title.setText("Contact Admins");
+        Text.setText("If you have any further issues or queries regarding this app, please click yes to start a private chat with the admins");
+        Button Submit = dialogView.findViewById(R.id.Submit);
+
+
+        Submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
+                Intent intent1 = new Intent(PassengerCreateRequests.this,ChatActivity.class);
+                intent1.putExtra("Username","StudentCarpooling");
+                intent1.putExtra("ID", AdminID);
+                intent1.putExtra("Fullname","Admins");
+                intent1.putExtra("ProfilePicURL","defaultPic");
+                startActivity(intent1);
+                finish();
+                dialogBuilder.dismiss();
+
+            }
+        });
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

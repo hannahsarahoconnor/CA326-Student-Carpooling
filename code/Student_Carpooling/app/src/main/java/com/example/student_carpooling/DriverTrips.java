@@ -39,7 +39,7 @@ public class DriverTrips extends AppCompatActivity
 
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private TextView NUsername, Nemail;
-    private String ProfilePicUrl;
+    private String ProfilePicUrl,UserID;
     private DatabaseReference UserDb;
     private ImageView navProfile;
     private FirebaseUser CurrentUser;
@@ -71,7 +71,7 @@ public class DriverTrips extends AppCompatActivity
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
         if(CurrentUser!=null){
-            String UserID = CurrentUser.getUid();
+            UserID = CurrentUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
             getUserDB();
         }
@@ -155,7 +155,8 @@ public class DriverTrips extends AppCompatActivity
                         if (task.isSuccessful()) {
                             //is deleted
                             Toast.makeText(DriverTrips.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
                             Intent intent = new Intent(DriverTrips.this, MainActivity.class);
                             startActivity(intent);
                             finish();

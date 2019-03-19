@@ -425,7 +425,8 @@ public class PassengerTrips extends AppCompatActivity
                         if (task.isSuccessful()) {
                             //is deleted
                             Toast.makeText(PassengerTrips.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
                             Intent intent = new Intent(PassengerTrips.this, MainActivity.class);
                             startActivity(intent);
                             finish();

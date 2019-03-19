@@ -153,7 +153,7 @@
                     android:id="@+id/Ddate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7/3/2019"
+                    android:text="27/3/2019"
                     android:layout_marginTop="5dp"
                     android:textSize="20sp"
                     android:textColor="@color/colorPrimaryDark"
@@ -163,8 +163,7 @@
                     android:id="@+id/clock"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="47.5dp"
-                    android:layout_marginLeft="47.5dp"
+                    android:layout_marginStart="37dp"
                     android:layout_marginTop="4dp"
                     app:srcCompat="@drawable/ic_time" />
 
@@ -173,7 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text=" Time"
+                    android:text=" 20:00"
                     android:textSize="20sp"
                     android:textColor="@color/colorPrimaryDark"
                     android:fontFamily="@font/amiko"/>
@@ -189,7 +188,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="7dp"
                     app:srcCompat="@drawable/ic_seat"
-                    android:layout_marginLeft="20dp"/>
+                    android:layout_marginStart="20dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -211,36 +210,6 @@
                     android:fontFamily="@font/amiko"
                     />
 
-
-
-                <ImageView
-                    android:id="@+id/bag"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    app:srcCompat="@drawable/ic_bag"
-                    android:layout_marginLeft="48dp"/>
-
-                <TextView
-                    android:layout_marginTop="5dp"
-                    android:id="@+id/LuggageCheck"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" Luggage: "
-                    android:textSize="20sp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:fontFamily="@font/amiko"/>
-
-                <TextView
-                    android:id="@+id/Dluggage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" Yes/No"
-                    android:layout_marginTop="6dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:fontFamily="@font/amiko"/>
-
             </LinearLayout>
 
             <LinearLayout android:layout_width="fill_parent"
@@ -257,7 +226,6 @@
 
                 <TextView
                     android:layout_marginTop="5dp"
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" Driver Note: "

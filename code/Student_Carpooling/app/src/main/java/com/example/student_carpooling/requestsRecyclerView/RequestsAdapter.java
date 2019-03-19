@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.student_carpooling.ChatActivity;
+import com.example.student_carpooling.Notification;
 import com.example.student_carpooling.PassengerLocation;
 import com.example.student_carpooling.R;
-import com.example.student_carpooling.SendNotification;
 import com.example.student_carpooling.UserProfile;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -102,7 +102,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
                 DatabaseReference RequestsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(firebaseUser.getUid()).child(TripID).child("TripRequests").child(_id);
                 RequestsDB.removeValue();
                 Toast.makeText(context, "Request declined for  " + _username, Toast.LENGTH_SHORT).show();
-                new SendNotification(_driverUsername + " declined your request", "Student Carpooling", _notificationKey);
+                new Notification(_driverUsername + " declined your request", "Student Carpooling", _notificationKey);
                 //refresh the activity
                 list.remove(requestsViewHolders.getAdapterPosition());
                 notifyDataSetChanged();
@@ -213,7 +213,7 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsViewHolders> {
         RequestsDB.removeValue();
         Toast.makeText(context, "Request accepted for  " + username, Toast.LENGTH_SHORT).show();
         //send notification to passenger
-        new SendNotification(driver + " accepted your request", "Student Carpooling", notificationKey);
+        new Notification(driver + " accepted your request", "Student Carpooling", notificationKey);
 
         //add the trip info to passenger user info ...
         DatabaseReference PassengerInfoDB = FirebaseDatabase.getInstance().getReference().child("users").child(id).child("Trips").child(UserID).child(tripid);

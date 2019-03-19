@@ -3,6 +3,8 @@ package com.example.student_carpooling.findTripsRecyclerView;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +25,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
 
@@ -32,6 +37,9 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
     private Context context;
 
     private Dialog dialog;
+
+    Boolean result=false;
+
 
     public FindTripAdapter(List<FindTrip> list, Context context){
         this.context = context;
@@ -45,10 +53,11 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
     @Override
     public FindTripViewHolders onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         //this controlls the layout
-        View vh = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.findtrip_cards, viewGroup, false);
+        View vh = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.findtrip_cards, null, false);
         RecyclerView.LayoutParams lp  = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         vh.setLayoutParams(lp);
-        return new FindTripViewHolders((vh));
+        FindTripViewHolders rcv = new FindTripViewHolders((vh));
+        return rcv;
     }
 
     @Override
@@ -89,7 +98,7 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
                 TextView ClosePopUp = dialog.findViewById(R.id.close);
                 TextView username = dialog.findViewById(R.id.DUserName);
                 //TextView Fullname = (TextView) dialog.findViewById(R.id.Dfullname);
-                TextView Luggage = dialog.findViewById(R.id.Dluggage);
+               // TextView Luggage = dialog.findViewById(R.id.Dluggage);
                 TextView Note = dialog.findViewById(R.id.Dnote);
                 TextView Time = dialog.findViewById(R.id.Dtime);
                 TextView Date = dialog.findViewById(R.id.Ddate);
@@ -111,7 +120,7 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
                     Time.setText(list.get(findTripViewHolders.getAdapterPosition()).getTime());
 
                     // Fullname.setText(list.get(findTripViewHolders.getAdapterPosition()).getFullname());
-                    Luggage.setText(list.get(findTripViewHolders.getAdapterPosition()).getLuggage());
+                    //Luggage.setText(list.get(findTripViewHolders.getAdapterPosition()).getLuggage());
                     Note.setText(list.get(findTripViewHolders.getAdapterPosition()).getNote());
 
                     final String PicUrl = list.get(findTripViewHolders.getAdapterPosition()).getProfilePicUrl();
@@ -186,7 +195,6 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
                                     intent.putExtra("TripID", _tripId);
                                     //Toast.makeText(context, _id, Toast.LENGTH_SHORT).show();
                                     context.startActivity(intent);
-                                    dialog.dismiss();
 
 
 
@@ -211,6 +219,19 @@ public class FindTripAdapter extends RecyclerView.Adapter<FindTripViewHolders> {
             }
         });
     }
+
+    private void RequestCheck(String Key,String TripKey,final String CurrentUserId) {
+        //get those declined and add to list
+
+    }
+
+    private ArrayList<String> requested = new ArrayList<String>();
+
+    private void addToList(String id){
+        requested.add(id);
+    }
+
+
 
     @Override
     public int getItemCount() {

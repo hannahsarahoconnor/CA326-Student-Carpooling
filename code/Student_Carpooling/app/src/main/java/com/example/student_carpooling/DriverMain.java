@@ -83,6 +83,8 @@ public class DriverMain extends AppCompatActivity
             UserID = CurrentUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
             getUserDB();
+
+            //initalize one signal in order to subscribe user to recieve notifications
             OneSignal.startInit(this).init();
             //notify one signal that the user wishes to receive notifications
             OneSignal.setSubscription(true);

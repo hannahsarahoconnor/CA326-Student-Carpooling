@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,8 +20,6 @@ import com.example.student_carpooling.passengerRecyclerView.Passenger;
 import com.example.student_carpooling.passengerRecyclerView.PassengerAdapter;
 import com.example.student_carpooling.seatRecyclerView.Seat;
 import com.example.student_carpooling.seatRecyclerView.SeatAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +44,6 @@ public class DriverTripItem extends AppCompatActivity {
     private TextView cancelledTV,PassengerText,PassengerCount;
     private String UserID;
     private ImageView delete;
-    private DatabaseReference UserDb;
     private String TripID, UserName, profilePicurl, NotificationKey, Name,Surname,Fullname, DriverNotKey;
     private float Lat,Lon, dlat, dlon;
     private FirebaseUser CurrentUser;
@@ -95,7 +91,7 @@ public class DriverTripItem extends AppCompatActivity {
             UserID = CurrentUser.getUid();
         }
 
-        UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+        DatabaseReference UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
         UserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -358,10 +354,10 @@ public class DriverTripItem extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                new SendNotification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling",DriverNotKey);
-                //new SendNotification to passengers
+                new Notification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling",DriverNotKey);
+                //new Notification to passengers
                 for (String notKey : PassengerNotKey) {
-                    new SendNotification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling", notKey);
+                    new Notification("Your trip to "+_destination+ " starts in an hour", "Student Carpooling", notKey);
                 }
 
             }
@@ -376,7 +372,7 @@ public class DriverTripItem extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                new SendNotification("Your trip to "+_destination+ " is scheduled to start, please start the trip", "Student Carpooling",DriverNotKey);
+                new Notification("Your trip to "+_destination+ " is scheduled to start, please start the trip", "Student Carpooling",DriverNotKey);
 
             }
         };
@@ -417,7 +413,7 @@ public class DriverTripItem extends AppCompatActivity {
                             if (started == 0) {
                                 if (PassengerNotKey.size() > 0) {
                                     for (String notKey : PassengerNotKey) {
-                                        new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
+                                        new Notification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
                                     }
                                 }
                             }
@@ -444,7 +440,7 @@ public class DriverTripItem extends AppCompatActivity {
                             if (started == 0) {
                                 if (PassengerNotKey.size() > 0) {
                                     for (String notKey : PassengerNotKey) {
-                                        new SendNotification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
+                                        new Notification(_username + " has started the trip, you are now able to track them", "Student Carpooling", notKey);
                                     }
                                 }
                             }
@@ -503,7 +499,7 @@ public class DriverTripItem extends AppCompatActivity {
                 Toast.makeText(DriverTripItem.this, "This trip has been cancelled", Toast.LENGTH_LONG).show();
                 //send notification to passengers of the cancellation
                 for(String key : PassengerNotKey){
-                    new SendNotification(_username+" has cancelled your trip, click on the trip details to leave a review", "Student Carpooling",key);
+                    new Notification(_username+" has cancelled your trip, click on the trip details to leave a review", "Student Carpooling",key);
                 }
                 Intent intent = new Intent(DriverTripItem.this, DriverTrips.class);
                 startActivity(intent);
@@ -692,60 +688,6 @@ public class DriverTripItem extends AppCompatActivity {
         return resultsSeats;
     }
 
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId()) {
-
-            case R.id.action_settings:
-                DeleteAccount();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void DeleteAccount() {
-        final AlertDialog dialogBuilder = new AlertDialog.Builder(DriverTripItem.this).create();
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog, null);
-        TextView Text = dialogView.findViewById(R.id.Text);
-        TextView Title = dialogView.findViewById(R.id.Title);
-        Title.setText("Delete Account");
-        Text.setText("By deleting your account, you will no longer be able to sign in and all of your user data will be deleted. If you wish to you use the app again in the future, you must re-register. Are you sure you wish to continue? ");
-        Button Submit = dialogView.findViewById(R.id.Submit);
-
-
-        Submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CurrentUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //is deleted
-                            Toast.makeText(DriverTripItem.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
-                            Intent intent = new Intent(DriverTripItem.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            dialogBuilder.dismiss();
-                        } else {
-                            Toast.makeText(DriverTripItem.this, "Account couldn't be deleted at this time", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-
-            }
-        });
-
-        dialogBuilder.setView(dialogView);
-        dialogBuilder.show();
-    }
 
     @Override
     public void onResume() {

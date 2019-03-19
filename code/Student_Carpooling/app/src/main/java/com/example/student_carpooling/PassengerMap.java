@@ -306,7 +306,7 @@ public class PassengerMap extends FragmentActivity implements OnMapReadyCallback
                             //send notification and display toast message
                             //dont want the passenger to get repeated notifications
                             Toast.makeText(PassengerMap.this, "The Driver is at your pickup Location", Toast.LENGTH_SHORT).show();
-                            new SendNotification("Your driver " + _driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
+                            new Notification("Your driver " + _driverUsername + " is at your pickup Location", "Student Carpooling", _notificationKey);
                         }
                     }
                 }

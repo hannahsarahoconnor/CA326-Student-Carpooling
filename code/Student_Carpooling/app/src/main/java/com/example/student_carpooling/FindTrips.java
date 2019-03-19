@@ -71,7 +71,7 @@ public class FindTrips extends AppCompatActivity
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private String StartingPt="", DestinationPt="";
-    private String DBUsername;
+    private String DBUsername,UserID;
     private EditText DriverName;
     int AUTOCOMPLETE_REQUEST_CODE = 1;
     private static final String TAG = "FindTrips";
@@ -103,7 +103,7 @@ public class FindTrips extends AppCompatActivity
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
         if (firebaseUser != null) {
-            String UserID = firebaseUser.getUid();
+            UserID = firebaseUser.getUid();
             UserDb = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
             getUserDB();
         }
@@ -309,7 +309,8 @@ public class FindTrips extends AppCompatActivity
                         if (task.isSuccessful()) {
                             //is deleted
                             Toast.makeText(FindTrips.this, "Account Successfully deleted", Toast.LENGTH_LONG).show();
-                            UserDb.removeValue();
+                            DatabaseReference User = FirebaseDatabase.getInstance().getReference().child("users").child(UserID);
+                            User.removeValue();
                             Intent intent = new Intent(FindTrips.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -345,9 +346,10 @@ public class FindTrips extends AppCompatActivity
         Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String AdminID = getResources().getString(R.string.AdminID);
                 Intent intent1 = new Intent(FindTrips.this,ChatActivity.class);
                 intent1.putExtra("Username","StudentCarpooling");
-                intent1.putExtra("ID", "tFRougwMUphm8B95q7EAToUoYci1");
+                intent1.putExtra("ID", AdminID);
                 intent1.putExtra("Fullname","Admins");
                 intent1.putExtra("ProfilePicURL","defaultPic");
                 startActivity(intent1);

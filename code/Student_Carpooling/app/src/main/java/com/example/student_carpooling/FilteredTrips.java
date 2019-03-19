@@ -182,7 +182,7 @@ public class FilteredTrips extends AppCompatActivity {
 
     private void UserTripDB(final String Key, final String ID) {
         DatabaseReference TripsDB = FirebaseDatabase.getInstance().getReference().child("TripForms").child(Key).child(ID);
-        //Drivers full name is stored within "users"
+        //Drivers full name is stored within "users" -- need to create another db reference
         if(passengers.size() > 0){
             passengers.clear();
         }
@@ -191,6 +191,7 @@ public class FilteredTrips extends AppCompatActivity {
             declined.clear();
         }
         getDeclinedList(Key,ID);
+
         DatabaseReference UserDB = FirebaseDatabase.getInstance().getReference().child("users").child(Key);
         UserDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -220,7 +221,8 @@ public class FilteredTrips extends AppCompatActivity {
 
                         if (map.get("Username") != null) {
                             UserName = (String) map.get("Username");
-                            drivers.add(UserName);
+                            if(!Key.equals(UserID)){
+                            drivers.add(UserName);}
                         }
 
                     }
@@ -312,46 +314,39 @@ public class FilteredTrips extends AppCompatActivity {
 
 
                     Fullname = First + " " + Surname;
-                    //if(passengers.size() >0){
-                    //    Id = passengers.get(0);
-                    // }
-                    // if(declined.size() >0){
-                    //    Un = declined.get(0);
-                    // }
-                    //user can put in blank and leave all trip going to dst, and dont have to specific a starting point
-
-                    Toast.makeText(FilteredTrips.this, ""+passengers.size(), Toast.LENGTH_SHORT).show();
-
                     if (!Key.equals(UserID)) {
                         if (!passengers.contains(UserID)) {
+
+
                             if (!TextUtils.isEmpty(drivername)) {
+                                if (UserName.equals(drivername)) {
                                 if (rightNow.before(tripdate)) {
                                     if ((Seat) != 0) {
-                                        if (UserName.equals(drivername)) {
-                                            FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, String.valueOf(Seat), LuggageCheck, Note, Key);
-                                            results.add(object);
-                                            results.sort(new Comparator<FindTrip>() {
-                                                @Override
-                                                public int compare(FindTrip o1, FindTrip o2) {
-                                                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
-                                                    String date1 = o1.getDate() + " " + o1.getTime();
-                                                    String date2 = o2.getDate() + " " + o2.getTime();
-                                                    try {
-                                                        Date Date1 = format.parse(date1);
-                                                        Date Date2 = format.parse(date2);
-                                                        mili = Date1.getTime();
-                                                        mili2 = Date2.getTime();
-                                                    } catch (ParseException e) {
-                                                        e.printStackTrace();
+                                                FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, String.valueOf(Seat), LuggageCheck, Note, Key);
+                                                results.add(object);
+                                                results.sort(new Comparator<FindTrip>() {
+                                                    @Override
+                                                    public int compare(FindTrip o1, FindTrip o2) {
+                                                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.UK);
+                                                        String date1 = o1.getDate() + " " + o1.getTime();
+                                                        String date2 = o2.getDate() + " " + o2.getTime();
+                                                        try {
+                                                            Date Date1 = format.parse(date1);
+                                                            Date Date2 = format.parse(date2);
+                                                            mili = Date1.getTime();
+                                                            mili2 = Date2.getTime();
+                                                        } catch (ParseException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        Date datenew1 = new Date(mili);
+                                                        Date datenew2 = new Date(mili2);
+                                                        return datenew1.compareTo(datenew2);
+
                                                     }
-                                                    Date datenew1 = new Date(mili);
-                                                    Date datenew2 = new Date(mili2);
-                                                    return datenew1.compareTo(datenew2);
+                                                });
 
-                                                }
-                                            });
+                                                FiltertripAdapter.notifyDataSetChanged();
 
-                                            FiltertripAdapter.notifyDataSetChanged();
 
                                         }
                                     }
@@ -367,7 +362,6 @@ public class FilteredTrips extends AppCompatActivity {
                                                     if (Cancelled != 1) {
                                                         if (Started != 1) {
                                                             if (((Seat) != 0)) {
-                                                                //if(Id.length() == 0 && Un.length() == 0){
 
 
                                                                 FindTrip object = new FindTrip(UserID, ID, Fullname, UserName, DriverProfilePicUrl, Time, Day, Starting, Destination, String.valueOf(Seat), LuggageCheck, Note, Key);
@@ -414,6 +408,7 @@ public class FilteredTrips extends AppCompatActivity {
                                     }
 
                                 }
+                            }
 
 
                                 if (!drivers.contains(drivername) && !TextUtils.isEmpty(drivername)) {
@@ -424,18 +419,15 @@ public class FilteredTrips extends AppCompatActivity {
                                     textView2.setText("That username does not exist!");
                                 }
                                 if (TextUtils.isEmpty(drivername) && results.isEmpty()) {
-                                    tripRecyclerView.setVisibility(View.GONE);
-                                    textView1.setVisibility(View.VISIBLE);
-                                    textView2.setVisibility(View.VISIBLE);
-                                    createRequest.setVisibility(View.VISIBLE);
-
+                                    emptyRecyclerView();
 
                                 }
 
 
-                            }
-                        }else{
+
+                        } else {
                             passengers.clear();
+
                         }
 
                     }
@@ -451,6 +443,13 @@ public class FilteredTrips extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void emptyRecyclerView(){
+        tripRecyclerView.setVisibility(View.GONE);
+        textView1.setVisibility(View.VISIBLE);
+        textView2.setVisibility(View.VISIBLE);
+        createRequest.setVisibility(View.VISIBLE);
     }
 
 

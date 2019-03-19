@@ -274,7 +274,7 @@ public class ChatActivity extends AppCompatActivity {
 
         //send notification to that user
         String msgFormat = CurrentUsername + ": " + msg;
-        new SendNotification(msgFormat, "Student Carpooling", OtherKey);
+        new Notification(msgFormat, "Student Carpooling", OtherKey);
 
         //add value to database
         msgDB.setValue(MessageInfo);
@@ -312,28 +312,20 @@ public class ChatActivity extends AppCompatActivity {
 
     private void readMessage(final String CurrentId, final String OtherId) {
         messageList = new ArrayList<>();
-
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
-
-
+        reference = FirebaseDatabase.getInstance().getReference().child("Chats");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                messageList.clear();
                 resultsMessage.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
                     if(message != null){
                     if (message.getRecipient().equals(CurrentId) && message.getSender().equals(OtherId) ||
                             message.getSender().equals(CurrentId) && message.getRecipient().equals(OtherId)) {
-                        //messageList.add(message);
                         resultsMessage.add(message);
                         messageAdapter.notifyDataSetChanged();
                         //notify adapter
                     }
-                    //change this to oncreate
-                    // messageAdapter = new MessageAdapter(messageList, ChatActivity.this);
-                    //messageRecyclerView.setAdapter(messageAdapter);
                 }}
             }
 

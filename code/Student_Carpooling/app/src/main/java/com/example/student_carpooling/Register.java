@@ -130,7 +130,8 @@ public class Register extends AppCompatActivity {
                             if (dataSnapshot.getChildrenCount() > 0) {
                                 Toast.makeText(Register.this, "Username is already taken.", Toast.LENGTH_SHORT).show();
                             } else {
-                                //add checks to make sure blanks arent empty
+                                //username is not taken, move on to next step
+                                // add checks to make sure blanks arent empty
 
 
                                 //add to database
