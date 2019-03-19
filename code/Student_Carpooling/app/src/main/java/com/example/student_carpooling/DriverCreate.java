@@ -270,7 +270,7 @@ public class DriverCreate extends AppCompatActivity
 
 
         // when user clicks create -- convert to string
-        Button Create;
+        final Button Create;
         Create = findViewById(R.id.CreateId);
         Create.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,13 +349,17 @@ public class DriverCreate extends AppCompatActivity
                                                             Toast.makeText(DriverCreate.this, "This conflicts with another trip, please change the time/date or delete other trip", Toast.LENGTH_LONG).show();
                                                             //refresh the activity if its a conflicting time
                                                             //add fields will be reset
+                                                            //disable button
+                                                            Create.setVisibility(View.INVISIBLE);
                                                             Intent intent = getIntent();
-                                                            finish();
                                                             startActivity(intent);
+                                                            finish();
 
                                                         }
                                                     }
-                                                }}
+                                                }
+
+                                            }
 
 
                                             @Override
@@ -366,7 +370,36 @@ public class DriverCreate extends AppCompatActivity
 
                                     }
                                 }
-                            }}
+                            }
+                            try {
+                                //Create new trip and add to database
+                                ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
+                                Map<String, Object> TripInfo = new HashMap<>();
+                                TripInfo.put("Username", DBUsername);
+                                TripInfo.put("Starting", starting);
+                                TripInfo.put("Destination", destination);
+                                TripInfo.put("DstLat", latLng.latitude);
+                                TripInfo.put("DstLon", latLng.longitude);
+                                TripInfo.put("Date", startingDate);
+                                TripInfo.put("Seats", numberSeats);
+                                TripInfo.put("Time", startingTime);
+                                TripInfo.put("Luggage", luggageCheck);
+                                TripInfo.put("Note", Trip_note);
+                                TripInfo.put("Started", 0);
+                                TripInfo.put("Completed", 0);
+                                TripInfo.put("Cancelled", 0);
+                                TripInfo.put("Deleted", 0);
+
+                                ref.push().setValue(TripInfo);
+                                Toast.makeText(DriverCreate.this, "new trip has been added successfully", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(DriverCreate.this, DriverTrips.class));
+                                finish();
+                            }catch (NullPointerException e){
+                                //
+                            }
+
+
+                            }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -374,28 +407,7 @@ public class DriverCreate extends AppCompatActivity
                             }
                         });
 
-                            //Create new trip and add to database
-                            ref = FirebaseDatabase.getInstance().getReference().child("TripForms").child(UserID);
-                            Map<String, Object> TripInfo = new HashMap<>();
-                            TripInfo.put("Username", DBUsername);
-                            TripInfo.put("Starting", starting);
-                            TripInfo.put("Destination",destination);
-                            TripInfo.put("DstLat", latLng.latitude);
-                            TripInfo.put("DstLon", latLng.longitude);
-                            TripInfo.put("Date", startingDate);
-                            TripInfo.put("Seats", numberSeats);
-                            TripInfo.put("Time", startingTime);
-                            TripInfo.put("Luggage", luggageCheck);
-                            TripInfo.put("Note", Trip_note);
-                            TripInfo.put("Started", 0);
-                            TripInfo.put("Completed", 0);
-                            TripInfo.put("Cancelled",0);
-                            TripInfo.put("Deleted",0);
 
-                            ref.push().setValue(TripInfo);
-                            Toast.makeText(DriverCreate.this, "new trip has been added successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(DriverCreate.this, DriverTrips.class));
-                            finish();
                         }
                     }
 

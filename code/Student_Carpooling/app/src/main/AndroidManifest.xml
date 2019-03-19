@@ -118,6 +118,7 @@
         <activity
             android:name=".DriverCreate"
             android:label="@string/title_activity_driver_create"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".DriverTrips"
