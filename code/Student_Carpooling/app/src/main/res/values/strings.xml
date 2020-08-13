@@ -91,7 +91,5 @@
     <string name="title_activity_passenger_location">Map</string>
     <string name="title_activity_start_trip">Map</string>
     <string name="title_activity_passenger_map">Map</string>
-    <string name="google_maps_routes">AIzaSyCGNnh1lFiJ4mGCAdzJa50I77c2ITyGhnY</string>
-    <string name="google_maps_places_key">AIzaSyBTJ-pUGMT8ypVgiyWqy0T_nSoT6z0bOIA</string>
 
 </resources>
